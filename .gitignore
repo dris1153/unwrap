@@ -5,7 +5,7 @@ target
 *.pdb
 src-tauri/gen/
 
-plans/
+plans
 
 # Tauri sidecar binaries — 3rd-party tools (AssetRipper, ILSpyCmd, etc.).
 # Too large for git (~190MB total, > GitHub 100MB hard limit).
