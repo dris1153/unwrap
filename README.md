@@ -14,9 +14,9 @@ Multi-language documentation page (EN / VI / zh-CN):
 pnpm docs:serve
 ```
 
-Then open http://localhost:5173/docs.html — opening the file directly via `file://` will fail because browsers block `fetch()` on local files.
+Then open http://localhost:5173 — `serve.json` rewrites root to `docs.html`. Opening the file directly via `file://` will fail because browsers block `fetch()` on local files.
 
-Or browse [the docs on GitHub Pages](https://dris1153.github.io/unwrap/docs.html) once Pages is enabled.
+Or browse the deployed docs at **https://dris1153.github.io/unwrap/** — auto-deployed via `.github/workflows/deploy-docs.yml` on every push to `dev` that touches `docs.html` or `docs/**`.
 
 ## What it does
 

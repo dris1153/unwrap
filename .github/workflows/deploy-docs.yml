@@ -1,0 +1,57 @@
+name: Deploy docs to GitHub Pages
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'docs.html'
+      - 'docs/**'
+      - '.github/workflows/deploy-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skip runs queued between an
+# in-progress run and the latest queued one. Don't cancel in-progress runs.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Stage docs into _site
+        run: |
+          mkdir -p _site/docs
+          # Rename docs.html → index.html so GitHub Pages serves it at /
+          cp docs.html _site/index.html
+          # Preserve docs/assets/* paths (i18n JSON, diagrams, screenshots, CSS, JS)
+          cp -r docs/assets   _site/docs/assets
+          # Brand logos (favicon, mark, wordmark)
+          cp -r docs/branding _site/docs/branding
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
