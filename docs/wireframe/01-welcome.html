@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en" style="width:1440px;height:900px;overflow:hidden">
+<head>
+<meta charset="UTF-8" />
+<title>Unwrap — Welcome</title>
+
+<!-- Tailwind via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts: Satoshi (UI) + JetBrains Mono (code) -->
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Phosphor Icons via CDN -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          base:     '#09090B',
+          surface:  '#111114',
+          elevated: '#18181B',
+          overlay:  '#27272A',
+          'border-subtle':  'rgba(63,63,70,0.35)',
+          'border-default': '#27272A',
+          'border-strong':  '#3F3F46',
+          primary:   '#F4F4F5',
+          secondary: '#A1A1AA',
+          tertiary:  '#71717A',
+          disabled:  '#52525B',
+          accent:         '#10B981',
+          'accent-strong':'#059669',
+          'accent-muted': 'rgba(16,185,129,0.12)',
+          'accent-glow':  'rgba(16,185,129,0.20)',
+          success: '#22C55E',
+          warning: '#F59E0B',
+          danger:  '#EF4444',
+          info:    '#0EA5E9',
+          tex:    '#F472B6',
+          aud:    '#A78BFA',
+          mesh:   '#FBBF24',
+          script: '#10B981',
+          txt:    '#60A5FA',
+          bin:    '#71717A',
+        },
+        fontFamily: {
+          sans: ['Satoshi','ui-sans-serif','system-ui'],
+          mono: ['JetBrains Mono','ui-monospace','monospace'],
+        },
+        letterSpacing: {
+          tightest: '-0.02em',
+          tighter:  '-0.015em',
+          tightish: '-0.01em',
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  html, body { margin:0; padding:0; }
+  body { -webkit-font-smoothing: antialiased; }
+  .text-secondary { color: #A1A1AA; }
+  .text-tertiary  { color: #71717A; }
+  .text-primary   { color: #F4F4F5; }
+  .hero-glow {
+    background:
+      radial-gradient(circle at 92% 8%, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.04) 28%, transparent 55%);
+  }
+  .drop-pulse { animation: dropPulse 2.4s ease-in-out infinite; }
+  @keyframes dropPulse {
+    0%,100% { border-color: rgba(16,185,129,0.35); }
+    50%     { border-color: rgba(16,185,129,0.55); }
+  }
+  /* checker bg utility for icons */
+  .grid-tick {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  /* phosphor icon sizing helpers */
+  i.ph { font-style: normal; }
+</style>
+</head>
+<body class="bg-base text-primary font-sans antialiased" style="width:1440px;height:900px;overflow:hidden">
+
+<!-- ====================== APP SHELL ====================== -->
+<div class="flex flex-col" style="width:1440px;height:900px;">
+
+  <!-- TITLE BAR — 36px -->
+  <header class="flex items-center justify-between bg-surface border-b border-[#27272A]" style="height:36px;">
+    <!-- Left: brand mark + app -->
+    <div class="flex items-center gap-2 px-3">
+      <!-- monogram mark -->
+      <div class="w-[18px] h-[18px] rounded-[4px] bg-accent/15 border border-accent/40 flex items-center justify-center">
+        <div class="w-[8px] h-[8px] bg-accent rounded-[1px]"></div>
+      </div>
+      <span class="font-sans text-[12px] font-medium tracking-tightish text-primary">Unwrap</span>
+      <span class="text-tertiary text-[12px]">·</span>
+      <span class="font-mono text-[11px] text-tertiary">welcome</span>
+    </div>
+
+    <!-- Center: drag region (empty visually) -->
+    <div class="flex-1"></div>
+
+    <!-- Right: window controls -->
+    <div class="flex items-center">
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-overlay hover:text-primary transition-colors">
+        <i class="ph ph-minus text-[14px]"></i>
+      </button>
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-overlay hover:text-primary transition-colors">
+        <i class="ph ph-square text-[12px]"></i>
+      </button>
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-danger hover:text-white transition-colors">
+        <i class="ph ph-x text-[14px]"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ====================== HERO BODY ====================== -->
+  <main class="flex-1 hero-glow relative">
+    <!-- Top-right subtle tick grid hint -->
+    <div class="absolute inset-0 grid-tick opacity-40 pointer-events-none"></div>
+
+    <!-- Inner padding + 60/40 split -->
+    <div class="relative h-full flex" style="padding: 56px 64px 40px 64px;">
+
+      <!-- LEFT (60%) — headline + drop zone -->
+      <section class="flex flex-col" style="width:60%; padding-right:48px;">
+
+        <!-- eyebrow -->
+        <div class="flex items-center gap-2 mb-7">
+          <span class="w-[6px] h-[6px] rounded-full bg-accent shadow-[0_0_8px_rgba(16,185,129,0.6)]"></span>
+          <span class="font-mono text-[11px] tracking-[0.04em] uppercase text-secondary">
+            Reverse engineering<span class="text-tertiary mx-2">•</span>v0.1
+          </span>
+        </div>
+
+        <!-- display headline -->
+        <h1 class="font-sans text-[56px] leading-[58px] font-[700] tracking-tightest text-primary mb-6">
+          Decode anything<br/>
+          <span class="relative">
+            you own.
+            <!-- tiny accent dot at end -->
+            <span class="absolute -right-3 bottom-3 w-[6px] h-[6px] rounded-full bg-accent"></span>
+          </span>
+        </h1>
+
+        <!-- sub body -->
+        <p class="font-sans text-[15px] leading-[24px] text-secondary max-w-[480px] mb-9">
+          Drop a Unity build to extract assets, decompile scripts, and surface
+          translatable text — without leaving your desktop.
+        </p>
+
+        <!-- DRAG-DROP ZONE -->
+        <div class="rounded-2xl bg-accent-muted/[0.12] border border-dashed drop-pulse"
+             style="padding:44px 40px; border-width:1.5px; border-color:rgba(16,185,129,0.40); max-width:560px;">
+          <div class="flex items-start gap-5">
+            <!-- icon -->
+            <div class="shrink-0 w-[52px] h-[52px] rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center">
+              <i class="ph-duotone ph-folder-open text-accent" style="font-size:28px;"></i>
+            </div>
+            <!-- text + button -->
+            <div class="flex-1">
+              <div class="font-sans text-[18px] leading-[24px] font-[600] text-primary mb-1.5">
+                Drop a Unity build folder here
+              </div>
+              <div class="font-sans text-[13px] leading-[20px] text-secondary mb-4">
+                Point at the folder containing <span class="font-mono text-[12px] text-primary/80">*.exe</span> and <span class="font-mono text-[12px] text-primary/80">*_Data/</span> — or browse manually.
+              </div>
+
+              <div class="flex items-center gap-3">
+                <button class="h-8 px-3 rounded-md bg-accent text-[#09090B] text-[13px] font-[600] hover:bg-accent-strong active:translate-y-[1px] transition-all flex items-center gap-1.5">
+                  <i class="ph ph-folder-notch-open text-[14px]"></i>
+                  Browse files…
+                </button>
+                <span class="font-mono text-[12px] text-tertiary">or</span>
+                <button class="h-8 px-3 rounded-md text-secondary hover:text-primary hover:bg-overlay text-[13px] font-[500] transition-colors flex items-center gap-1.5">
+                  <i class="ph ph-file-arrow-up text-[14px]"></i>
+                  Open archive (.zip)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- bottom tiny meta row inside dropzone -->
+          <div class="mt-5 pt-4 border-t border-accent/15 flex items-center gap-4 text-[11px] font-mono text-tertiary">
+            <span class="flex items-center gap-1.5">
+              <i class="ph ph-shield-check text-[12px] text-accent/70"></i>
+              Local only · nothing uploaded
+            </span>
+            <span class="text-overlay">·</span>
+            <span>Drag any folder · ⌘O to browse</span>
+          </div>
+        </div>
+
+        <!-- support line -->
+        <div class="mt-5 font-mono text-[11px] text-tertiary">
+          Supports: <span class="text-secondary">Unity 3.5 – 6000.x</span>
+          <span class="mx-2 text-overlay">•</span>
+          <span class="text-secondary">Mono + IL2CPP</span>
+          <span class="mx-2 text-overlay">•</span>
+          <span class="text-secondary">Windows 11 / 10</span>
+        </div>
+
+      </section>
+
+      <!-- RIGHT (40%) — recent projects -->
+      <section class="flex flex-col" style="width:40%;">
+
+        <!-- header row -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Recent</span>
+            <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">4</span>
+          </div>
+          <button class="text-secondary hover:text-primary text-[12px] font-[500] flex items-center gap-1 transition-colors">
+            <i class="ph ph-arrows-clockwise text-[12px]"></i>
+            Refresh
+          </button>
+        </div>
+
+        <!-- 2x2 grid -->
+        <div class="grid grid-cols-2 gap-3 mb-5">
+
+          <!-- TILE 1 — Hollow Vale (active hover state shown) -->
+          <div class="group rounded-lg bg-surface border border-accent/30 hover:border-accent/40 transition-all cursor-pointer relative overflow-hidden"
+               style="padding:14px 14px 14px 14px; height:138px;">
+            <!-- subtle accent bg on hover state -->
+            <div class="absolute inset-0 bg-accent-muted opacity-100 pointer-events-none"></div>
+            <div class="relative h-full flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between mb-2">
+                  <div class="w-[28px] h-[28px] rounded-md bg-tex/15 border border-tex/30 flex items-center justify-center">
+                    <i class="ph ph-game-controller text-tex" style="font-size:15px;"></i>
+                  </div>
+                  <span class="font-mono text-[10px] text-accent flex items-center gap-1">
+                    <span class="w-[5px] h-[5px] rounded-full bg-accent"></span>
+                    pinned
+                  </span>
+                </div>
+                <div class="font-sans text-[14px] font-[600] text-primary leading-[18px] mb-1 tracking-tightish">
+                  Hollow Vale
+                </div>
+                <div class="font-mono text-[10px] text-tertiary truncate">
+                  C:\Games\HollowVale\HollowVale_Data
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">
+                  Unity 2022.3.18
+                </span>
+                <div class="text-right">
+                  <div class="font-mono text-[10px] text-secondary">14,238 assets</div>
+                  <div class="font-mono text-[10px] text-tertiary">opened 3h ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TILE 2 — Ferrocity Demo -->
+          <div class="group rounded-lg bg-surface border border-[#27272A] hover:border-[#3F3F46] transition-all cursor-pointer relative"
+               style="padding:14px; height:138px;">
+            <div class="h-full flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between mb-2">
+                  <div class="w-[28px] h-[28px] rounded-md bg-mesh/15 border border-mesh/30 flex items-center justify-center">
+                    <i class="ph ph-cube text-mesh" style="font-size:15px;"></i>
+                  </div>
+                  <span class="font-mono text-[10px] text-warning flex items-center gap-1">
+                    <span class="w-[5px] h-[5px] rounded-full bg-warning"></span>
+                    il2cpp
+                  </span>
+                </div>
+                <div class="font-sans text-[14px] font-[600] text-primary leading-[18px] mb-1 tracking-tightish">
+                  Ferrocity Demo
+                </div>
+                <div class="font-mono text-[10px] text-tertiary truncate">
+                  D:\Builds\Ferrocity\demo_v0.4.2
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">
+                  Unity 2021.3.9
+                </span>
+                <div class="text-right">
+                  <div class="font-mono text-[10px] text-secondary">8,921 assets</div>
+                  <div class="font-mono text-[10px] text-tertiary">yesterday</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TILE 3 — Knight of the Tin Drum -->
+          <div class="group rounded-lg bg-surface border border-[#27272A] hover:border-[#3F3F46] transition-all cursor-pointer relative"
+               style="padding:14px; height:138px;">
+            <div class="h-full flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between mb-2">
+                  <div class="w-[28px] h-[28px] rounded-md bg-script/15 border border-script/30 flex items-center justify-center">
+                    <i class="ph ph-knife text-script" style="font-size:15px;"></i>
+                  </div>
+                  <span class="font-mono text-[10px] text-info flex items-center gap-1">
+                    <span class="w-[5px] h-[5px] rounded-full bg-info"></span>
+                    mono
+                  </span>
+                </div>
+                <div class="font-sans text-[14px] font-[600] text-primary leading-[18px] mb-1 tracking-tightish">
+                  Knight of the Tin Drum
+                </div>
+                <div class="font-mono text-[10px] text-tertiary truncate">
+                  E:\Steam\steamapps\common\KOTD
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">
+                  Unity 2023.1.4
+                </span>
+                <div class="text-right">
+                  <div class="font-mono text-[10px] text-secondary">22,447 assets</div>
+                  <div class="font-mono text-[10px] text-tertiary">4 days ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TILE 4 — Wandersmith -->
+          <div class="group rounded-lg bg-surface border border-[#27272A] hover:border-[#3F3F46] transition-all cursor-pointer relative"
+               style="padding:14px; height:138px;">
+            <div class="h-full flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between mb-2">
+                  <div class="w-[28px] h-[28px] rounded-md bg-txt/15 border border-txt/30 flex items-center justify-center">
+                    <i class="ph ph-map-trifold text-txt" style="font-size:15px;"></i>
+                  </div>
+                  <span class="font-mono text-[10px] text-info flex items-center gap-1">
+                    <span class="w-[5px] h-[5px] rounded-full bg-info"></span>
+                    mono
+                  </span>
+                </div>
+                <div class="font-sans text-[14px] font-[600] text-primary leading-[18px] mb-1 tracking-tightish">
+                  Wandersmith
+                </div>
+                <div class="font-mono text-[10px] text-tertiary truncate">
+                  C:\itch\wandersmith-win64
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">
+                  Unity 6000.0.18
+                </span>
+                <div class="text-right">
+                  <div class="font-mono text-[10px] text-secondary">5,612 assets</div>
+                  <div class="font-mono text-[10px] text-tertiary">last week</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- empty state row -->
+        <div class="flex items-center justify-between rounded-lg border border-[#27272A] border-dashed px-3.5 py-2.5">
+          <div class="flex items-center gap-2.5">
+            <i class="ph ph-clock-counter-clockwise text-tertiary text-[14px]"></i>
+            <span class="font-sans text-[12px] text-tertiary">No more projects</span>
+          </div>
+          <button class="text-secondary hover:text-primary text-[12px] font-[500] flex items-center gap-1 transition-colors">
+            <i class="ph ph-broom text-[12px]"></i>
+            Clear history
+          </button>
+        </div>
+
+        <!-- spacer + tip -->
+        <div class="mt-auto pt-6 flex items-center gap-2 font-mono text-[10px] text-tertiary">
+          <span class="inline-flex items-center gap-1 px-1.5 py-[2px] border border-[#27272A] rounded-[4px] bg-elevated">
+            <i class="ph ph-keyboard text-[10px]"></i> ⌘O
+          </span>
+          <span>open folder</span>
+          <span class="mx-1 text-overlay">·</span>
+          <span class="inline-flex items-center gap-1 px-1.5 py-[2px] border border-[#27272A] rounded-[4px] bg-elevated">⌘K</span>
+          <span>jump anywhere</span>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- STATUS BAR — 24px -->
+  <footer class="flex items-center justify-between border-t border-[#27272A] bg-surface px-3" style="height:24px;">
+    <div class="flex items-center gap-3 text-[11px] font-mono text-secondary">
+      <span class="flex items-center gap-1.5">
+        <span class="w-[6px] h-[6px] rounded-full bg-tertiary"></span>
+        Ready
+      </span>
+      <span class="text-overlay">•</span>
+      <span class="text-tertiary">No project open</span>
+    </div>
+    <div class="flex items-center gap-3 text-[11px] font-mono text-tertiary">
+      <span class="flex items-center gap-1.5">
+        <i class="ph ph-cloud-slash text-[11px]"></i>
+        Offline mode
+      </span>
+      <span class="text-overlay">•</span>
+      <span>v0.1.0-alpha</span>
+      <span class="text-overlay">•</span>
+      <span class="flex items-center gap-1.5">
+        <i class="ph ph-circuitry text-[11px]"></i>
+        Win 11 · WebView2
+      </span>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

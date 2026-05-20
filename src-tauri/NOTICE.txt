@@ -1,0 +1,100 @@
+Unwrap — Third-Party Software Notices
+======================================
+
+This product bundles or downloads at runtime the following third-party tools.
+Each tool retains its own license. Unwrap invokes each only as a separate
+process (subprocess pattern) and does not link any of their code into its own
+binary.
+
+---
+
+1. AssetRipper
+-------------------
+Version: 1.3.14
+Project: https://github.com/AssetRipper/AssetRipper
+Source: https://github.com/AssetRipper/AssetRipper/releases/tag/1.3.14
+License: GNU General Public License version 3.0 (GPL-3.0-only)
+SPDX:    GPL-3.0-only
+License text: https://www.gnu.org/licenses/gpl-3.0.txt
+
+You are entitled, under the terms of GPL-3.0, to receive the corresponding
+source code of AssetRipper. The complete source is published at the project
+URL above. AssetRipper is invoked by Unwrap as a separate process; its code
+is not linked into Unwrap's binary.
+
+If you wish to obtain a copy of the AssetRipper source code corresponding
+to the binary shipped with this version of Unwrap, visit the source URL
+above or contact the Unwrap maintainers and a copy will be provided.
+
+
+2. ILSpyCmd (part of ILSpy)
+---------------------------
+Version: 9.1.0.7988
+Project: https://github.com/icsharpcode/ILSpy
+Source:  https://www.nuget.org/packages/ilspycmd/9.1.0.7988
+License: MIT License
+SPDX:    MIT
+
+MIT License
+
+Copyright (c) 2011-2025 AlphaSierraPapa for the SharpDevelop Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+3. Il2CppDumper (downloaded on demand, not bundled)
+---------------------------------------------------
+Version: 6.7.42
+Project: https://github.com/Perfare/Il2CppDumper
+Source:  https://github.com/Perfare/Il2CppDumper/releases/tag/v6.7.42
+License: MIT License
+SPDX:    MIT
+
+MIT License
+
+Copyright (c) Perfare
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+Note: Il2CppDumper is NOT bundled with Unwrap. It is downloaded from the
+Source URL above on first detection of an IL2CPP-compiled project, with the
+SHA-256 checksum verified before execution. Users can opt out by declining
+the download prompt; IL2CPP decompilation will then be unavailable.
+
+
+---
+
+For questions or requests regarding these notices, contact the Unwrap
+maintainers via the project repository.

@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en" style="width:1440px;height:900px;overflow:hidden">
+<head>
+<meta charset="UTF-8" />
+<title>Unwrap — Hollow Vale · PlayerController.cs</title>
+
+<!-- Tailwind via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts -->
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Phosphor Icons -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          base:     '#09090B',
+          surface:  '#111114',
+          elevated: '#18181B',
+          overlay:  '#27272A',
+          'border-subtle':  'rgba(63,63,70,0.35)',
+          'border-default': '#27272A',
+          'border-strong':  '#3F3F46',
+          primary:   '#F4F4F5',
+          secondary: '#A1A1AA',
+          tertiary:  '#71717A',
+          disabled:  '#52525B',
+          accent:         '#10B981',
+          'accent-strong':'#059669',
+          'accent-muted': 'rgba(16,185,129,0.12)',
+          'accent-glow':  'rgba(16,185,129,0.20)',
+          success: '#22C55E',
+          warning: '#F59E0B',
+          danger:  '#EF4444',
+          info:    '#0EA5E9',
+          tex:    '#F472B6',
+          aud:    '#A78BFA',
+          mesh:   '#FBBF24',
+          script: '#10B981',
+          txt:    '#60A5FA',
+          bin:    '#71717A',
+          /* C# syntax */
+          kw:     '#c084fc',
+          ty:     '#60a5fa',
+          str:    '#fcd34d',
+          num:    '#f472b6',
+          cmt:    '#71717a',
+          id:     '#f4f4f5',
+        },
+        fontFamily: {
+          sans: ['Satoshi','ui-sans-serif','system-ui'],
+          mono: ['JetBrains Mono','ui-monospace','monospace'],
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  html, body { margin:0; padding:0; }
+  body { -webkit-font-smoothing: antialiased; }
+  i.ph { font-style: normal; }
+
+  .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scroll-thin::-webkit-scrollbar-thumb { background: #27272A; border-radius: 3px; }
+  .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+
+  .tree-row:hover { background:#1c1c1f; }
+  .tree-sel { background: rgba(16,185,129,0.12); }
+  .tree-sel-bar { box-shadow: inset 2px 0 0 0 #10B981; }
+  .mod-dot { width:6px; height:6px; border-radius:9999px; background:#10B981; box-shadow:0 0 6px rgba(16,185,129,0.6);}
+  .tab-active { box-shadow: inset 0 -2px 0 0 #10B981; }
+  .focus-ring:focus { outline:none; box-shadow: 0 0 0 2px rgba(16,185,129,0.20); border-color:#10B981; }
+
+  /* Code editor bg */
+  .code-bg { background:#0c0c0e; }
+
+  /* Active line highlight */
+  .active-line { background: rgba(39,39,42,0.55); box-shadow: inset 2px 0 0 0 rgba(16,185,129,0.5); }
+
+  /* gutter line */
+  .gutter { background:#0a0a0c; }
+
+  /* minimap mini code line block */
+  .mm-line { height:2px; margin: 0 4px 1px 4px; border-radius:1px; background:#27272A; }
+
+  /* code line hover */
+  .code-line:hover { background: rgba(39,39,42,0.25); }
+
+  /* token spacing fix */
+  pre, code { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+</style>
+</head>
+<body class="bg-base text-primary font-sans antialiased" style="width:1440px;height:900px;overflow:hidden">
+
+<div class="flex flex-col" style="width:1440px;height:900px;">
+
+  <!-- ============== TITLE BAR (36) ============== -->
+  <header class="flex items-center justify-between bg-surface border-b border-[#27272A]" style="height:36px;">
+    <div class="flex items-center gap-2 px-3">
+      <div class="w-[18px] h-[18px] rounded-[4px] bg-accent/15 border border-accent/40 flex items-center justify-center">
+        <div class="w-[8px] h-[8px] bg-accent rounded-[1px]"></div>
+      </div>
+      <span class="font-sans text-[12px] font-medium text-primary">Unwrap</span>
+      <i class="ph ph-caret-right text-tertiary text-[10px]"></i>
+      <button class="flex items-center gap-1.5 px-2 py-[3px] rounded-[4px] hover:bg-overlay text-primary text-[12px] font-medium">
+        Hollow Vale
+        <i class="ph ph-caret-down text-tertiary text-[10px]"></i>
+      </button>
+    </div>
+    <div class="flex-1"></div>
+    <div class="flex items-center">
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-overlay hover:text-primary transition-colors">
+        <i class="ph ph-minus text-[14px]"></i>
+      </button>
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-overlay hover:text-primary transition-colors">
+        <i class="ph ph-square text-[12px]"></i>
+      </button>
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-danger hover:text-white transition-colors">
+        <i class="ph ph-x text-[14px]"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============== TOOLBAR (44) ============== -->
+  <div class="flex items-center bg-base border-b border-[#27272A] px-3" style="height:44px;">
+    <div class="flex items-center gap-0.5">
+      <button class="w-7 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+        <i class="ph ph-arrow-left text-[14px]"></i>
+      </button>
+      <button class="w-7 h-7 rounded-md hover:bg-overlay text-tertiary flex items-center justify-center transition-colors">
+        <i class="ph ph-arrow-right text-[14px]"></i>
+      </button>
+    </div>
+    <div class="w-px h-5 bg-[#27272A] mx-3"></div>
+
+    <button class="flex items-center gap-1.5 px-2.5 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary text-[12px] font-medium transition-colors">
+      <i class="ph ph-clock-counter-clockwise text-[14px]"></i>
+      Recents
+      <i class="ph ph-caret-down text-[10px] text-tertiary"></i>
+    </button>
+
+    <!-- breadcrumb -->
+    <div class="flex items-center gap-1 ml-3 font-mono text-[11px] text-tertiary">
+      <i class="ph ph-folder text-[12px]"></i>
+      <span class="hover:text-secondary cursor-pointer">Hollow Vale</span>
+      <i class="ph ph-caret-right text-[9px]"></i>
+      <span class="hover:text-secondary cursor-pointer">scripts</span>
+      <i class="ph ph-caret-right text-[9px]"></i>
+      <span class="hover:text-secondary cursor-pointer">Gameplay</span>
+      <i class="ph ph-caret-right text-[9px]"></i>
+      <span class="text-primary">PlayerController.cs</span>
+    </div>
+
+    <div class="flex-1 flex justify-center px-8">
+      <div class="flex items-center gap-2 bg-elevated border border-[#27272A] hover:border-[#3F3F46] rounded-md h-8 px-3 w-[480px] focus-within:border-accent transition-all">
+        <i class="ph ph-magnifying-glass text-tertiary text-[14px]"></i>
+        <input type="text" placeholder="Search assets, scripts, strings…"
+               class="flex-1 bg-transparent text-[13px] text-primary placeholder:text-tertiary outline-none font-sans">
+        <span class="font-mono text-[10px] text-tertiary bg-base border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">⌘K</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1">
+      <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+        <i class="ph ph-export text-[16px]"></i>
+      </button>
+      <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center relative transition-colors">
+        <i class="ph ph-bell text-[16px]"></i>
+        <span class="absolute top-[6px] right-[7px] w-[6px] h-[6px] bg-accent rounded-full border border-base"></span>
+      </button>
+      <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+        <i class="ph ph-gear-six text-[16px]"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============== WORK AREA ============== -->
+  <div class="flex flex-1 min-h-0">
+
+    <!-- ============== LEFT SIDEBAR ============== -->
+    <aside class="flex flex-shrink-0 border-r border-[#27272A] bg-surface" style="width:280px;">
+
+      <!-- Rail tabs -->
+      <nav class="flex flex-col items-center border-r border-[#27272A] py-2 gap-1" style="width:44px;">
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center">
+          <i class="ph ph-files text-[16px]"></i>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center">
+          <i class="ph ph-magnifying-glass text-[16px]"></i>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center relative">
+          <i class="ph ph-graph text-[16px]"></i>
+        </button>
+        <!-- scripts active -->
+        <button class="w-8 h-8 rounded-md bg-accent-muted text-accent flex items-center justify-center">
+          <i class="ph ph-file-code text-[16px]"></i>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center">
+          <i class="ph ph-translate text-[16px]"></i>
+        </button>
+        <div class="w-6 border-t border-[#27272A] my-1"></div>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center">
+          <i class="ph ph-bookmark-simple text-[16px]"></i>
+        </button>
+        <div class="flex-1"></div>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center">
+          <i class="ph ph-question text-[16px]"></i>
+        </button>
+      </nav>
+
+      <!-- Script tree -->
+      <div class="flex-1 flex flex-col min-w-0">
+
+        <div class="flex items-center justify-between px-3 border-b border-[#27272A]" style="height:36px;">
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Scripts</span>
+            <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">412</span>
+          </div>
+          <div class="flex items-center gap-0.5">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-funnel-simple text-[12px]"></i>
+            </button>
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-arrows-down-up text-[12px]"></i>
+            </button>
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three text-[12px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="px-2 py-2 border-b border-[#27272A]">
+          <div class="flex items-center gap-2 bg-base border border-[#27272A] rounded-md h-7 px-2.5 hover:border-[#3F3F46] transition-colors">
+            <i class="ph ph-magnifying-glass text-tertiary text-[12px]"></i>
+            <input type="text" placeholder="Filter scripts…" class="flex-1 bg-transparent text-[12px] placeholder:text-tertiary outline-none">
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto scroll-thin py-1 font-mono text-[12px]">
+
+          <!-- ▾ Assembly-CSharp -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-package text-accent text-[13px]"></i>
+            <span class="text-primary font-sans text-[12.5px] font-[500]">Assembly-CSharp</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">298</span>
+          </div>
+
+          <!-- ▾ HollowVale -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-secondary text-[13px]"></i>
+            <span class="text-primary">HollowVale</span>
+          </div>
+
+          <!-- ▾ Gameplay -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:40px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-secondary text-[13px]"></i>
+            <span class="text-primary">Gameplay</span>
+          </div>
+
+          <!-- PlayerController.cs SELECTED -->
+          <div class="tree-row tree-sel tree-sel-bar h-6 flex items-center gap-1.5 cursor-default" style="padding-left:56px;">
+            <span class="w-3"></span>
+            <i class="ph ph-file-code text-script text-[13px]"></i>
+            <span class="text-primary">PlayerController.cs</span>
+            <span class="ml-auto pr-3 text-accent text-[10px]">98%</span>
+          </div>
+
+          <!-- siblings -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:56px;">
+            <span class="w-3"></span>
+            <i class="ph ph-file-code text-script text-[13px]"></i>
+            <span class="text-primary">Mira.cs</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">99%</span>
+          </div>
+
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:56px;">
+            <span class="w-3"></span>
+            <i class="ph ph-file-code text-script text-[13px]"></i>
+            <span class="text-primary">EnemyAI.cs</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">97%</span>
+          </div>
+
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:56px;">
+            <span class="w-3"></span>
+            <i class="ph ph-file-code text-script text-[13px]"></i>
+            <span class="text-primary">CameraRig.cs</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">100%</span>
+          </div>
+
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:56px;">
+            <span class="w-3"></span>
+            <i class="ph ph-file-code text-script text-[13px]"></i>
+            <span class="text-primary">LevelManager.cs</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">98%</span>
+          </div>
+
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:56px;">
+            <span class="w-3"></span>
+            <i class="ph ph-file-code text-script text-[13px]"></i>
+            <span class="text-primary">SaveSystem.cs</span>
+            <span class="ml-auto pr-3 text-warning text-[10px]">82%</span>
+          </div>
+
+          <!-- ▸ Combat -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:40px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">Combat</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">38</span>
+          </div>
+
+          <!-- ▸ UI -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:40px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">UI</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">52</span>
+          </div>
+
+          <!-- ▸ Audio -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:40px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">Audio</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">14</span>
+          </div>
+
+          <!-- ▸ Save -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:40px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">Persistence</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">9</span>
+          </div>
+
+          <!-- ▸ Util -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">Util</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">22</span>
+          </div>
+
+          <!-- ▸ Third-party -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-package text-secondary text-[13px]"></i>
+            <span class="text-primary">Assembly-CSharp-firstpass</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">94</span>
+          </div>
+
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-package text-secondary text-[13px]"></i>
+            <span class="text-primary">UnityEngine</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">—</span>
+          </div>
+
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-package text-secondary text-[13px]"></i>
+            <span class="text-primary">DOTween</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">12</span>
+          </div>
+
+        </div>
+
+        <div class="flex items-center justify-between px-3 border-t border-[#27272A] font-mono text-[10px] text-tertiary" style="height:24px;">
+          <span class="flex items-center gap-1.5">
+            <span class="w-[5px] h-[5px] rounded-full bg-info"></span>
+            mono · ILSpy
+          </span>
+          <span>412 of 412</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ============== CENTER: tabs + code editor ============== -->
+    <section class="flex-1 flex flex-col min-w-0 bg-base">
+
+      <!-- Tab bar -->
+      <div class="flex items-center bg-surface border-b border-[#27272A]" style="height:32px;">
+
+        <div class="flex items-center gap-2 h-full px-3 border-r border-[#27272A] text-secondary hover:bg-base/60 cursor-default">
+          <i class="ph ph-image text-tex text-[12px]"></i>
+          <span class="font-mono text-[11.5px] font-[500]">idle_01.png</span>
+          <button class="ml-1 w-4 h-4 rounded-[3px] hover:bg-overlay text-tertiary flex items-center justify-center">
+            <i class="ph ph-x text-[10px]"></i>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 h-full px-3 border-r border-[#27272A] text-secondary hover:bg-base/60 cursor-default">
+          <i class="ph ph-waveform text-aud text-[12px]"></i>
+          <span class="font-mono text-[11.5px] font-[500]">bgm_field.ogg</span>
+          <button class="ml-1 w-4 h-4 rounded-[3px] hover:bg-overlay text-tertiary flex items-center justify-center">
+            <i class="ph ph-x text-[10px]"></i>
+          </button>
+        </div>
+
+        <!-- ACTIVE -->
+        <div class="tab-active flex items-center gap-2 h-full px-3 bg-base border-r border-[#27272A] cursor-default">
+          <i class="ph ph-file-code text-script text-[12px]"></i>
+          <span class="font-mono text-[11.5px] font-[500] text-primary">PlayerController.cs</span>
+          <button class="ml-1 w-4 h-4 rounded-[3px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-x text-[10px]"></i>
+          </button>
+        </div>
+
+        <button class="w-8 h-full flex items-center justify-center text-tertiary hover:text-primary hover:bg-overlay">
+          <i class="ph ph-plus text-[12px]"></i>
+        </button>
+
+        <div class="flex-1"></div>
+
+        <div class="flex items-center gap-0.5 px-2">
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-columns text-[14px]"></i>
+          </button>
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-dots-three-vertical text-[14px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Code sub-toolbar -->
+      <div class="flex items-center justify-between px-4 border-b border-[#27272A] bg-base" style="height:36px;">
+        <div class="flex items-center gap-2 font-mono text-[11px] text-secondary">
+          <i class="ph ph-file-code text-script text-[12px]"></i>
+          <span>C#</span>
+          <span class="text-overlay">·</span>
+          <span>ILSpy 9.1</span>
+          <span class="text-overlay">·</span>
+          <span class="text-accent">Mono</span>
+          <span class="text-overlay">·</span>
+          <span>UTF-8</span>
+          <span class="text-overlay">·</span>
+          <span>LF</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="h-7 px-2.5 rounded-md hover:bg-overlay text-secondary hover:text-primary text-[11.5px] font-medium flex items-center gap-1.5 transition-colors">
+            <i class="ph ph-list-numbers text-[13px]"></i>
+            Outline
+          </button>
+          <button class="h-7 px-2.5 rounded-md hover:bg-overlay text-secondary hover:text-primary text-[11.5px] font-medium flex items-center gap-1.5 transition-colors">
+            <i class="ph ph-arrow-square-out text-[13px]"></i>
+            Go to definition
+          </button>
+          <div class="w-px h-4 bg-[#27272A] mx-1"></div>
+          <button class="h-7 px-2.5 rounded-md bg-elevated border border-[#27272A] hover:border-[#3F3F46] text-primary text-[11.5px] font-medium flex items-center gap-1.5 transition-colors">
+            <i class="ph ph-download-simple text-[13px]"></i>
+            Export .cs
+          </button>
+        </div>
+      </div>
+
+      <!-- Code Editor -->
+      <div class="flex-1 flex code-bg min-h-0">
+
+        <!-- Code area (flex, takes most) -->
+        <div class="flex-1 flex font-mono text-[13px] leading-[20px] overflow-hidden min-h-0">
+
+          <!-- Gutter (line numbers) -->
+          <div class="gutter flex-shrink-0 text-right text-tertiary select-none border-r border-[#1a1a1d]" style="padding:14px 12px 14px 16px; width:60px;">
+<div class="h-5">1</div>
+<div class="h-5">2</div>
+<div class="h-5">3</div>
+<div class="h-5">4</div>
+<div class="h-5">5</div>
+<div class="h-5">6</div>
+<div class="h-5">7</div>
+<div class="h-5">8</div>
+<div class="h-5">9</div>
+<div class="h-5">10</div>
+<div class="h-5">11</div>
+<div class="h-5">12</div>
+<div class="h-5">13</div>
+<div class="h-5">14</div>
+<div class="h-5">15</div>
+<div class="h-5">16</div>
+<div class="h-5">17</div>
+<div class="h-5">18</div>
+<div class="h-5">19</div>
+<div class="h-5">20</div>
+<div class="h-5">21</div>
+<div class="h-5">22</div>
+<div class="h-5">23</div>
+<div class="h-5">24</div>
+<div class="h-5 text-accent">25</div>
+<div class="h-5">26</div>
+<div class="h-5">27</div>
+<div class="h-5">28</div>
+<div class="h-5">29</div>
+<div class="h-5">30</div>
+<div class="h-5">31</div>
+<div class="h-5">32</div>
+<div class="h-5">33</div>
+<div class="h-5">34</div>
+<div class="h-5">35</div>
+<div class="h-5">36</div>
+          </div>
+
+          <!-- Code lines -->
+          <div class="flex-1 overflow-x-auto overflow-y-hidden scroll-thin" style="padding:14px 16px;">
+<div class="code-line h-5"><span class="text-cmt italic">// Decompiled with ILSpy 9.1 · Mono · build #d28f1</span></div>
+<div class="code-line h-5"><span class="text-kw">using</span> <span class="text-id">UnityEngine</span><span class="text-id">;</span></div>
+<div class="code-line h-5"><span class="text-kw">using</span> <span class="text-id">System.Collections</span><span class="text-id">;</span></div>
+<div class="code-line h-5"><span class="text-kw">using</span> <span class="text-id">HollowVale.Combat</span><span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;</div>
+<div class="code-line h-5"><span class="text-kw">namespace</span> <span class="text-id">HollowVale.Gameplay</span></div>
+<div class="code-line h-5"><span class="text-id">{</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cmt italic">/// &lt;summary&gt; Top-down 2D player movement with combat hooks. &lt;/summary&gt;</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;[<span class="text-ty">RequireComponent</span>(<span class="text-kw">typeof</span>(<span class="text-ty">Rigidbody2D</span>))]</div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-kw">public</span> <span class="text-kw">class</span> <span class="text-ty">PlayerController</span> <span class="text-id">:</span> <span class="text-ty">MonoBehaviour</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">{</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="text-ty">SerializeField</span>] <span class="text-kw">private</span> <span class="text-ty">float</span> <span class="text-id">moveSpeed</span> <span class="text-id">=</span> <span class="text-num">6.4f</span><span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="text-ty">SerializeField</span>] <span class="text-kw">private</span> <span class="text-ty">float</span> <span class="text-id">dashImpulse</span> <span class="text-id">=</span> <span class="text-num">18.0f</span><span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="text-ty">SerializeField</span>] <span class="text-kw">private</span> <span class="text-ty">Rigidbody2D</span> <span class="text-id">body</span><span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="text-ty">SerializeField</span>] <span class="text-kw">private</span> <span class="text-ty">PlayerAnimator</span> <span class="text-id">anim</span><span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;</div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-kw">private</span> <span class="text-ty">Vector2</span> <span class="text-id">input</span><span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-kw">private</span> <span class="text-ty">bool</span> <span class="text-id">isDashing</span><span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;</div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-kw">private</span> <span class="text-ty">void</span> <span class="text-id">Awake</span>()</div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">{</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">body</span> <span class="text-id">=</span> <span class="text-id">GetComponent</span>&lt;<span class="text-ty">Rigidbody2D</span>&gt;()<span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">anim</span> <span class="text-id">=</span> <span class="text-id">GetComponentInChildren</span>&lt;<span class="text-ty">PlayerAnimator</span>&gt;()<span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">}</span></div>
+<div class="code-line h-5 active-line">&nbsp;</div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-kw">private</span> <span class="text-ty">void</span> <span class="text-id">Update</span>()</div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">{</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">input.x</span> <span class="text-id">=</span> <span class="text-ty">Input</span><span class="text-id">.</span><span class="text-id">GetAxisRaw</span>(<span class="text-str">"Horizontal"</span>)<span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">input.y</span> <span class="text-id">=</span> <span class="text-ty">Input</span><span class="text-id">.</span><span class="text-id">GetAxisRaw</span>(<span class="text-str">"Vertical"</span>)<span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;</div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-kw">if</span> (<span class="text-ty">Input</span><span class="text-id">.</span><span class="text-id">GetButtonDown</span>(<span class="text-str">"Dash"</span>) <span class="text-id">&amp;&amp;</span> <span class="text-id">!</span><span class="text-id">isDashing</span>)</div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">StartCoroutine</span>(<span class="text-id">DashRoutine</span>())<span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;</div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">anim.</span><span class="text-id">SetVelocity</span>(<span class="text-id">input</span>)<span class="text-id">;</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">}</span></div>
+<div class="code-line h-5">&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-id">}</span></div>
+<div class="code-line h-5"><span class="text-id">}</span></div>
+          </div>
+
+        </div>
+
+        <!-- Minimap -->
+        <div class="border-l border-[#1a1a1d] bg-[#08080a] py-2 flex-shrink-0" style="width:58px;">
+          <!-- viewport indicator -->
+          <div class="relative h-full">
+            <div class="absolute top-0 left-0 right-0 bg-overlay/30 border-y border-[#27272A]" style="height:64%; top:0;"></div>
+            <!-- mini code lines, mirroring the file shape -->
+            <div class="relative pt-1">
+              <div class="mm-line" style="width:64%; background:#71717a;"></div>
+              <div class="mm-line" style="width:42%; background:#c084fc;"></div>
+              <div class="mm-line" style="width:46%; background:#c084fc;"></div>
+              <div class="mm-line" style="width:54%; background:#c084fc;"></div>
+              <div class="mm-line" style="width:8%;"></div>
+              <div class="mm-line" style="width:52%; background:#c084fc;"></div>
+              <div class="mm-line" style="width:14%;"></div>
+              <div class="mm-line" style="width:78%; background:#71717a;"></div>
+              <div class="mm-line" style="width:72%; background:#60a5fa;"></div>
+              <div class="mm-line" style="width:82%; background:#60a5fa;"></div>
+              <div class="mm-line" style="width:20%;"></div>
+              <div class="mm-line" style="width:88%; background:#60a5fa;"></div>
+              <div class="mm-line" style="width:84%; background:#60a5fa;"></div>
+              <div class="mm-line" style="width:82%; background:#60a5fa;"></div>
+              <div class="mm-line" style="width:78%; background:#60a5fa;"></div>
+              <div class="mm-line" style="width:8%;"></div>
+              <div class="mm-line" style="width:50%; background:#f4f4f5;"></div>
+              <div class="mm-line" style="width:48%; background:#f4f4f5;"></div>
+              <div class="mm-line" style="width:8%;"></div>
+              <div class="mm-line" style="width:46%; background:#60a5fa;"></div>
+              <div class="mm-line" style="width:16%;"></div>
+              <div class="mm-line" style="width:80%; background:#f4f4f5;"></div>
+              <div class="mm-line" style="width:84%; background:#f4f4f5;"></div>
+              <div class="mm-line" style="width:14%;"></div>
+              <div class="mm-line" style="width:8%; background:#10B981;"></div>
+              <div class="mm-line" style="width:48%; background:#60a5fa;"></div>
+              <div class="mm-line" style="width:14%;"></div>
+              <div class="mm-line" style="width:82%; background:#fcd34d;"></div>
+              <div class="mm-line" style="width:80%; background:#fcd34d;"></div>
+              <div class="mm-line" style="width:8%;"></div>
+              <div class="mm-line" style="width:78%; background:#c084fc;"></div>
+              <div class="mm-line" style="width:62%; background:#c084fc;"></div>
+              <div class="mm-line" style="width:8%;"></div>
+              <div class="mm-line" style="width:54%; background:#f4f4f5;"></div>
+              <div class="mm-line" style="width:14%;"></div>
+              <div class="mm-line" style="width:8%;"></div>
+              <div class="mm-line" style="width:6%;"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Code footer (per-file mini status) -->
+      <div class="flex items-center justify-between px-4 border-t border-[#27272A] bg-surface font-mono text-[10.5px] text-tertiary" style="height:26px;">
+        <div class="flex items-center gap-3">
+          <span>Ln <span class="text-secondary">25</span>, Col <span class="text-secondary">1</span></span>
+          <span class="text-overlay">·</span>
+          <span>Spaces: <span class="text-secondary">4</span></span>
+          <span class="text-overlay">·</span>
+          <span>72 lines</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1.5">
+            <i class="ph ph-arrow-square-out text-[11px]"></i>
+            3 refs
+          </span>
+          <span class="text-overlay">·</span>
+          <span class="text-accent">decompiled in 184ms</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============== RIGHT INSPECTOR ============== -->
+    <aside class="border-l border-[#27272A] bg-surface flex flex-col" style="width:320px;">
+
+      <div class="flex items-center justify-between px-4 border-b border-[#27272A]" style="height:36px;">
+        <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Inspector</span>
+        <div class="flex items-center gap-0.5">
+          <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-push-pin text-[12px]"></i>
+          </button>
+          <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-arrows-in-simple text-[12px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto scroll-thin">
+
+        <!-- Identity card -->
+        <div class="px-4 pt-4 pb-4 border-b border-[#27272A]">
+          <div class="flex items-start gap-3">
+            <div class="w-[40px] h-[40px] rounded-lg bg-script/15 border border-script/30 flex items-center justify-center flex-shrink-0">
+              <i class="ph ph-file-code text-script" style="font-size:20px;"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-sans text-[15px] font-[600] text-primary tracking-tight mb-0.5">PlayerController</div>
+              <div class="font-mono text-[10.5px] text-tertiary mb-2 truncate">HollowVale.Gameplay</div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-mono text-[10px] text-script bg-script/10 border border-script/20 rounded-[4px] px-1.5 py-[1px]">class</span>
+                <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">MonoBehaviour</span>
+                <span class="font-mono text-[10px] text-info bg-info/10 border border-info/20 rounded-[4px] px-1.5 py-[1px]">public</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decompile metadata -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Decompile</span>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Source</span>
+              <span class="font-mono text-[11.5px] text-primary">Mono · ILSpy 9.1</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Assembly</span>
+              <span class="font-mono text-[11.5px] text-primary">Assembly-CSharp.dll</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Confidence</span>
+              <div class="flex items-center gap-2">
+                <div class="w-16 h-1.5 bg-overlay rounded-full overflow-hidden">
+                  <div class="h-full bg-accent" style="width:98%"></div>
+                </div>
+                <span class="font-mono text-[11.5px] text-accent">98.2%</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Build IL2CPP?</span>
+              <span class="font-mono text-[11.5px] text-tertiary">No</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Symbols</span>
+              <span class="font-mono text-[11.5px] text-primary">.pdb found</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Outline / members -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Members</span>
+            <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">8</span>
+          </div>
+          <div class="space-y-0.5">
+            <button class="w-full flex items-center gap-2 px-2 py-1 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-circle-half text-num text-[11px]"></i>
+              <span class="font-mono text-[11px] text-primary flex-1 truncate">moveSpeed</span>
+              <span class="font-mono text-[10px] text-tertiary">float</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-circle-half text-num text-[11px]"></i>
+              <span class="font-mono text-[11px] text-primary flex-1 truncate">dashImpulse</span>
+              <span class="font-mono text-[10px] text-tertiary">float</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-circle-half text-num text-[11px]"></i>
+              <span class="font-mono text-[11px] text-primary flex-1 truncate">body</span>
+              <span class="font-mono text-[10px] text-tertiary">Rigidbody2D</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-circle-half text-num text-[11px]"></i>
+              <span class="font-mono text-[11px] text-primary flex-1 truncate">anim</span>
+              <span class="font-mono text-[10px] text-tertiary">PlayerAnimator</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-cube text-ty text-[11px]"></i>
+              <span class="font-mono text-[11px] text-primary flex-1 truncate">Awake()</span>
+              <span class="font-mono text-[10px] text-tertiary">void</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1 rounded-md bg-accent-muted text-left transition-colors">
+              <i class="ph ph-cube text-accent text-[11px]"></i>
+              <span class="font-mono text-[11px] text-primary flex-1 truncate">Update()</span>
+              <span class="font-mono text-[10px] text-tertiary">void</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-cube text-ty text-[11px]"></i>
+              <span class="font-mono text-[11px] text-primary flex-1 truncate">DashRoutine()</span>
+              <span class="font-mono text-[10px] text-tertiary">IEnumerator</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-cube text-ty text-[11px]"></i>
+              <span class="font-mono text-[11px] text-primary flex-1 truncate">OnTriggerEnter2D()</span>
+              <span class="font-mono text-[10px] text-tertiary">void</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- References -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">References</span>
+          </div>
+
+          <div class="mb-3">
+            <div class="font-mono text-[10px] text-tertiary mb-1.5">Inherits</div>
+            <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-arrow-bend-up-left text-ty text-[13px]"></i>
+              <span class="font-mono text-[11.5px] text-ty">MonoBehaviour</span>
+              <span class="ml-auto font-mono text-[10px] text-tertiary">UnityEngine</span>
+            </button>
+          </div>
+
+          <div class="mb-3">
+            <div class="font-mono text-[10px] text-tertiary mb-1.5">Used by</div>
+            <div class="space-y-0.5">
+              <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+                <i class="ph ph-square text-secondary text-[13px]"></i>
+                <span class="font-mono text-[11.5px] text-primary flex-1">Player.prefab</span>
+              </button>
+              <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+                <i class="ph ph-file-code text-script text-[13px]"></i>
+                <span class="font-mono text-[11.5px] text-primary flex-1">LevelManager.cs</span>
+                <span class="font-mono text-[10px] text-tertiary">L 88</span>
+              </button>
+              <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+                <i class="ph ph-file-code text-script text-[13px]"></i>
+                <span class="font-mono text-[11.5px] text-primary flex-1">CameraRig.cs</span>
+                <span class="font-mono text-[10px] text-tertiary">L 24</span>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div class="font-mono text-[10px] text-tertiary mb-1.5">Calls</div>
+            <div class="space-y-0.5">
+              <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+                <i class="ph ph-arrow-up-right text-tertiary text-[12px]"></i>
+                <span class="font-mono text-[11.5px] text-primary flex-1 truncate">Input.GetAxisRaw</span>
+              </button>
+              <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+                <i class="ph ph-arrow-up-right text-tertiary text-[12px]"></i>
+                <span class="font-mono text-[11.5px] text-primary flex-1 truncate">Input.GetButtonDown</span>
+              </button>
+              <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+                <i class="ph ph-arrow-up-right text-tertiary text-[12px]"></i>
+                <span class="font-mono text-[11.5px] text-primary flex-1 truncate">Rigidbody2D.AddForce</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="px-4 py-3">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Actions</span>
+          </div>
+          <div class="space-y-1.5">
+            <button class="w-full h-8 px-2.5 rounded-md bg-accent text-[#09090B] text-[12.5px] font-[600] hover:bg-accent-strong active:translate-y-[1px] transition-all flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i class="ph ph-download-simple text-[14px]"></i>
+                Export .cs
+              </span>
+              <span class="font-mono text-[10px] text-[#09090B]/70">⌘E</span>
+            </button>
+            <button class="w-full h-8 px-2.5 rounded-md bg-elevated border border-[#27272A] hover:border-[#3F3F46] text-primary text-[12.5px] font-[500] hover:bg-overlay transition-all flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i class="ph ph-copy text-[14px] text-secondary"></i>
+                Copy class
+              </span>
+            </button>
+            <button class="w-full h-8 px-2.5 rounded-md bg-elevated border border-[#27272A] hover:border-[#3F3F46] text-primary text-[12.5px] font-[500] hover:bg-overlay transition-all flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i class="ph ph-graph text-[14px] text-secondary"></i>
+                Open call graph
+              </span>
+              <span class="font-mono text-[10px] text-tertiary">⌘G</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============== STATUS BAR (24) ============== -->
+  <footer class="flex items-center justify-between border-t border-[#27272A] bg-surface px-3" style="height:24px;">
+    <div class="flex items-center gap-3 text-[11px] font-mono text-secondary">
+      <span class="flex items-center gap-1.5">
+        <span class="w-[6px] h-[6px] rounded-full bg-info"></span>
+        Mono
+      </span>
+      <span class="text-overlay">•</span>
+      <span>Unity 2022.3.18</span>
+      <span class="text-overlay">•</span>
+      <span class="text-tertiary">14,238 assets</span>
+      <span class="text-overlay">•</span>
+      <span class="flex items-center gap-1.5">
+        <i class="ph ph-code text-accent text-[11px]"></i>
+        <span class="text-accent">Decompiled</span>
+      </span>
+    </div>
+    <div class="flex items-center gap-3 text-[11px] font-mono text-tertiary">
+      <span>UTF-8</span>
+      <span class="text-overlay">•</span>
+      <span>LF</span>
+      <span class="text-overlay">•</span>
+      <span>C# 9.0</span>
+      <span class="text-overlay">•</span>
+      <span class="flex items-center gap-1.5">
+        <i class="ph ph-shield-check text-[11px]"></i>
+        Read-only
+      </span>
+      <span class="text-overlay">•</span>
+      <span>v0.1.0</span>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

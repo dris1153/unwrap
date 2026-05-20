@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "tools": [
+    {
+      "id": "asset-ripper",
+      "version": "1.3.14",
+      "bundled": true,
+      "binary": "AssetRipper-x86_64-pc-windows-msvc.exe",
+      "sha256": "11ec892dcd70b1b86f2e52db631e83e007f6103daa20a9616ecaa7a95baa9f21",
+      "license": "GPL-3.0",
+      "source": "https://github.com/AssetRipper/AssetRipper/releases/tag/1.3.14",
+      "invocation_mode": "subprocess",
+      "notice_required": true
+    },
+    {
+      "id": "ilspycmd",
+      "version": "9.1.0.7988",
+      "bundled": true,
+      "binary": "ilspycmd-x86_64-pc-windows-msvc.exe",
+      "sha256": "a7051adbef4494774fa6e982c0d016b2441dccf8fe5e824bafb8b8e58a5a90d5",
+      "license": "MIT",
+      "source": "https://www.nuget.org/packages/ilspycmd/9.1.0.7988",
+      "invocation_mode": "subprocess",
+      "notice_required": false
+    },
+    {
+      "id": "il2cpp-dumper",
+      "version": "6.7.42",
+      "bundled": false,
+      "binary": "Il2CppDumper.exe",
+      "sha256": "TBD",
+      "license": "MIT",
+      "source": "https://github.com/Perfare/Il2CppDumper/releases/tag/v6.7.42",
+      "download_url": "https://github.com/Perfare/Il2CppDumper/releases/download/v6.7.42/Il2CppDumper-net6.0-x64-v6.7.42.zip",
+      "install_subpath": "Il2CppDumper.exe",
+      "invocation_mode": "subprocess",
+      "notice_required": false
+    }
+  ]
+}

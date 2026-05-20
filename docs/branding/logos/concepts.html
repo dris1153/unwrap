@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" style="width:1440px;height:900px;overflow:hidden">
+<head>
+<meta charset="UTF-8" />
+<title>Unwrap — Logo Concepts</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: {
+        base: '#09090B', surface: '#111114', elevated: '#18181B',
+        primary: '#F4F4F5', secondary: '#A1A1AA', tertiary: '#71717A',
+        accent: '#10B981', 'accent-strong': '#059669', 'accent-muted': 'rgba(16,185,129,0.12)',
+      },
+      fontFamily: {
+        sans: ['Satoshi','ui-sans-serif','system-ui'],
+        mono: ['JetBrains Mono','ui-monospace','monospace'],
+      }
+    }}
+  }
+</script>
+<style>
+  html, body { margin:0; padding:0; }
+  body { -webkit-font-smoothing: antialiased; }
+  .text-primary { color: #F4F4F5; }
+  .text-secondary { color: #A1A1AA; }
+  .text-tertiary { color: #71717A; }
+  .grid-tick {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+</style>
+</head>
+<body class="bg-base text-primary font-sans antialiased" style="width:1440px;height:900px;overflow:hidden">
+
+<div class="flex flex-col" style="width:1440px;height:900px;">
+
+  <!-- Header strip -->
+  <header class="px-12 pt-8 pb-5">
+    <div class="flex items-baseline justify-between">
+      <div>
+        <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-tertiary mb-2">logo · concept set 01</div>
+        <h1 class="font-sans font-bold text-[34px] leading-none tracking-[-0.02em] text-primary">Unwrap — Logo Concepts</h1>
+      </div>
+      <div class="font-mono text-[11px] text-tertiary">
+        <span class="text-secondary">4 options</span>  ·  vector SVG  ·  emerald #10B981  ·  zinc-950 base
+      </div>
+    </div>
+    <p class="mt-3 max-w-[820px] text-secondary text-[13px] leading-relaxed">
+      Each concept reads as a single emerald glyph on dark surface. Wordmark uses Satoshi 900. Pick one to lock as v0.1 mark — refinements happen post-implementation.
+    </p>
+  </header>
+
+  <!-- 4-column grid -->
+  <div class="flex-1 px-12 pb-8 grid-tick">
+    <div class="grid grid-cols-4 gap-5 h-full">
+
+      <!-- ============ CONCEPT 1 — U Unfold ============ -->
+      <div class="flex flex-col bg-surface border border-[#27272A]/70 rounded-2xl overflow-hidden">
+        <!-- Mark display -->
+        <div class="flex-1 flex items-center justify-center bg-base relative">
+          <svg viewBox="0 0 100 100" class="w-[170px] h-[170px]" fill="none">
+            <!-- U body (rounded U letterform) -->
+            <path d="M30 18 L30 58 A20 20 0 0 0 70 58 L70 18"
+              stroke="#10B981" stroke-width="13"
+              stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Peeled tab (top right serif unwrapping outward) -->
+            <path d="M68 16 L82 10 L82 24 L72 28 Z"
+              fill="#10B981" opacity="0.85"/>
+            <!-- Tiny shadow under peel -->
+            <line x1="68" y1="20" x2="74" y2="24" stroke="#10B981" stroke-width="1.5" opacity="0.4"/>
+          </svg>
+          <!-- top-left corner mono label -->
+          <span class="absolute top-3 left-3 font-mono text-[10px] text-tertiary">01</span>
+        </div>
+        <!-- Caption -->
+        <div class="px-5 py-4 border-t border-[#27272A]/70 bg-surface">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">monogram</span>
+            <span class="font-mono text-[10px] text-tertiary">/ peeled-U</span>
+          </div>
+          <h3 class="font-sans font-bold text-[18px] leading-tight tracking-tight text-primary mb-1">U-Peel</h3>
+          <p class="text-secondary text-[12px] leading-relaxed">
+            Geometric U with the top-right serif folded outward — direct "unwrap" gesture.
+          </p>
+          <!-- wordmark mini -->
+          <div class="mt-4 pt-3 border-t border-[#27272A]/60 flex items-center gap-3">
+            <svg viewBox="0 0 100 100" class="w-[28px] h-[28px]" fill="none">
+              <path d="M30 18 L30 58 A20 20 0 0 0 70 58 L70 18" stroke="#10B981" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M68 16 L82 10 L82 24 L72 28 Z" fill="#10B981" opacity="0.85"/>
+            </svg>
+            <span class="font-sans font-black text-[20px] tracking-[-0.03em] text-primary">Unwrap</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ CONCEPT 2 — Layered Brackets ============ -->
+      <div class="flex flex-col bg-surface border border-[#27272A]/70 rounded-2xl overflow-hidden">
+        <div class="flex-1 flex items-center justify-center bg-base relative">
+          <svg viewBox="0 0 100 100" class="w-[170px] h-[170px]" fill="none">
+            <!-- Back bracket -->
+            <path d="M62 18 Q48 18 48 32 Q48 45 36 50 Q48 55 48 68 Q48 82 62 82"
+              stroke="#10B981" stroke-width="6.5"
+              stroke-linecap="round" stroke-linejoin="round" opacity="0.22"/>
+            <!-- Middle bracket -->
+            <path d="M56 18 Q42 18 42 32 Q42 45 30 50 Q42 55 42 68 Q42 82 56 82"
+              stroke="#10B981" stroke-width="6.5"
+              stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+            <!-- Front bracket -->
+            <path d="M50 18 Q36 18 36 32 Q36 45 24 50 Q36 55 36 68 Q36 82 50 82"
+              stroke="#10B981" stroke-width="6.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Closing chevron echo on the right -->
+            <path d="M62 38 L72 50 L62 62" stroke="#10B981" stroke-width="6.5"
+              stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+          </svg>
+          <span class="absolute top-3 left-3 font-mono text-[10px] text-tertiary">02</span>
+        </div>
+        <div class="px-5 py-4 border-t border-[#27272A]/70 bg-surface">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">layered</span>
+            <span class="font-mono text-[10px] text-tertiary">/ bracket-stack</span>
+          </div>
+          <h3 class="font-sans font-bold text-[18px] leading-tight tracking-tight text-primary mb-1">Stack</h3>
+          <p class="text-secondary text-[12px] leading-relaxed">
+            Three `{` brackets peeled apart — code layers unwrapped. Reads as "decompile".
+          </p>
+          <div class="mt-4 pt-3 border-t border-[#27272A]/60 flex items-center gap-3">
+            <svg viewBox="0 0 100 100" class="w-[28px] h-[28px]" fill="none">
+              <path d="M62 18 Q48 18 48 32 Q48 45 36 50 Q48 55 48 68 Q48 82 62 82" stroke="#10B981" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.22"/>
+              <path d="M56 18 Q42 18 42 32 Q42 45 30 50 Q42 55 42 68 Q42 82 56 82" stroke="#10B981" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+              <path d="M50 18 Q36 18 36 32 Q36 45 24 50 Q36 55 36 68 Q36 82 50 82" stroke="#10B981" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M62 38 L72 50 L62 62" stroke="#10B981" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+            </svg>
+            <span class="font-sans font-black text-[20px] tracking-[-0.03em] text-primary">Unwrap</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ CONCEPT 3 — Cube Unfold ============ -->
+      <div class="flex flex-col bg-surface border border-[#27272A]/70 rounded-2xl overflow-hidden">
+        <div class="flex-1 flex items-center justify-center bg-base relative">
+          <svg viewBox="0 0 100 100" class="w-[170px] h-[170px]" fill="none">
+            <!-- Isometric cube (base) -->
+            <!-- Right face -->
+            <path d="M50 40 L78 56 L78 84 L50 68 Z"
+              stroke="#10B981" stroke-width="3.2"
+              stroke-linejoin="round" opacity="0.65"/>
+            <!-- Left face -->
+            <path d="M50 40 L22 56 L22 84 L50 68 Z" stroke="#10B981" stroke-width="3.2"
+              stroke-linejoin="round" opacity="0.85"/>
+            <!-- Top face — flipped/lifted up to the left (showing inside) -->
+            <path d="M50 40 L78 56 L62 22 L34 12 Z"
+              fill="#10B981" opacity="0.18" stroke="#10B981" stroke-width="3.2"
+              stroke-linejoin="round"/>
+            <!-- inner hint -->
+            <path d="M50 40 L34 12" stroke="#10B981" stroke-width="3.2" stroke-dasharray="2 3" opacity="0.6"/>
+            <!-- accent dot in the "reveal" -->
+            <circle cx="55" cy="32" r="3" fill="#10B981"/>
+          </svg>
+          <span class="absolute top-3 left-3 font-mono text-[10px] text-tertiary">03</span>
+        </div>
+        <div class="px-5 py-4 border-t border-[#27272A]/70 bg-surface">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">isometric</span>
+            <span class="font-mono text-[10px] text-tertiary">/ cube-open</span>
+          </div>
+          <h3 class="font-sans font-bold text-[18px] leading-tight tracking-tight text-primary mb-1">Cube</h3>
+          <p class="text-secondary text-[12px] leading-relaxed">
+            3D cube with top face flipped open, accent dot inside — "look inside the build".
+          </p>
+          <div class="mt-4 pt-3 border-t border-[#27272A]/60 flex items-center gap-3">
+            <svg viewBox="0 0 100 100" class="w-[28px] h-[28px]" fill="none">
+              <path d="M50 40 L78 56 L78 84 L50 68 Z" stroke="#10B981" stroke-width="3.2" stroke-linejoin="round" opacity="0.65"/>
+              <path d="M50 40 L22 56 L22 84 L50 68 Z" stroke="#10B981" stroke-width="3.2" stroke-linejoin="round" opacity="0.85"/>
+              <path d="M50 40 L78 56 L62 22 L34 12 Z" fill="#10B981" opacity="0.18" stroke="#10B981" stroke-width="3.2" stroke-linejoin="round"/>
+              <circle cx="55" cy="32" r="3" fill="#10B981"/>
+            </svg>
+            <span class="font-sans font-black text-[20px] tracking-[-0.03em] text-primary">Unwrap</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ CONCEPT 4 — Folded Square ============ -->
+      <div class="flex flex-col bg-surface border border-[#27272A]/70 rounded-2xl overflow-hidden">
+        <div class="flex-1 flex items-center justify-center bg-base relative">
+          <svg viewBox="0 0 100 100" class="w-[170px] h-[170px]" fill="none">
+            <!-- Outer square (zinc, slightly muted) -->
+            <rect x="18" y="18" width="64" height="64" rx="8"
+              stroke="#10B981" stroke-width="5"
+              opacity="0.55" stroke-linejoin="round"/>
+            <!-- Folded triangle (filled emerald) -->
+            <path d="M58 18 L82 18 L82 42 Z" fill="#10B981"/>
+            <!-- Fold crease (subtle) -->
+            <path d="M58 18 L82 42" stroke="#09090B" stroke-width="2" opacity="0.55"/>
+            <!-- Reveal under fold (slight inner glow line) -->
+            <path d="M58 18 L82 42" stroke="#10B981" stroke-width="2" stroke-dasharray="3 3" opacity="0.35" transform="translate(-1.5,1.5)"/>
+            <!-- 3 dots inside square hinting at code/asset list -->
+            <circle cx="32" cy="62" r="2.6" fill="#10B981" opacity="0.45"/>
+            <circle cx="42" cy="62" r="2.6" fill="#10B981" opacity="0.45"/>
+            <circle cx="52" cy="62" r="2.6" fill="#10B981" opacity="0.45"/>
+            <line x1="60" y1="62" x2="74" y2="62" stroke="#10B981" stroke-width="2" opacity="0.45" stroke-linecap="round"/>
+          </svg>
+          <span class="absolute top-3 left-3 font-mono text-[10px] text-tertiary">04</span>
+        </div>
+        <div class="px-5 py-4 border-t border-[#27272A]/70 bg-surface">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">geometric</span>
+            <span class="font-mono text-[10px] text-tertiary">/ fold-reveal</span>
+          </div>
+          <h3 class="font-sans font-bold text-[18px] leading-tight tracking-tight text-primary mb-1">Fold</h3>
+          <p class="text-secondary text-[12px] leading-relaxed">
+            Square with top-right corner folded back, revealing contents — direct "open the package".
+          </p>
+          <div class="mt-4 pt-3 border-t border-[#27272A]/60 flex items-center gap-3">
+            <svg viewBox="0 0 100 100" class="w-[28px] h-[28px]" fill="none">
+              <rect x="18" y="18" width="64" height="64" rx="8" stroke="#10B981" stroke-width="5" opacity="0.55" stroke-linejoin="round"/>
+              <path d="M58 18 L82 18 L82 42 Z" fill="#10B981"/>
+              <path d="M58 18 L82 42" stroke="#09090B" stroke-width="2" opacity="0.55"/>
+            </svg>
+            <span class="font-sans font-black text-[20px] tracking-[-0.03em] text-primary">Unwrap</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer hint strip -->
+  <footer class="px-12 pb-5 flex items-center justify-between">
+    <div class="flex items-center gap-4 text-tertiary text-[11px] font-mono">
+      <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-accent"></span>emerald #10B981</span>
+      <span>·</span>
+      <span>vector SVG · embeddable anywhere</span>
+      <span>·</span>
+      <span>renders 16px → 1024px crisp</span>
+    </div>
+    <div class="text-tertiary text-[11px] font-mono">
+      pick 01 · 02 · 03 · 04
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

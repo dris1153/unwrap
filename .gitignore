@@ -1,0 +1,12 @@
+node_modules
+dist
+target
+.DS_Store
+*.pdb
+src-tauri/gen/
+
+# Tauri sidecar binaries — 3rd-party tools (AssetRipper, ILSpyCmd, etc.).
+# Too large for git (~190MB total, > GitHub 100MB hard limit).
+# Devs/CI must re-acquire from sources documented in src-tauri/binaries/README.md
+# and verify SHA-256 against src-tauri/binaries/sidecar-manifest.json before building.
+src-tauri/binaries/*.exe

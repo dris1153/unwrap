@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en" style="width:1440px;height:900px;overflow:hidden">
+<head>
+<meta charset="UTF-8" />
+<title>Unwrap — Hollow Vale · idle_01.png</title>
+
+<!-- Tailwind via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts -->
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Phosphor Icons -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          base:     '#09090B',
+          surface:  '#111114',
+          elevated: '#18181B',
+          overlay:  '#27272A',
+          'border-subtle':  'rgba(63,63,70,0.35)',
+          'border-default': '#27272A',
+          'border-strong':  '#3F3F46',
+          primary:   '#F4F4F5',
+          secondary: '#A1A1AA',
+          tertiary:  '#71717A',
+          disabled:  '#52525B',
+          accent:         '#10B981',
+          'accent-strong':'#059669',
+          'accent-muted': 'rgba(16,185,129,0.12)',
+          'accent-glow':  'rgba(16,185,129,0.20)',
+          success: '#22C55E',
+          warning: '#F59E0B',
+          danger:  '#EF4444',
+          info:    '#0EA5E9',
+          tex:    '#F472B6',
+          aud:    '#A78BFA',
+          mesh:   '#FBBF24',
+          script: '#10B981',
+          txt:    '#60A5FA',
+          bin:    '#71717A',
+        },
+        fontFamily: {
+          sans: ['Satoshi','ui-sans-serif','system-ui'],
+          mono: ['JetBrains Mono','ui-monospace','monospace'],
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  html, body { margin:0; padding:0; }
+  body { -webkit-font-smoothing: antialiased; }
+  i.ph { font-style: normal; }
+
+  /* checker background for image preview */
+  .checker {
+    background-color:#0c0c0e;
+    background-image:
+      linear-gradient(45deg, #1a1a1d 25%, transparent 25%),
+      linear-gradient(-45deg, #1a1a1d 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #1a1a1d 75%),
+      linear-gradient(-45deg, transparent 75%, #1a1a1d 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, 8px 0;
+  }
+
+  /* knight silhouette gradient — stylized character placeholder */
+  .knight-figure {
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(244,114,182,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 70%, rgba(16,185,129,0.10) 0%, transparent 50%);
+  }
+
+  .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scroll-thin::-webkit-scrollbar-thumb { background: #27272A; border-radius: 3px; }
+  .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+
+  /* tree row hover */
+  .tree-row:hover { background:#1c1c1f; }
+
+  /* selected row */
+  .tree-sel { background: rgba(16,185,129,0.12); }
+  .tree-sel-bar { box-shadow: inset 2px 0 0 0 #10B981; }
+
+  /* Modified dot */
+  .mod-dot { width:6px; height:6px; border-radius:9999px; background:#10B981; box-shadow:0 0 6px rgba(16,185,129,0.6);}
+
+  /* underline accent for active tab */
+  .tab-active { box-shadow: inset 0 -2px 0 0 #10B981; }
+
+  .focus-ring:focus { outline:none; box-shadow: 0 0 0 2px rgba(16,185,129,0.20); border-color:#10B981; }
+
+</style>
+</head>
+<body class="bg-base text-primary font-sans antialiased" style="width:1440px;height:900px;overflow:hidden">
+
+<div class="flex flex-col" style="width:1440px;height:900px;">
+
+  <!-- ============== TITLE BAR (36) ============== -->
+  <header class="flex items-center justify-between bg-surface border-b border-[#27272A]" style="height:36px;">
+    <div class="flex items-center gap-2 px-3">
+      <div class="w-[18px] h-[18px] rounded-[4px] bg-accent/15 border border-accent/40 flex items-center justify-center">
+        <div class="w-[8px] h-[8px] bg-accent rounded-[1px]"></div>
+      </div>
+      <span class="font-sans text-[12px] font-medium text-primary">Unwrap</span>
+      <i class="ph ph-caret-right text-tertiary text-[10px]"></i>
+      <button class="flex items-center gap-1.5 px-2 py-[3px] rounded-[4px] hover:bg-overlay text-primary text-[12px] font-medium">
+        Hollow Vale
+        <i class="ph ph-caret-down text-tertiary text-[10px]"></i>
+      </button>
+    </div>
+    <div class="flex-1"></div>
+    <div class="flex items-center">
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-overlay hover:text-primary transition-colors">
+        <i class="ph ph-minus text-[14px]"></i>
+      </button>
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-overlay hover:text-primary transition-colors">
+        <i class="ph ph-square text-[12px]"></i>
+      </button>
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-danger hover:text-white transition-colors">
+        <i class="ph ph-x text-[14px]"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============== TOOLBAR (44) ============== -->
+  <div class="flex items-center bg-base border-b border-[#27272A] px-3" style="height:44px;">
+    <!-- nav arrows -->
+    <div class="flex items-center gap-0.5">
+      <button class="w-7 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+        <i class="ph ph-arrow-left text-[14px]"></i>
+      </button>
+      <button class="w-7 h-7 rounded-md hover:bg-overlay text-tertiary flex items-center justify-center transition-colors">
+        <i class="ph ph-arrow-right text-[14px]"></i>
+      </button>
+    </div>
+    <div class="w-px h-5 bg-[#27272A] mx-3"></div>
+
+    <!-- recents dropdown -->
+    <button class="flex items-center gap-1.5 px-2.5 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary text-[12px] font-medium transition-colors">
+      <i class="ph ph-clock-counter-clockwise text-[14px]"></i>
+      Recents
+      <i class="ph ph-caret-down text-[10px] text-tertiary"></i>
+    </button>
+
+    <!-- breadcrumb trail -->
+    <div class="flex items-center gap-1 ml-3 font-mono text-[11px] text-tertiary">
+      <i class="ph ph-folder text-[12px]"></i>
+      <span class="hover:text-secondary cursor-pointer">Hollow Vale</span>
+      <i class="ph ph-caret-right text-[9px]"></i>
+      <span class="hover:text-secondary cursor-pointer">characters</span>
+      <i class="ph ph-caret-right text-[9px]"></i>
+      <span class="hover:text-secondary cursor-pointer">Mira</span>
+      <i class="ph ph-caret-right text-[9px]"></i>
+      <span class="hover:text-secondary cursor-pointer">sprites</span>
+      <i class="ph ph-caret-right text-[9px]"></i>
+      <span class="text-primary">idle_01.png</span>
+    </div>
+
+    <!-- spacer center → search -->
+    <div class="flex-1 flex justify-center px-8">
+      <div class="flex items-center gap-2 bg-elevated border border-[#27272A] hover:border-[#3F3F46] rounded-md h-8 px-3 w-[480px] focus-within:border-accent focus-within:shadow-[0_0_0_2px_rgba(16,185,129,0.20)] transition-all">
+        <i class="ph ph-magnifying-glass text-tertiary text-[14px]"></i>
+        <input type="text" placeholder="Search assets, scripts, strings…"
+               class="flex-1 bg-transparent text-[13px] text-primary placeholder:text-tertiary outline-none font-sans"
+               value="">
+        <span class="font-mono text-[10px] text-tertiary bg-base border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">⌘K</span>
+      </div>
+    </div>
+
+    <!-- right cluster -->
+    <div class="flex items-center gap-1">
+      <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+        <i class="ph ph-export text-[16px]"></i>
+      </button>
+      <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center relative transition-colors">
+        <i class="ph ph-bell text-[16px]"></i>
+        <span class="absolute top-[6px] right-[7px] w-[6px] h-[6px] bg-accent rounded-full border border-base"></span>
+      </button>
+      <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+        <i class="ph ph-gear-six text-[16px]"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============== WORK AREA ============== -->
+  <div class="flex flex-1 min-h-0">
+
+    <!-- ============== LEFT SIDEBAR (rail + tree) ============== -->
+    <aside class="flex flex-shrink-0 border-r border-[#27272A] bg-surface" style="width:280px;">
+
+      <!-- Rail tabs (44 wide) -->
+      <nav class="flex flex-col items-center border-r border-[#27272A] py-2 gap-1" style="width:44px;">
+        <button class="w-8 h-8 rounded-md bg-accent-muted text-accent flex items-center justify-center" title="Files">
+          <i class="ph ph-files text-[16px]"></i>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Search">
+          <i class="ph ph-magnifying-glass text-[16px]"></i>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center relative" title="Cross references">
+          <i class="ph ph-graph text-[16px]"></i>
+          <span class="absolute top-1 right-1.5 w-[5px] h-[5px] bg-warning rounded-full"></span>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Scripts">
+          <i class="ph ph-file-code text-[16px]"></i>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Strings">
+          <i class="ph ph-translate text-[16px]"></i>
+        </button>
+        <div class="w-6 border-t border-[#27272A] my-1"></div>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Bookmarks">
+          <i class="ph ph-bookmark-simple text-[16px]"></i>
+        </button>
+
+        <div class="flex-1"></div>
+
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Help">
+          <i class="ph ph-question text-[16px]"></i>
+        </button>
+      </nav>
+
+      <!-- Tree panel -->
+      <div class="flex-1 flex flex-col min-w-0">
+
+        <!-- header -->
+        <div class="flex items-center justify-between px-3 border-b border-[#27272A]" style="height:36px;">
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Assets</span>
+            <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">14,238</span>
+          </div>
+          <div class="flex items-center gap-0.5">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-funnel-simple text-[12px]"></i>
+            </button>
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-arrows-down-up text-[12px]"></i>
+            </button>
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three text-[12px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- search row -->
+        <div class="px-2 py-2 border-b border-[#27272A]">
+          <div class="flex items-center gap-2 bg-base border border-[#27272A] rounded-md h-7 px-2.5 hover:border-[#3F3F46] transition-colors">
+            <i class="ph ph-magnifying-glass text-tertiary text-[12px]"></i>
+            <input type="text" placeholder="Filter tree…" class="flex-1 bg-transparent text-[12px] placeholder:text-tertiary outline-none">
+          </div>
+        </div>
+
+        <!-- tree rows -->
+        <div class="flex-1 overflow-y-auto scroll-thin py-1 font-mono text-[12px]">
+
+          <!-- Row helper: paddingLeft = 8 + 16*depth -->
+
+          <!-- ▾ Assets (root) -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-accent text-[13px]"></i>
+            <span class="text-primary font-sans text-[12.5px] font-[500] tracking-tight">Assets</span>
+          </div>
+
+          <!-- ▾ characters -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-secondary text-[13px]"></i>
+            <span class="text-primary">characters</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">142</span>
+          </div>
+
+          <!-- ▾ Mira -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:40px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-secondary text-[13px]"></i>
+            <span class="text-primary">Mira</span>
+          </div>
+
+          <!-- ▾ sprites -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:56px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-secondary text-[13px]"></i>
+            <span class="text-primary">sprites</span>
+          </div>
+
+          <!-- SELECTED: idle_01.png -->
+          <div class="tree-row tree-sel tree-sel-bar h-6 flex items-center gap-1.5 cursor-default" style="padding-left:72px;">
+            <span class="w-3"></span>
+            <i class="ph ph-image text-tex text-[13px]"></i>
+            <span class="text-primary">idle_01.png</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">256 KB</span>
+          </div>
+
+          <!-- idle_02 -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:72px;">
+            <span class="w-3"></span>
+            <i class="ph ph-image text-tex text-[13px]"></i>
+            <span class="text-primary">idle_02.png</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">258 KB</span>
+          </div>
+
+          <!-- idle_03 -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:72px;">
+            <span class="w-3"></span>
+            <i class="ph ph-image text-tex text-[13px]"></i>
+            <span class="text-primary">idle_03.png</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">255 KB</span>
+          </div>
+
+          <!-- run_01 -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:72px;">
+            <span class="w-3"></span>
+            <i class="ph ph-image text-tex text-[13px]"></i>
+            <span class="text-primary">run_01.png</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">261 KB</span>
+          </div>
+
+          <!-- run_02 -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:72px;">
+            <span class="w-3"></span>
+            <i class="ph ph-image text-tex text-[13px]"></i>
+            <span class="text-primary">run_02.png</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">263 KB</span>
+          </div>
+
+          <!-- attack_01 -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:72px;">
+            <span class="w-3"></span>
+            <i class="ph ph-image text-tex text-[13px]"></i>
+            <span class="text-primary">attack_01.png</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">274 KB</span>
+          </div>
+
+          <!-- ▸ portraits collapsed -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:40px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">portraits</span>
+          </div>
+
+          <!-- ▾ globals -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-secondary text-[13px]"></i>
+            <span class="text-primary">globals</span>
+          </div>
+
+          <!-- ▾ audio -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:40px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-secondary text-[13px]"></i>
+            <span class="text-primary">audio</span>
+          </div>
+
+          <!-- bgm_field.ogg -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:56px;">
+            <span class="w-3"></span>
+            <i class="ph ph-waveform text-aud text-[13px]"></i>
+            <span class="text-primary">bgm_field.ogg</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">2.4 MB</span>
+          </div>
+
+          <!-- sfx_step.wav -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:56px;">
+            <span class="w-3"></span>
+            <i class="ph ph-waveform text-aud text-[13px]"></i>
+            <span class="text-primary">sfx_step.wav</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">88 KB</span>
+          </div>
+
+          <!-- ▸ meshes -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">meshes</span>
+            <span class="ml-auto pr-3 text-mesh text-[10px]">821</span>
+          </div>
+
+          <!-- ▸ scripts -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">scripts</span>
+            <span class="ml-auto pr-3 text-script text-[10px]">412</span>
+          </div>
+
+          <!-- ▸ shaders -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">shaders</span>
+          </div>
+
+          <!-- ▸ animations -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">animations</span>
+          </div>
+
+          <!-- ▸ scenes -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">scenes</span>
+          </div>
+
+          <!-- ▸ ui -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">ui</span>
+          </div>
+
+          <!-- ▸ localization -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">localization</span>
+          </div>
+
+          <!-- StreamingAssets -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">StreamingAssets</span>
+          </div>
+
+          <!-- ProjectSettings -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">ProjectSettings</span>
+          </div>
+
+        </div>
+
+        <!-- footer mini stats -->
+        <div class="flex items-center justify-between px-3 border-t border-[#27272A] font-mono text-[10px] text-tertiary" style="height:24px;">
+          <span class="flex items-center gap-1.5">
+            <span class="w-[5px] h-[5px] rounded-full bg-accent"></span>
+            indexed
+          </span>
+          <span>14,238 of 14,238</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ============== CENTER: tabs + preview ============== -->
+    <section class="flex-1 flex flex-col min-w-0 bg-base">
+
+      <!-- Tab bar (32) -->
+      <div class="flex items-center bg-surface border-b border-[#27272A]" style="height:32px;">
+
+        <!-- Tab 1 — active (modified) -->
+        <div class="tab-active flex items-center gap-2 h-full px-3 bg-base border-r border-[#27272A] cursor-default">
+          <i class="ph ph-image text-tex text-[12px]"></i>
+          <span class="font-mono text-[11.5px] font-[500] text-primary">characters/Mira/sprites/idle_01.png</span>
+          <span class="mod-dot ml-1"></span>
+          <button class="ml-1 w-4 h-4 rounded-[3px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-x text-[10px]"></i>
+          </button>
+        </div>
+
+        <!-- Tab 2 -->
+        <div class="flex items-center gap-2 h-full px-3 border-r border-[#27272A] text-secondary hover:bg-base/60 cursor-default">
+          <i class="ph ph-waveform text-aud text-[12px]"></i>
+          <span class="font-mono text-[11.5px] font-[500]">globals/audio/bgm_field.ogg</span>
+          <button class="ml-1 w-4 h-4 rounded-[3px] hover:bg-overlay text-tertiary flex items-center justify-center">
+            <i class="ph ph-x text-[10px]"></i>
+          </button>
+        </div>
+
+        <!-- Tab 3 -->
+        <div class="flex items-center gap-2 h-full px-3 border-r border-[#27272A] text-secondary hover:bg-base/60 cursor-default">
+          <i class="ph ph-file-code text-script text-[12px]"></i>
+          <span class="font-mono text-[11.5px] font-[500]">scripts/PlayerController.cs</span>
+          <button class="ml-1 w-4 h-4 rounded-[3px] hover:bg-overlay text-tertiary flex items-center justify-center">
+            <i class="ph ph-x text-[10px]"></i>
+          </button>
+        </div>
+
+        <!-- + new tab -->
+        <button class="w-8 h-full flex items-center justify-center text-tertiary hover:text-primary hover:bg-overlay">
+          <i class="ph ph-plus text-[12px]"></i>
+        </button>
+
+        <div class="flex-1"></div>
+
+        <!-- split / layout -->
+        <div class="flex items-center gap-0.5 px-2">
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center" title="Split right">
+            <i class="ph ph-columns text-[14px]"></i>
+          </button>
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center" title="More">
+            <i class="ph ph-dots-three-vertical text-[14px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sub-toolbar specific to image preview -->
+      <div class="flex items-center justify-between px-4 border-b border-[#27272A] bg-base" style="height:36px;">
+        <div class="flex items-center gap-2 font-mono text-[11px] text-secondary">
+          <i class="ph ph-image text-tex text-[12px]"></i>
+          <span>Texture2D</span>
+          <span class="text-overlay">·</span>
+          <span>256 × 256</span>
+          <span class="text-overlay">·</span>
+          <span>RGBA32</span>
+          <span class="text-overlay">·</span>
+          <span class="text-accent">mipmaps · 9</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="h-7 px-2.5 rounded-md hover:bg-overlay text-secondary hover:text-primary text-[11.5px] font-medium flex items-center gap-1.5 transition-colors">
+            <i class="ph ph-eye text-[13px]"></i>
+            Channels: RGBA
+          </button>
+          <button class="h-7 px-2.5 rounded-md hover:bg-overlay text-secondary hover:text-primary text-[11.5px] font-medium flex items-center gap-1.5 transition-colors">
+            <i class="ph ph-chart-bar text-[13px]"></i>
+            Histogram
+          </button>
+          <div class="w-px h-4 bg-[#27272A] mx-1"></div>
+          <button class="h-7 px-2.5 rounded-md bg-elevated border border-[#27272A] hover:border-[#3F3F46] text-primary text-[11.5px] font-medium flex items-center gap-1.5 transition-colors">
+            <i class="ph ph-download-simple text-[13px]"></i>
+            Export PNG
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview canvas -->
+      <div class="relative flex-1 checker overflow-hidden">
+
+        <!-- Stylized knight silhouette in center -->
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="relative knight-figure rounded-md" style="width:320px;height:320px;">
+            <!-- Knight silhouette built from SVG -->
+            <svg viewBox="0 0 320 320" class="absolute inset-0" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="knight" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#3a2a3a"/>
+                  <stop offset="55%" stop-color="#241b24"/>
+                  <stop offset="100%" stop-color="#15101a"/>
+                </linearGradient>
+                <linearGradient id="cape" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#7a2538" stop-opacity="0.92"/>
+                  <stop offset="100%" stop-color="#3b1422" stop-opacity="0.95"/>
+                </linearGradient>
+                <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#e8e3da"/>
+                  <stop offset="100%" stop-color="#7a7670"/>
+                </linearGradient>
+                <radialGradient id="emerald" cx="0.5" cy="0.5" r="0.5">
+                  <stop offset="0%" stop-color="#34d399" stop-opacity="1"/>
+                  <stop offset="100%" stop-color="#065f46" stop-opacity="0.6"/>
+                </radialGradient>
+              </defs>
+
+              <!-- cape -->
+              <path d="M88 110 C 70 170, 70 240, 92 285 L 228 285 C 250 240, 250 170, 232 110 Z" fill="url(#cape)" opacity="0.85"/>
+
+              <!-- body / armor -->
+              <path d="M120 110 L 200 110 L 215 175 L 205 240 L 175 285 L 145 285 L 115 240 L 105 175 Z" fill="url(#knight)"/>
+
+              <!-- shoulder pauldrons -->
+              <ellipse cx="108" cy="125" rx="22" ry="14" fill="#211520"/>
+              <ellipse cx="212" cy="125" rx="22" ry="14" fill="#211520"/>
+
+              <!-- helm -->
+              <path d="M130 82 Q 160 56 190 82 L 188 118 Q 160 130 132 118 Z" fill="url(#knight)"/>
+
+              <!-- visor slit -->
+              <rect x="140" y="96" width="40" height="4" fill="#0a0a0a"/>
+              <rect x="140" y="105" width="40" height="3" fill="#0a0a0a"/>
+
+              <!-- emerald gem on chest -->
+              <circle cx="160" cy="160" r="9" fill="url(#emerald)"/>
+              <circle cx="160" cy="160" r="14" fill="none" stroke="#34d399" stroke-opacity="0.25" stroke-width="1"/>
+
+              <!-- belt -->
+              <rect x="118" y="208" width="84" height="9" fill="#1c1018"/>
+              <rect x="154" y="206" width="12" height="13" fill="#a08240"/>
+
+              <!-- sword handle -->
+              <rect x="220" y="135" width="6" height="60" fill="#3a2a1e"/>
+              <rect x="214" y="130" width="18" height="6" fill="#a08240"/>
+              <!-- blade -->
+              <polygon points="223,135 235,150 235,255 223,275 211,255 211,150" fill="url(#blade)" opacity="0.9"/>
+
+              <!-- legs hint -->
+              <path d="M138 285 L 145 320 L 158 320 L 158 285 Z" fill="#15101a"/>
+              <path d="M162 285 L 162 320 L 175 320 L 182 285 Z" fill="#15101a"/>
+
+              <!-- subtle highlight rim left edge -->
+              <path d="M120 110 L 105 175 L 115 240" fill="none" stroke="rgba(244,114,182,0.10)" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- zoom controls bottom-right -->
+        <div class="absolute bottom-4 right-4 flex items-center gap-1 bg-elevated/90 backdrop-blur-md border border-[#27272A] rounded-lg p-1 shadow-xl">
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+            <i class="ph ph-minus text-[12px]"></i>
+          </button>
+          <div class="px-2 font-mono text-[11px] text-primary min-w-[44px] text-center">100%</div>
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+            <i class="ph ph-plus text-[12px]"></i>
+          </button>
+          <div class="w-px h-4 bg-[#27272A]"></div>
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors" title="Fit">
+            <i class="ph ph-frame-corners text-[12px]"></i>
+          </button>
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors" title="Toggle alpha checker">
+            <i class="ph ph-checkerboard text-[12px]"></i>
+          </button>
+        </div>
+
+        <!-- coordinates HUD top-right -->
+        <div class="absolute top-3 right-3 px-2 py-1 bg-elevated/80 backdrop-blur-md border border-[#27272A] rounded-md font-mono text-[10px] text-tertiary">
+          x: <span class="text-secondary">128</span>
+          <span class="mx-1 text-overlay">·</span>
+          y: <span class="text-secondary">144</span>
+          <span class="mx-1 text-overlay">·</span>
+          <span class="text-tex">#A24B6C</span>
+        </div>
+
+        <!-- file label top-left -->
+        <div class="absolute top-3 left-3 flex items-center gap-2 px-2 py-1 bg-elevated/80 backdrop-blur-md border border-[#27272A] rounded-md">
+          <i class="ph ph-image text-tex text-[11px]"></i>
+          <span class="font-mono text-[10px] text-secondary">idle_01.png</span>
+        </div>
+      </div>
+
+      <!-- Filmstrip strip -->
+      <div class="bg-surface border-t border-[#27272A]" style="height:104px;">
+        <div class="flex items-center justify-between px-4 pt-2 pb-1">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Related</span>
+            <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">7 sprites</span>
+          </div>
+          <div class="flex items-center gap-1 font-mono text-[10px] text-tertiary">
+            <i class="ph ph-arrows-left-right text-[12px]"></i>
+            <span>scroll · ⌥+drag to pan</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 px-4 pb-2 overflow-x-auto scroll-thin">
+          <!-- active thumb -->
+          <div class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0">
+            <div class="w-[64px] h-[52px] rounded-md border border-accent/60 bg-elevated checker overflow-hidden relative">
+              <div class="absolute inset-0 bg-accent-muted"></div>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-[18px] h-[28px] bg-gradient-to-b from-[#3a2a3a] to-[#15101a] rounded-sm"></div>
+              </div>
+            </div>
+            <span class="font-mono text-[9px] text-primary">idle_01</span>
+          </div>
+          <!-- thumb 2 -->
+          <div class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0">
+            <div class="w-[64px] h-[52px] rounded-md border border-[#27272A] hover:border-[#3F3F46] bg-elevated checker overflow-hidden relative">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-[18px] h-[28px] bg-gradient-to-b from-[#3a2a3a] to-[#15101a] rounded-sm opacity-90"></div>
+              </div>
+            </div>
+            <span class="font-mono text-[9px] text-tertiary">idle_02</span>
+          </div>
+          <!-- thumb 3 -->
+          <div class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0">
+            <div class="w-[64px] h-[52px] rounded-md border border-[#27272A] hover:border-[#3F3F46] bg-elevated checker overflow-hidden relative">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-[18px] h-[28px] bg-gradient-to-b from-[#3a2a3a] to-[#15101a] rounded-sm opacity-80"></div>
+              </div>
+            </div>
+            <span class="font-mono text-[9px] text-tertiary">idle_03</span>
+          </div>
+          <!-- thumb 4 -->
+          <div class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0">
+            <div class="w-[64px] h-[52px] rounded-md border border-[#27272A] hover:border-[#3F3F46] bg-elevated checker overflow-hidden relative">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-[22px] h-[26px] bg-gradient-to-b from-[#3a2a3a] to-[#15101a] rounded-sm -rotate-6"></div>
+              </div>
+            </div>
+            <span class="font-mono text-[9px] text-tertiary">run_01</span>
+          </div>
+          <!-- thumb 5 -->
+          <div class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0">
+            <div class="w-[64px] h-[52px] rounded-md border border-[#27272A] hover:border-[#3F3F46] bg-elevated checker overflow-hidden relative">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-[22px] h-[26px] bg-gradient-to-b from-[#3a2a3a] to-[#15101a] rounded-sm rotate-6"></div>
+              </div>
+            </div>
+            <span class="font-mono text-[9px] text-tertiary">run_02</span>
+          </div>
+          <!-- thumb 6 -->
+          <div class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0">
+            <div class="w-[64px] h-[52px] rounded-md border border-[#27272A] hover:border-[#3F3F46] bg-elevated checker overflow-hidden relative">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-[28px] h-[20px] bg-gradient-to-b from-[#3a2a3a] to-[#15101a] rounded-sm"></div>
+              </div>
+            </div>
+            <span class="font-mono text-[9px] text-tertiary">attack_01</span>
+          </div>
+          <!-- thumb 7 -->
+          <div class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0">
+            <div class="w-[64px] h-[52px] rounded-md border border-[#27272A] hover:border-[#3F3F46] bg-elevated checker overflow-hidden relative">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-[28px] h-[20px] bg-gradient-to-b from-[#3a2a3a] to-[#15101a] rounded-sm scale-x-[-1]"></div>
+              </div>
+            </div>
+            <span class="font-mono text-[9px] text-tertiary">attack_02</span>
+          </div>
+          <!-- + more -->
+          <div class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0">
+            <div class="w-[64px] h-[52px] rounded-md border border-[#27272A] border-dashed bg-base/60 flex items-center justify-center">
+              <div class="text-center">
+                <i class="ph ph-plus text-tertiary text-[14px]"></i>
+                <div class="font-mono text-[9px] text-tertiary mt-0.5">+ 134</div>
+              </div>
+            </div>
+            <span class="font-mono text-[9px] text-tertiary">more</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============== RIGHT INSPECTOR (320) ============== -->
+    <aside class="border-l border-[#27272A] bg-surface flex flex-col" style="width:320px;">
+
+      <!-- Inspector header -->
+      <div class="flex items-center justify-between px-4 border-b border-[#27272A]" style="height:36px;">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Inspector</span>
+        </div>
+        <div class="flex items-center gap-0.5">
+          <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-push-pin text-[12px]"></i>
+          </button>
+          <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-arrows-in-simple text-[12px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto scroll-thin">
+
+        <!-- File identity card -->
+        <div class="px-4 pt-4 pb-4 border-b border-[#27272A]">
+          <div class="flex items-start gap-3">
+            <div class="w-[40px] h-[40px] rounded-lg bg-tex/15 border border-tex/30 flex items-center justify-center flex-shrink-0">
+              <i class="ph ph-image text-tex" style="font-size:20px;"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-sans text-[15px] font-[600] text-primary tracking-tight mb-0.5">idle_01.png</div>
+              <div class="font-mono text-[10.5px] text-tertiary mb-2 truncate">Assets/characters/Mira/sprites</div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-mono text-[10px] text-tex bg-tex/10 border border-tex/20 rounded-[4px] px-1.5 py-[1px]">Texture2D</span>
+                <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">PNG</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Properties -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Properties</span>
+            <button class="text-tertiary hover:text-primary"><i class="ph ph-caret-down text-[10px]"></i></button>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Dimensions</span>
+              <span class="font-mono text-[11.5px] text-primary">256 × 256 px</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Format</span>
+              <span class="font-mono text-[11.5px] text-primary">RGBA32</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Mipmaps</span>
+              <span class="font-mono text-[11.5px] text-primary">Yes <span class="text-tertiary">(9)</span></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Compressed</span>
+              <span class="font-mono text-[11.5px] text-primary">No <span class="text-tertiary">(raw)</span></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Filter mode</span>
+              <span class="font-mono text-[11.5px] text-primary">Bilinear</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Wrap mode</span>
+              <span class="font-mono text-[11.5px] text-primary">Clamp</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Size on disk</span>
+              <span class="font-mono text-[11.5px] text-primary">256 KB</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Pixel hash</span>
+              <span class="font-mono text-[10.5px] text-tertiary">a3f8 · 9b1e</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Origin -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Origin</span>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Source bundle</span>
+              <span class="font-mono text-[11.5px] text-primary">sharedassets3.assets</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">PathID</span>
+              <span class="font-mono text-[11.5px] text-primary">-742918</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Asset GUID</span>
+              <span class="font-mono text-[10.5px] text-tertiary">7f8a…1c</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- References -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">References</span>
+            <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">3</span>
+          </div>
+
+          <div class="space-y-1">
+            <!-- ref 1 -->
+            <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-file-code text-script text-[13px]"></i>
+              <span class="font-mono text-[11.5px] text-primary flex-1">Mira.cs</span>
+              <span class="font-mono text-[10px] text-tertiary">line 42</span>
+            </button>
+            <!-- ref 2 -->
+            <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-file-code text-script text-[13px]"></i>
+              <span class="font-mono text-[11.5px] text-primary flex-1">PlayerController.cs</span>
+              <span class="font-mono text-[10px] text-tertiary">line 88</span>
+            </button>
+            <!-- ref 3 -->
+            <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-square text-secondary text-[13px]"></i>
+              <span class="font-mono text-[11.5px] text-primary flex-1">UIPanel_HUD</span>
+              <span class="font-mono text-[10px] text-tertiary">prefab</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Animations using this sprite -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">In animations</span>
+            <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">2</span>
+          </div>
+          <div class="space-y-1">
+            <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-film-strip text-secondary text-[13px]"></i>
+              <span class="font-mono text-[11.5px] text-primary flex-1">mira_idle.anim</span>
+              <span class="font-mono text-[10px] text-tertiary">frame 1</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-film-strip text-secondary text-[13px]"></i>
+              <span class="font-mono text-[11.5px] text-primary flex-1">mira_combat_idle.anim</span>
+              <span class="font-mono text-[10px] text-tertiary">frame 1</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="px-4 py-3">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Actions</span>
+          </div>
+          <div class="space-y-1.5">
+            <button class="w-full h-8 px-2.5 rounded-md bg-accent text-[#09090B] text-[12.5px] font-[600] hover:bg-accent-strong active:translate-y-[1px] transition-all flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i class="ph ph-download-simple text-[14px]"></i>
+                Export PNG
+              </span>
+              <span class="font-mono text-[10px] text-[#09090B]/70">⌘E</span>
+            </button>
+            <button class="w-full h-8 px-2.5 rounded-md bg-elevated border border-[#27272A] hover:border-[#3F3F46] text-primary text-[12.5px] font-[500] hover:bg-overlay transition-all flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i class="ph ph-copy text-[14px] text-secondary"></i>
+                Copy GUID
+              </span>
+            </button>
+            <button class="w-full h-8 px-2.5 rounded-md bg-elevated border border-[#27272A] hover:border-[#3F3F46] text-primary text-[12.5px] font-[500] hover:bg-overlay transition-all flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i class="ph ph-graph text-[14px] text-secondary"></i>
+                Reveal references
+              </span>
+              <span class="font-mono text-[10px] text-tertiary">⌘R</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============== STATUS BAR (24) ============== -->
+  <footer class="flex items-center justify-between border-t border-[#27272A] bg-surface px-3" style="height:24px;">
+    <div class="flex items-center gap-3 text-[11px] font-mono text-secondary">
+      <span class="flex items-center gap-1.5">
+        <span class="w-[6px] h-[6px] rounded-full bg-info"></span>
+        Mono
+      </span>
+      <span class="text-overlay">•</span>
+      <span>Unity 2022.3.18</span>
+      <span class="text-overlay">•</span>
+      <span class="text-tertiary">14,238 assets</span>
+      <span class="text-overlay">•</span>
+      <span class="flex items-center gap-1.5">
+        <i class="ph ph-check-circle text-accent text-[11px]"></i>
+        <span class="text-secondary">Indexed</span>
+      </span>
+    </div>
+    <div class="flex items-center gap-3 text-[11px] font-mono text-tertiary">
+      <span>UTF-8</span>
+      <span class="text-overlay">•</span>
+      <span>RGBA</span>
+      <span class="text-overlay">•</span>
+      <span class="flex items-center gap-1.5">
+        <i class="ph ph-shield-check text-[11px]"></i>
+        Read-only
+      </span>
+      <span class="text-overlay">•</span>
+      <span>v0.1.0</span>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

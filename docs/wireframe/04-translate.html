@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en" style="width:1440px;height:900px;overflow:hidden">
+<head>
+<meta charset="UTF-8" />
+<title>Unwrap — Hollow Vale · ui_strings_en.txt</title>
+
+<!-- Tailwind via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts -->
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Phosphor Icons -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          base:     '#09090B',
+          surface:  '#111114',
+          elevated: '#18181B',
+          overlay:  '#27272A',
+          'border-subtle':  'rgba(63,63,70,0.35)',
+          'border-default': '#27272A',
+          'border-strong':  '#3F3F46',
+          primary:   '#F4F4F5',
+          secondary: '#A1A1AA',
+          tertiary:  '#71717A',
+          disabled:  '#52525B',
+          accent:         '#10B981',
+          'accent-strong':'#059669',
+          'accent-muted': 'rgba(16,185,129,0.12)',
+          'accent-glow':  'rgba(16,185,129,0.20)',
+          success: '#22C55E',
+          warning: '#F59E0B',
+          danger:  '#EF4444',
+          info:    '#0EA5E9',
+          tex:    '#F472B6',
+          aud:    '#A78BFA',
+          mesh:   '#FBBF24',
+          script: '#10B981',
+          txt:    '#60A5FA',
+          bin:    '#71717A',
+        },
+        fontFamily: {
+          sans: ['Satoshi','ui-sans-serif','system-ui'],
+          mono: ['JetBrains Mono','ui-monospace','monospace'],
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  html, body { margin:0; padding:0; }
+  body { -webkit-font-smoothing: antialiased; }
+  i.ph { font-style: normal; }
+
+  .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scroll-thin::-webkit-scrollbar-thumb { background: #27272A; border-radius: 3px; }
+  .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+
+  /* tree row hover */
+  .tree-row:hover { background:#1c1c1f; }
+
+  /* selected row */
+  .tree-sel { background: rgba(16,185,129,0.12); }
+  .tree-sel-bar { box-shadow: inset 2px 0 0 0 #10B981; }
+
+  /* Modified dot */
+  .mod-dot { width:6px; height:6px; border-radius:9999px; background:#10B981; box-shadow:0 0 6px rgba(16,185,129,0.6);}
+
+  /* underline accent for active tab */
+  .tab-active { box-shadow: inset 0 -2px 0 0 #10B981; }
+
+  .focus-ring:focus { outline:none; box-shadow: 0 0 0 2px rgba(16,185,129,0.20); border-color:#10B981; }
+
+  /* translate row textarea — read-only EN */
+  .vi-area {
+    width:100%; height:100%; resize:none;
+    background:transparent; border:none; outline:none;
+    color:#F4F4F5;
+    font-family:'JetBrains Mono','ui-monospace',monospace;
+    font-size:12.5px; line-height:1.55;
+    padding:0;
+  }
+  .vi-area::placeholder { color:#52525B; font-style:italic; }
+
+  /* status dot variants */
+  .dot-translated  { background:#22C55E; box-shadow:0 0 6px rgba(34,197,94,0.55); }
+  .dot-untranslated{ background:#52525B; }
+  .dot-review      { background:#F59E0B; box-shadow:0 0 6px rgba(245,158,11,0.55); }
+
+  /* amber-tinted left border for needs-review VI cell */
+  .review-cell { box-shadow: inset 2px 0 0 0 #F59E0B; }
+
+  /* active row accent focus ring around VI textarea wrapper */
+  .vi-focus {
+    border:1px solid #10B981 !important;
+    box-shadow:0 0 0 2px rgba(16,185,129,0.20);
+    background:#0e1311 !important;
+  }
+
+  /* progress bar (translate toolbar) */
+  .prog-track { width:120px; height:6px; background:#27272A; border-radius:9999px; overflow:hidden; }
+  .prog-fill  { height:100%; background:#10B981; box-shadow:0 0 6px rgba(16,185,129,0.45); }
+
+</style>
+</head>
+<body class="bg-base text-primary font-sans antialiased" style="width:1440px;height:900px;overflow:hidden">
+
+<div class="flex flex-col" style="width:1440px;height:900px;">
+
+  <!-- ============== TITLE BAR (36) ============== -->
+  <header class="flex items-center justify-between bg-surface border-b border-[#27272A]" style="height:36px;">
+    <div class="flex items-center gap-2 px-3">
+      <div class="w-[18px] h-[18px] rounded-[4px] bg-accent/15 border border-accent/40 flex items-center justify-center">
+        <div class="w-[8px] h-[8px] bg-accent rounded-[1px]"></div>
+      </div>
+      <span class="font-sans text-[12px] font-medium text-primary">Unwrap</span>
+      <i class="ph ph-caret-right text-tertiary text-[10px]"></i>
+      <button class="flex items-center gap-1.5 px-2 py-[3px] rounded-[4px] hover:bg-overlay text-primary text-[12px] font-medium">
+        Hollow Vale
+        <i class="ph ph-caret-down text-tertiary text-[10px]"></i>
+      </button>
+    </div>
+    <div class="flex-1"></div>
+    <div class="flex items-center">
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-overlay hover:text-primary transition-colors">
+        <i class="ph ph-minus text-[14px]"></i>
+      </button>
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-overlay hover:text-primary transition-colors">
+        <i class="ph ph-square text-[12px]"></i>
+      </button>
+      <button class="w-[44px] h-[36px] flex items-center justify-center text-secondary hover:bg-danger hover:text-white transition-colors">
+        <i class="ph ph-x text-[14px]"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============== TOOLBAR (44) ============== -->
+  <div class="flex items-center bg-base border-b border-[#27272A] px-3" style="height:44px;">
+    <!-- nav arrows -->
+    <div class="flex items-center gap-0.5">
+      <button class="w-7 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+        <i class="ph ph-arrow-left text-[14px]"></i>
+      </button>
+      <button class="w-7 h-7 rounded-md hover:bg-overlay text-tertiary flex items-center justify-center transition-colors">
+        <i class="ph ph-arrow-right text-[14px]"></i>
+      </button>
+    </div>
+    <div class="w-px h-5 bg-[#27272A] mx-3"></div>
+
+    <!-- recents dropdown -->
+    <button class="flex items-center gap-1.5 px-2.5 h-7 rounded-md hover:bg-overlay text-secondary hover:text-primary text-[12px] font-medium transition-colors">
+      <i class="ph ph-clock-counter-clockwise text-[14px]"></i>
+      Recents
+      <i class="ph ph-caret-down text-[10px] text-tertiary"></i>
+    </button>
+
+    <!-- breadcrumb trail -->
+    <div class="flex items-center gap-1 ml-3 font-mono text-[11px] text-tertiary">
+      <i class="ph ph-folder text-[12px]"></i>
+      <span class="hover:text-secondary cursor-pointer">Hollow Vale</span>
+      <i class="ph ph-caret-right text-[9px]"></i>
+      <span class="hover:text-secondary cursor-pointer">localization</span>
+      <i class="ph ph-caret-right text-[9px]"></i>
+      <span class="text-primary">ui_strings_en.txt</span>
+    </div>
+
+    <!-- spacer center → search -->
+    <div class="flex-1 flex justify-center px-8">
+      <div class="flex items-center gap-2 bg-elevated border border-[#27272A] hover:border-[#3F3F46] rounded-md h-8 px-3 w-[480px] focus-within:border-accent focus-within:shadow-[0_0_0_2px_rgba(16,185,129,0.20)] transition-all">
+        <i class="ph ph-magnifying-glass text-tertiary text-[14px]"></i>
+        <input type="text" placeholder="Search assets, scripts, strings…"
+               class="flex-1 bg-transparent text-[13px] text-primary placeholder:text-tertiary outline-none font-sans"
+               value="">
+        <span class="font-mono text-[10px] text-tertiary bg-base border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">⌘K</span>
+      </div>
+    </div>
+
+    <!-- right cluster -->
+    <div class="flex items-center gap-1">
+      <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+        <i class="ph ph-export text-[16px]"></i>
+      </button>
+      <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center relative transition-colors">
+        <i class="ph ph-bell text-[16px]"></i>
+        <span class="absolute top-[6px] right-[7px] w-[6px] h-[6px] bg-accent rounded-full border border-base"></span>
+      </button>
+      <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center transition-colors">
+        <i class="ph ph-gear-six text-[16px]"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============== WORK AREA ============== -->
+  <div class="flex flex-1 min-h-0">
+
+    <!-- ============== LEFT SIDEBAR (rail + tree) ============== -->
+    <aside class="flex flex-shrink-0 border-r border-[#27272A] bg-surface" style="width:280px;">
+
+      <!-- Rail tabs (44 wide) -->
+      <nav class="flex flex-col items-center border-r border-[#27272A] py-2 gap-1" style="width:44px;">
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Files">
+          <i class="ph ph-files text-[16px]"></i>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Search">
+          <i class="ph ph-magnifying-glass text-[16px]"></i>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center relative" title="Cross references">
+          <i class="ph ph-graph text-[16px]"></i>
+          <span class="absolute top-1 right-1.5 w-[5px] h-[5px] bg-warning rounded-full"></span>
+        </button>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Scripts">
+          <i class="ph ph-file-code text-[16px]"></i>
+        </button>
+        <!-- ACTIVE: Strings / translate rail -->
+        <button class="w-8 h-8 rounded-md bg-accent-muted text-accent flex items-center justify-center" title="Strings">
+          <i class="ph ph-translate text-[16px]"></i>
+        </button>
+        <div class="w-6 border-t border-[#27272A] my-1"></div>
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Bookmarks">
+          <i class="ph ph-bookmark-simple text-[16px]"></i>
+        </button>
+
+        <div class="flex-1"></div>
+
+        <button class="w-8 h-8 rounded-md hover:bg-overlay text-secondary hover:text-primary flex items-center justify-center" title="Help">
+          <i class="ph ph-question text-[16px]"></i>
+        </button>
+      </nav>
+
+      <!-- Tree panel -->
+      <div class="flex-1 flex flex-col min-w-0">
+
+        <!-- header -->
+        <div class="flex items-center justify-between px-3 border-b border-[#27272A]" style="height:36px;">
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Strings</span>
+            <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">208</span>
+          </div>
+          <div class="flex items-center gap-0.5">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-funnel-simple text-[12px]"></i>
+            </button>
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-arrows-down-up text-[12px]"></i>
+            </button>
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three text-[12px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- search row -->
+        <div class="px-2 py-2 border-b border-[#27272A]">
+          <div class="flex items-center gap-2 bg-base border border-[#27272A] rounded-md h-7 px-2.5 hover:border-[#3F3F46] transition-colors">
+            <i class="ph ph-magnifying-glass text-tertiary text-[12px]"></i>
+            <input type="text" placeholder="Filter strings…" class="flex-1 bg-transparent text-[12px] placeholder:text-tertiary outline-none">
+          </div>
+        </div>
+
+        <!-- tree rows -->
+        <div class="flex-1 overflow-y-auto scroll-thin py-1 font-mono text-[12px]">
+
+          <!-- ▾ Localization -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-accent text-[13px]"></i>
+            <span class="text-primary font-sans text-[12.5px] font-[500] tracking-tight">Localization</span>
+          </div>
+
+          <!-- SELECTED: ui_strings_en.txt -->
+          <div class="tree-row tree-sel tree-sel-bar h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <span class="w-3"></span>
+            <i class="ph ph-text-aa text-txt text-[13px]"></i>
+            <span class="text-primary">ui_strings_en.txt</span>
+            <span class="mod-dot ml-1"></span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">47</span>
+          </div>
+
+          <!-- ui_strings_vi.txt -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <span class="w-3"></span>
+            <i class="ph ph-text-aa text-txt text-[13px]"></i>
+            <span class="text-primary">ui_strings_vi.txt</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">28</span>
+          </div>
+
+          <!-- dialogue_en.json -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <span class="w-3"></span>
+            <i class="ph ph-brackets-curly text-txt text-[13px]"></i>
+            <span class="text-primary">dialogue_en.json</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">312</span>
+          </div>
+
+          <!-- dialogue_vi.json -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <span class="w-3"></span>
+            <i class="ph ph-brackets-curly text-txt text-[13px]"></i>
+            <span class="text-primary">dialogue_vi.json</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">147</span>
+          </div>
+
+          <!-- items_en.csv -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <span class="w-3"></span>
+            <i class="ph ph-table text-txt text-[13px]"></i>
+            <span class="text-primary">items_en.csv</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">94</span>
+          </div>
+
+          <!-- credits.txt -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <span class="w-3"></span>
+            <i class="ph ph-text-aa text-txt text-[13px]"></i>
+            <span class="text-primary">credits.txt</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">62</span>
+          </div>
+
+          <!-- ▸ DLC1 -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">DLC1</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">38</span>
+          </div>
+
+          <!-- ▸ DLC2 -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">DLC2</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">22</span>
+          </div>
+
+          <!-- ▾ UI/Text -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-down text-tertiary text-[10px] w-3"></i>
+            <i class="ph-fill ph-folder-open text-secondary text-[13px]"></i>
+            <span class="text-primary font-sans text-[12.5px] font-[500] tracking-tight">UI / Text</span>
+          </div>
+
+          <!-- TextPanel.txt -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <span class="w-3"></span>
+            <i class="ph ph-text-aa text-txt text-[13px]"></i>
+            <span class="text-primary">TextPanel.txt</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">8 KB</span>
+          </div>
+
+          <!-- DialogueBox.txt -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <span class="w-3"></span>
+            <i class="ph ph-text-aa text-txt text-[13px]"></i>
+            <span class="text-primary">DialogueBox.txt</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">14 KB</span>
+          </div>
+
+          <!-- HUD.txt -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:24px;">
+            <span class="w-3"></span>
+            <i class="ph ph-text-aa text-txt text-[13px]"></i>
+            <span class="text-primary">HUD.txt</span>
+            <span class="ml-auto pr-3 text-tertiary text-[10px]">4 KB</span>
+          </div>
+
+          <!-- ▸ Audio -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">Audio</span>
+            <span class="ml-auto pr-3 text-aud text-[10px]">186</span>
+          </div>
+
+          <!-- ▸ Scripts -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">Scripts</span>
+            <span class="ml-auto pr-3 text-script text-[10px]">412</span>
+          </div>
+
+          <!-- ▸ Materials -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">Materials</span>
+          </div>
+
+          <!-- ▸ Scenes -->
+          <div class="tree-row h-6 flex items-center gap-1.5 cursor-default" style="padding-left:8px;">
+            <i class="ph ph-caret-right text-tertiary text-[10px] w-3"></i>
+            <i class="ph ph-folder text-secondary text-[13px]"></i>
+            <span class="text-primary">Scenes</span>
+          </div>
+
+        </div>
+
+        <!-- footer mini stats -->
+        <div class="flex items-center justify-between px-3 border-t border-[#27272A] font-mono text-[10px] text-tertiary" style="height:24px;">
+          <span class="flex items-center gap-1.5">
+            <span class="w-[5px] h-[5px] rounded-full bg-accent"></span>
+            translating
+          </span>
+          <span>EN → VI · 28/47</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ============== CENTER: tabs + translate ============== -->
+    <section class="flex-1 flex flex-col min-w-0 bg-base">
+
+      <!-- Tab bar (32) -->
+      <div class="flex items-center bg-surface border-b border-[#27272A]" style="height:32px;">
+
+        <!-- Tab 1 -->
+        <div class="flex items-center gap-2 h-full px-3 border-r border-[#27272A] text-secondary hover:bg-base/60 cursor-default">
+          <i class="ph ph-image text-tex text-[12px]"></i>
+          <span class="font-mono text-[11.5px] font-[500]">characters/Mira/sprites/idle_01.png</span>
+          <button class="ml-1 w-4 h-4 rounded-[3px] hover:bg-overlay text-tertiary flex items-center justify-center">
+            <i class="ph ph-x text-[10px]"></i>
+          </button>
+        </div>
+
+        <!-- Tab 2 -->
+        <div class="flex items-center gap-2 h-full px-3 border-r border-[#27272A] text-secondary hover:bg-base/60 cursor-default">
+          <i class="ph ph-file-code text-script text-[12px]"></i>
+          <span class="font-mono text-[11.5px] font-[500]">scripts/PlayerController.cs</span>
+          <button class="ml-1 w-4 h-4 rounded-[3px] hover:bg-overlay text-tertiary flex items-center justify-center">
+            <i class="ph ph-x text-[10px]"></i>
+          </button>
+        </div>
+
+        <!-- Tab 3 — active (modified) -->
+        <div class="tab-active flex items-center gap-2 h-full px-3 bg-base border-r border-[#27272A] cursor-default">
+          <i class="ph ph-translate text-txt text-[12px]"></i>
+          <span class="font-mono text-[11.5px] font-[500] text-primary">localization/ui_strings_en.txt</span>
+          <span class="mod-dot ml-1"></span>
+          <button class="ml-1 w-4 h-4 rounded-[3px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-x text-[10px]"></i>
+          </button>
+        </div>
+
+        <!-- + new tab -->
+        <button class="w-8 h-full flex items-center justify-center text-tertiary hover:text-primary hover:bg-overlay">
+          <i class="ph ph-plus text-[12px]"></i>
+        </button>
+
+        <div class="flex-1"></div>
+
+        <!-- split / layout -->
+        <div class="flex items-center gap-0.5 px-2">
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center" title="Split right">
+            <i class="ph ph-columns text-[14px]"></i>
+          </button>
+          <button class="w-7 h-7 rounded-md hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center" title="More">
+            <i class="ph ph-dots-three-vertical text-[14px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============== TRANSLATE TOOLBAR (36) ============== -->
+      <div class="flex items-center justify-between px-4 border-b border-[#27272A] bg-base" style="height:36px;">
+        <div class="flex items-center gap-3">
+          <!-- Locale picker EN → VI -->
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Locale</span>
+            <button class="h-6 px-2 rounded-[4px] bg-elevated border border-[#27272A] hover:border-[#3F3F46] flex items-center gap-1.5 transition-colors">
+              <span class="font-mono text-[10px] font-[700] text-primary tracking-wider">EN</span>
+              <i class="ph ph-caret-down text-tertiary text-[9px]"></i>
+            </button>
+            <i class="ph ph-arrow-right text-tertiary text-[11px]"></i>
+            <button class="h-6 px-2 rounded-[4px] bg-elevated border border-[#27272A] hover:border-[#3F3F46] flex items-center gap-1.5 transition-colors">
+              <span class="font-mono text-[10px] font-[700] text-primary tracking-wider">VI</span>
+              <i class="ph ph-caret-down text-tertiary text-[9px]"></i>
+            </button>
+          </div>
+
+          <span class="text-overlay">·</span>
+
+          <!-- Progress strip -->
+          <div class="flex items-center gap-2">
+            <div class="prog-track"><div class="prog-fill" style="width:59.6%;"></div></div>
+            <span class="font-mono text-[11px] text-primary"><span class="text-accent">28</span><span class="text-tertiary">/47</span></span>
+            <span class="font-mono text-[10.5px] text-tertiary">(59.6%)</span>
+          </div>
+
+          <span class="text-overlay">·</span>
+
+          <!-- Legend -->
+          <div class="flex items-center gap-3 font-mono text-[10px] text-tertiary">
+            <span class="flex items-center gap-1.5"><span class="w-[6px] h-[6px] rounded-full dot-translated"></span>translated</span>
+            <span class="flex items-center gap-1.5"><span class="w-[6px] h-[6px] rounded-full dot-untranslated"></span>pending</span>
+            <span class="flex items-center gap-1.5"><span class="w-[6px] h-[6px] rounded-full dot-review"></span>review</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button class="h-7 px-2.5 rounded-md hover:bg-overlay text-secondary hover:text-primary text-[11.5px] font-medium flex items-center gap-1.5 transition-colors">
+            <i class="ph ph-funnel text-[13px]"></i>
+            Filter: All
+            <i class="ph ph-caret-down text-[9px] text-tertiary"></i>
+          </button>
+          <button class="h-7 px-2.5 rounded-md hover:bg-overlay text-secondary hover:text-primary text-[11.5px] font-medium flex items-center gap-1.5 transition-colors">
+            <i class="ph ph-export text-[13px]"></i>
+            Export…
+          </button>
+          <div class="w-px h-4 bg-[#27272A] mx-1"></div>
+          <button class="h-7 px-2.5 rounded-md bg-accent text-[#09090B] hover:bg-accent-strong active:translate-y-[1px] text-[11.5px] font-[600] flex items-center gap-1.5 transition-all">
+            <i class="ph ph-sparkle text-[13px]"></i>
+            Auto-translate
+          </button>
+        </div>
+      </div>
+
+      <!-- ============== TWO-COLUMN HEADER ROW (28) ============== -->
+      <div class="flex border-b border-[#27272A] bg-surface" style="height:28px;">
+        <div class="flex items-center px-4" style="width:280px;">
+          <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Key · ID</span>
+        </div>
+        <div class="flex items-center border-l border-[#27272A] px-4 flex-1">
+          <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">EN <span class="text-overlay">·</span> Source</span>
+        </div>
+        <div class="flex items-center border-l border-[#27272A] px-4 flex-1">
+          <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">VI <span class="text-overlay">·</span> Tiếng Việt</span>
+        </div>
+        <div class="flex items-center justify-center border-l border-[#27272A]" style="width:40px;">
+          <i class="ph ph-dots-three text-tertiary text-[12px]"></i>
+        </div>
+      </div>
+
+      <!-- ============== ROWS ============== -->
+      <div class="flex-1 overflow-y-auto scroll-thin">
+
+        <!-- ROW 1 — menu.title — translated -->
+        <div class="flex border-b border-[#27272A]/40 hover:bg-base/60" style="min-height:76px;">
+          <!-- Key cell -->
+          <div class="flex items-start gap-2 px-4 py-3" style="width:280px;">
+            <span class="w-[8px] h-[8px] mt-1 rounded-full dot-translated flex-shrink-0"></span>
+            <div class="min-w-0 flex-1">
+              <div class="font-mono text-[12px] font-[500] text-primary truncate">menu.title</div>
+              <div class="font-mono text-[10px] text-tertiary mt-0.5">#001 · MainMenu</div>
+            </div>
+          </div>
+          <!-- EN cell -->
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-secondary leading-[1.55]">"Hollow Vale"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5">12 char</div>
+          </div>
+          <!-- VI cell -->
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-primary leading-[1.55]">"Thung Lũng Hoang"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5">16 char</div>
+          </div>
+          <!-- Actions cell -->
+          <div class="border-l border-[#27272A]/60 flex items-start justify-center pt-3" style="width:40px;">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three-vertical text-[11px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ROW 2 — menu.continue — translated -->
+        <div class="flex border-b border-[#27272A]/40 hover:bg-base/60" style="min-height:76px;">
+          <div class="flex items-start gap-2 px-4 py-3" style="width:280px;">
+            <span class="w-[8px] h-[8px] mt-1 rounded-full dot-translated flex-shrink-0"></span>
+            <div class="min-w-0 flex-1">
+              <div class="font-mono text-[12px] font-[500] text-primary truncate">menu.continue</div>
+              <div class="font-mono text-[10px] text-tertiary mt-0.5">#002 · MainMenu</div>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-secondary leading-[1.55]">"Continue Journey"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5">16 char</div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-primary leading-[1.55]">"Tiếp tục hành trình"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5">19 char</div>
+          </div>
+          <div class="border-l border-[#27272A]/60 flex items-start justify-center pt-3" style="width:40px;">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three-vertical text-[11px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ROW 3 — ACTIVE — menu.start_adventure — expanded ~120px -->
+        <div class="flex border-b border-[#27272A] bg-accent-muted/30" style="min-height:120px;">
+          <div class="flex items-start gap-2 px-4 py-3" style="width:280px; box-shadow: inset 2px 0 0 0 #10B981;">
+            <span class="w-[8px] h-[8px] mt-1 rounded-full dot-translated flex-shrink-0"></span>
+            <div class="min-w-0 flex-1">
+              <div class="font-mono text-[12px] font-[600] text-primary truncate">menu.start_adventure</div>
+              <div class="font-mono text-[10px] text-tertiary mt-0.5">#003 · MainMenu</div>
+              <div class="mt-2 flex items-center gap-1">
+                <span class="font-mono text-[9.5px] text-accent bg-accent-muted border border-accent/30 rounded-[3px] px-1.5 py-[1px]">ACTIVE</span>
+                <span class="font-mono text-[9.5px] text-tertiary bg-elevated border border-[#27272A] rounded-[3px] px-1.5 py-[1px]">btn</span>
+              </div>
+            </div>
+          </div>
+          <!-- EN read-only -->
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1 flex flex-col">
+            <div class="font-mono text-[12.5px] text-secondary leading-[1.55] flex-1">"Start Adventure"</div>
+            <div class="flex items-center justify-between mt-2 pt-2 border-t border-[#27272A]/40">
+              <span class="font-mono text-[10px] text-tertiary">15 char</span>
+              <span class="font-mono text-[10px] text-tertiary flex items-center gap-1"><i class="ph ph-lock text-[10px]"></i> read-only</span>
+            </div>
+          </div>
+          <!-- VI editable, focused -->
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1 flex flex-col">
+            <div class="vi-focus rounded-md px-2.5 py-1.5 flex-1 flex">
+              <textarea class="vi-area" rows="2">"Bắt đầu phiêu lưu"</textarea>
+            </div>
+            <div class="flex items-center justify-between mt-2 pt-2 border-t border-[#27272A]/40 font-mono text-[10px]">
+              <div class="flex items-center gap-2 text-tertiary">
+                <span><span class="text-secondary">Char:</span> <span class="text-secondary">15</span> <i class="ph ph-arrow-right text-[9px]"></i> <span class="text-accent">19</span></span>
+                <span class="text-overlay">·</span>
+                <button class="hover:text-primary flex items-center gap-1">
+                  Status
+                  <span class="text-accent flex items-center gap-1">
+                    <span class="w-[5px] h-[5px] rounded-full dot-translated"></span>
+                    Translated
+                  </span>
+                  <i class="ph ph-caret-down text-[9px]"></i>
+                </button>
+                <span class="text-overlay">·</span>
+                <button class="hover:text-primary flex items-center gap-1">
+                  <i class="ph ph-chat-circle-text text-[11px]"></i>
+                  Add comment
+                </button>
+              </div>
+              <div class="flex items-center gap-1.5 text-tertiary">
+                <span class="bg-base border border-[#27272A] rounded-[3px] px-1 py-[1px]">⌘</span>
+                <span class="bg-base border border-[#27272A] rounded-[3px] px-1 py-[1px]">↵</span>
+                <span class="text-tertiary">next</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 flex items-start justify-center pt-3" style="width:40px;">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three-vertical text-[11px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ROW 4 — menu.options — UNTRANSLATED -->
+        <div class="flex border-b border-[#27272A]/40 hover:bg-base/60" style="min-height:76px;">
+          <div class="flex items-start gap-2 px-4 py-3" style="width:280px;">
+            <span class="w-[8px] h-[8px] mt-1 rounded-full dot-untranslated flex-shrink-0"></span>
+            <div class="min-w-0 flex-1">
+              <div class="font-mono text-[12px] font-[500] text-primary truncate">menu.options</div>
+              <div class="font-mono text-[10px] text-tertiary mt-0.5">#004 · MainMenu</div>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-secondary leading-[1.55]">"Options"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5">7 char</div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-disabled leading-[1.55] italic">Add translation…</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5 flex items-center gap-1.5">
+              <span class="text-warning">pending</span>
+              <span class="text-overlay">·</span>
+              <span>0 char</span>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 flex items-start justify-center pt-3" style="width:40px;">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three-vertical text-[11px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ROW 5 — menu.quit — NEEDS REVIEW (amber) -->
+        <div class="flex border-b border-[#27272A]/40 hover:bg-base/60" style="min-height:76px;">
+          <div class="flex items-start gap-2 px-4 py-3" style="width:280px;">
+            <span class="w-[8px] h-[8px] mt-1 rounded-full dot-review flex-shrink-0"></span>
+            <div class="min-w-0 flex-1">
+              <div class="font-mono text-[12px] font-[500] text-primary truncate">menu.quit</div>
+              <div class="font-mono text-[10px] text-tertiary mt-0.5">#005 · MainMenu</div>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-secondary leading-[1.55]">"Quit to Desktop"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5">15 char</div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1 review-cell">
+            <div class="font-mono text-[12.5px] text-primary leading-[1.55]">"Thoát ra Desktop"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5 flex items-center gap-1.5">
+              <i class="ph ph-warning text-warning text-[11px]"></i>
+              <span class="text-warning">needs review</span>
+              <span class="text-overlay">·</span>
+              <span>16 char</span>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 flex items-start justify-center pt-3" style="width:40px;">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three-vertical text-[11px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ROW 6 — hud.health — translated -->
+        <div class="flex border-b border-[#27272A]/40 hover:bg-base/60" style="min-height:76px;">
+          <div class="flex items-start gap-2 px-4 py-3" style="width:280px;">
+            <span class="w-[8px] h-[8px] mt-1 rounded-full dot-translated flex-shrink-0"></span>
+            <div class="min-w-0 flex-1">
+              <div class="font-mono text-[12px] font-[500] text-primary truncate">hud.health</div>
+              <div class="font-mono text-[10px] text-tertiary mt-0.5">#012 · HUD</div>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-secondary leading-[1.55]">"Health: <span class="text-accent">{0}</span>/<span class="text-accent">{1}</span>"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5 flex items-center gap-1.5">
+              <span>12 char</span>
+              <span class="text-overlay">·</span>
+              <span class="text-accent">2 vars</span>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-primary leading-[1.55]">"Máu: <span class="text-accent">{0}</span>/<span class="text-accent">{1}</span>"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5 flex items-center gap-1.5">
+              <span>9 char</span>
+              <span class="text-overlay">·</span>
+              <span class="text-accent">2 vars matched</span>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 flex items-start justify-center pt-3" style="width:40px;">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three-vertical text-[11px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ROW 7 — hud.mana — translated -->
+        <div class="flex border-b border-[#27272A]/40 hover:bg-base/60" style="min-height:76px;">
+          <div class="flex items-start gap-2 px-4 py-3" style="width:280px;">
+            <span class="w-[8px] h-[8px] mt-1 rounded-full dot-translated flex-shrink-0"></span>
+            <div class="min-w-0 flex-1">
+              <div class="font-mono text-[12px] font-[500] text-primary truncate">hud.mana</div>
+              <div class="font-mono text-[10px] text-tertiary mt-0.5">#013 · HUD</div>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-secondary leading-[1.55]">"Mana: <span class="text-accent">{0}</span>"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5">8 char</div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-primary leading-[1.55]">"Mana: <span class="text-accent">{0}</span>"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5">8 char</div>
+          </div>
+          <div class="border-l border-[#27272A]/60 flex items-start justify-center pt-3" style="width:40px;">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three-vertical text-[11px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ROW 8 — tooltip.heal_potion — UNTRANSLATED -->
+        <div class="flex border-b border-[#27272A]/40 hover:bg-base/60" style="min-height:76px;">
+          <div class="flex items-start gap-2 px-4 py-3" style="width:280px;">
+            <span class="w-[8px] h-[8px] mt-1 rounded-full dot-untranslated flex-shrink-0"></span>
+            <div class="min-w-0 flex-1">
+              <div class="font-mono text-[12px] font-[500] text-primary truncate">tooltip.heal_potion</div>
+              <div class="font-mono text-[10px] text-tertiary mt-0.5">#024 · Tooltips</div>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-secondary leading-[1.55]">"Restores <span class="text-accent">{0}</span> HP over 5s"</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5">22 char</div>
+          </div>
+          <div class="border-l border-[#27272A]/60 px-4 py-3 flex-1">
+            <div class="font-mono text-[12.5px] text-disabled leading-[1.55] italic">Add translation…</div>
+            <div class="font-mono text-[10px] text-tertiary mt-1.5 flex items-center gap-1.5">
+              <span class="text-warning">pending</span>
+              <span class="text-overlay">·</span>
+              <span>0 char</span>
+            </div>
+          </div>
+          <div class="border-l border-[#27272A]/60 flex items-start justify-center pt-3" style="width:40px;">
+            <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+              <i class="ph ph-dots-three-vertical text-[11px]"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ============== RIGHT INSPECTOR (320) ============== -->
+    <aside class="border-l border-[#27272A] bg-surface flex flex-col" style="width:320px;">
+
+      <!-- Inspector header -->
+      <div class="flex items-center justify-between px-4 border-b border-[#27272A]" style="height:36px;">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Inspector</span>
+        </div>
+        <div class="flex items-center gap-0.5">
+          <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-push-pin text-[12px]"></i>
+          </button>
+          <button class="w-5 h-5 rounded-[4px] hover:bg-overlay text-tertiary hover:text-primary flex items-center justify-center">
+            <i class="ph ph-arrows-in-simple text-[12px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto scroll-thin">
+
+        <!-- File identity card -->
+        <div class="px-4 pt-4 pb-4 border-b border-[#27272A]">
+          <div class="flex items-start gap-3">
+            <div class="w-[40px] h-[40px] rounded-lg bg-txt/15 border border-txt/30 flex items-center justify-center flex-shrink-0">
+              <i class="ph ph-translate text-txt" style="font-size:20px;"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-sans text-[15px] font-[600] text-primary tracking-tight mb-0.5">ui_strings_en.txt</div>
+              <div class="font-mono text-[10.5px] text-tertiary mb-2 truncate">Assets/localization</div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-mono text-[10px] text-txt bg-txt/10 border border-txt/20 rounded-[4px] px-1.5 py-[1px]">TextAsset</span>
+                <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">UTF-8</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Properties -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Properties</span>
+            <button class="text-tertiary hover:text-primary"><i class="ph ph-caret-down text-[10px]"></i></button>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Encoding</span>
+              <span class="font-mono text-[11.5px] text-primary">UTF-8 <span class="text-tertiary">BOM</span></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Lines</span>
+              <span class="font-mono text-[11.5px] text-primary">47</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Used in</span>
+              <span class="font-mono text-[11.5px] text-primary">12 scenes</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Size on disk</span>
+              <span class="font-mono text-[11.5px] text-primary">3.2 KB</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Format</span>
+              <span class="font-mono text-[11.5px] text-primary">key=value</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Current key block -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Current key</span>
+            <span class="font-mono text-[10px] text-accent bg-accent-muted border border-accent/30 rounded-[4px] px-1.5 py-[1px]">#003</span>
+          </div>
+          <div class="bg-elevated border border-[#27272A] rounded-md p-2.5 mb-2.5">
+            <div class="font-mono text-[12px] text-primary mb-1">menu.start_adventure</div>
+            <div class="font-mono text-[10px] text-tertiary">MainMenu · btn · primary CTA</div>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Status</span>
+              <span class="font-mono text-[11.5px] text-primary flex items-center gap-1.5">
+                <span class="w-[6px] h-[6px] rounded-full dot-translated"></span>
+                Translated
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Last edit</span>
+              <span class="font-mono text-[11.5px] text-primary">2 min ago</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Translator</span>
+              <span class="font-mono text-[11.5px] text-primary">linh.n</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- References -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Used by</span>
+            <span class="font-mono text-[10px] text-secondary bg-elevated border border-[#27272A] rounded-[4px] px-1.5 py-[1px]">3</span>
+          </div>
+          <div class="space-y-1">
+            <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-map-trifold text-secondary text-[13px]"></i>
+              <span class="font-mono text-[11.5px] text-primary flex-1 truncate">MainMenu.scene</span>
+              <span class="font-mono text-[10px] text-tertiary">scene</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-file-code text-script text-[13px]"></i>
+              <span class="font-mono text-[11.5px] text-primary flex-1 truncate">UIPanel.cs</span>
+              <span class="font-mono text-[10px] text-tertiary">line 142</span>
+            </button>
+            <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-overlay text-left transition-colors">
+              <i class="ph ph-square text-secondary text-[13px]"></i>
+              <span class="font-mono text-[11.5px] text-primary flex-1 truncate">SaveSlot.prefab</span>
+              <span class="font-mono text-[10px] text-tertiary">prefab</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Char limits -->
+        <div class="px-4 py-3 border-b border-[#27272A]">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Char limits</span>
+            <i class="ph ph-info text-tertiary text-[12px]"></i>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">EN length</span>
+              <span class="font-mono text-[11.5px] text-primary">15 <span class="text-tertiary">char</span></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">VI length</span>
+              <span class="font-mono text-[11.5px] text-primary">19 <span class="text-tertiary">char</span></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[12px] text-secondary">Max suggested</span>
+              <span class="font-mono text-[11.5px] text-primary">24</span>
+            </div>
+            <!-- mini gauge -->
+            <div class="pt-2">
+              <div class="flex items-center justify-between font-mono text-[10px] text-tertiary mb-1">
+                <span>fits</span>
+                <span class="text-accent">79%</span>
+              </div>
+              <div class="h-1.5 bg-overlay rounded-full overflow-hidden">
+                <div class="h-full bg-accent" style="width:79%; box-shadow:0 0 6px rgba(16,185,129,0.45);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="px-4 py-3">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-mono text-[10px] tracking-[0.12em] uppercase text-tertiary">Actions</span>
+          </div>
+          <div class="space-y-1.5">
+            <button class="w-full h-8 px-2.5 rounded-md bg-accent text-[#09090B] text-[12.5px] font-[600] hover:bg-accent-strong active:translate-y-[1px] transition-all flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i class="ph ph-floppy-disk text-[14px]"></i>
+                Save translations
+              </span>
+              <span class="font-mono text-[10px] text-[#09090B]/70">⌘S</span>
+            </button>
+            <button class="w-full h-8 px-2.5 rounded-md bg-elevated border border-[#27272A] hover:border-[#3F3F46] text-primary text-[12.5px] font-[500] hover:bg-overlay transition-all flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i class="ph ph-arrow-counter-clockwise text-[14px] text-secondary"></i>
+                Revert key
+              </span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============== STATUS BAR (24) ============== -->
+  <footer class="flex items-center justify-between border-t border-[#27272A] bg-surface px-3" style="height:24px;">
+    <div class="flex items-center gap-3 text-[11px] font-mono text-secondary">
+      <span class="flex items-center gap-1.5">
+        <span class="w-[6px] h-[6px] rounded-full bg-info"></span>
+        Mono
+      </span>
+      <span class="text-overlay">•</span>
+      <span>Unity 2022.3.18</span>
+      <span class="text-overlay">•</span>
+      <span class="flex items-center gap-1.5">
+        <i class="ph ph-translate text-txt text-[11px]"></i>
+        <span class="text-secondary">EN → VI</span>
+        <span class="text-accent">59.6%</span>
+        <span class="text-tertiary">(28/47)</span>
+      </span>
+      <span class="text-overlay">•</span>
+      <span class="flex items-center gap-1.5">
+        <i class="ph ph-check-circle text-accent text-[11px]"></i>
+        <span class="text-secondary">saved</span>
+      </span>
+    </div>
+    <div class="flex items-center gap-3 text-[11px] font-mono text-tertiary">
+      <span>UTF-8</span>
+      <span class="text-overlay">•</span>
+      <span>LF</span>
+      <span class="text-overlay">•</span>
+      <span class="flex items-center gap-1.5">
+        <i class="ph ph-pencil-simple text-[11px]"></i>
+        editable
+      </span>
+      <span class="text-overlay">•</span>
+      <span>v0.1.0</span>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
