@@ -66,8 +66,25 @@ WebView2 Runtime is required (pre-installed on Windows 11; the installer prompts
 
 ```
 pnpm install
+pnpm sidecars      # one-time: downloads AssetRipper + installs ILSpyCmd (~120 MB)
 pnpm tauri dev
 ```
+
+`pnpm sidecars` is required after a fresh clone because Tauri sidecar binaries
+are gitignored (too large for GitHub). The script:
+
+- Downloads **AssetRipper 1.3.14** (~120 MB) from the upstream GitHub release and
+  verifies SHA-256 against `src-tauri/binaries/sidecar-manifest.json`.
+- Installs **ILSpyCmd 9.1.0.7988** via `dotnet tool install --global` (requires
+  .NET 8 SDK on PATH). Dev-mode uses the official tool; production MSI builds
+  use a custom self-contained wrapper documented in
+  `src-tauri/binaries/README.md`.
+- Skips **Il2CppDumper** — the app downloads it lazily on first IL2CPP project
+  detection into `%LOCALAPPDATA%\Unwrap\bin\`.
+
+Re-run any time the sidecar versions change in
+[src-tauri/binaries/sidecar-manifest.json](src-tauri/binaries/sidecar-manifest.json).
+The script is idempotent — already-installed binaries pass through quickly.
 
 First `cargo build` takes 3-10 minutes while Rust compiles rusqlite, three, and symphonia.
 
