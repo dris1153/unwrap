@@ -4,6 +4,17 @@ All notable changes to Unwrap are documented here. Format: [Keep a Changelog](ht
 
 ## [Unreleased]
 
+### Fixed (phase 01 — indexing fix)
+
+- **Real Unity builds now extract correctly.** Opening `D:\Applications\Steam\steamapps\common\Ladies Dont Tempt My Immortality` (and any other genuine Unity Steam build) previously produced an empty asset tree with StatusBar lying "Indexed". Five compounding defects converged into a silent no-op:
+  1. **Bundled AssetRipper-x86_64-pc-windows-msvc.exe is `AssetRipper.GUI.Web` (ASP.NET web app), not a CLI extractor.** The old `asset_ripper.rs` passed `<path> -o <output> --headless` — unknown args ignored, binary started a web server, idled until 10-minute timeout. Now the wrapper spawns the binary on a random local port and drives its HTTP REST endpoints (`POST /LoadFolder`, `GET /Collections/Count`, `POST /Export/UnityProject`, `POST /Reset`) over a `reqwest::Client`. API surface documented in `plans/20260521-0900-v0.1.1-indexing-fix-and-multi-engine-guard/research-assetripper-api.md`.
+  2. **Sidecar stderr was dropped** at `src-tauri/src/sidecar/spawn.rs:70` (`Stdio::null()`). Now piped and merged into the same channel as stdout with `[stderr]` prefix. mpsc channel cap raised 64 → 512 to absorb stderr bursts. Benefits ILSpyCmd and Il2CppDumper too.
+  3. **`tree_builder::walk` walked the wrong directory.** AssetRipper writes to `<output>/ExportedProject/Assets/…` but the handler walked the parent. Now `extract()` resolves the actual output dir (prefers `ExportedProject` subfolder; falls back to root only when the export root has > 5 entries; errors out on empty) and `unity/mod.rs:184` walks `report.output_dir`.
+  4. **`assets_count == 0` no longer treated as success.** `extract()` returns `Err(SidecarFailed)` when `/Collections/Count` returns 0 (load failure) or when the export produces no files (`resolve_output_dir → None`).
+  5. **StatusBar no longer hard-codes `indexState="indexed"`.** `src/app/project/$projectId.tsx` now derives the state from real tree size: `indexing` while query loading, `indexed` when tree has > 1 node, `empty` otherwise. New `empty` variant rendered with red `Warning` icon and label "No assets indexed — see logs". `indexing` variant renders an animated `Spinner` with "Indexing…" label.
+- AssetRipper diagnostic log persisted to `%LOCALAPPDATA%\Unwrap\logs\<op_id>-asset-ripper.log` via the binary's own `--log --log-path` flags, so failed extractions are debuggable without rerunning.
+- Windows long-path UNC `\\?\` prefix stripped before sending paths to AssetRipper's `Path=` form field (avoids ".NET file-not-found" errors on canonicalized Steam paths).
+
 ### Security
 
 - `sidecar::manifest::verify_sha256` and `verify_sha256_bytes` now **refuse** to short-circuit on placeholder `"TBD"` or empty-string checksums. Previously, these returned `Ok(true)`, allowing tools shipped with `sha256: "TBD"` in `sidecar-manifest.json` to bypass integrity verification entirely. The lazy-download path (Il2CppDumper) is the primary affected surface. Test `sha256_bytes_placeholder_refused` updated to assert the new fail-closed behavior.

@@ -67,7 +67,7 @@ pub async fn spawn(spec: SidecarSpec) -> Result<SidecarHandle, AppError> {
     cmd.args(&spec.args)
         .current_dir(&spec.workdir)
         .stdout(Stdio::piped())
-        .stderr(Stdio::null())
+        .stderr(Stdio::piped())
         .kill_on_drop(true);
 
     let mut child = cmd.spawn().map_err(|e| {
@@ -78,13 +78,36 @@ pub async fn spawn(spec: SidecarSpec) -> Result<SidecarHandle, AppError> {
         .stdout
         .take()
         .ok_or_else(|| AppError::SidecarFailed("stdout not captured".into()))?;
+    let stderr = child
+        .stderr
+        .take()
+        .ok_or_else(|| AppError::SidecarFailed("stderr not captured".into()))?;
 
-    let (msg_tx, msg_rx) = mpsc::channel::<SidecarMsg>(64);
+    // Capacity 512: stderr-merged logs from chatty tools (AssetRipper, IL2CPP
+    // dumper) can briefly exceed the original 64 before consumers drain.
+    let (msg_tx, msg_rx) = mpsc::channel::<SidecarMsg>(512);
     let (exit_tx, exit_rx) = oneshot::channel::<i32>();
 
     let op_id = spec.operation_id.clone();
     let parser = spec.progress_parser.clone();
     let deadline = spec.timeout_duration;
+
+    // Stderr reader task — forwards every line as a tagged log message so the
+    // diagnostic narrative isn't lost when sidecars write errors to stderr.
+    let stderr_tx = msg_tx.clone();
+    tokio::spawn(async move {
+        let reader = BufReader::new(stderr);
+        let mut lines = reader.lines();
+        while let Ok(Some(line)) = lines.next_line().await {
+            if stderr_tx
+                .send(SidecarMsg::Log(format!("[stderr] {line}")))
+                .await
+                .is_err()
+            {
+                break;
+            }
+        }
+    });
 
     // Stdout reader task — one task per process.
     tokio::spawn(async move {

@@ -1,5 +1,7 @@
-import { CloudSlash, Circuitry, CheckCircle } from "@phosphor-icons/react";
+import { CloudSlash, Circuitry, CheckCircle, Warning, Spinner } from "@phosphor-icons/react";
 import { StatusDot } from "../ui/status-dot";
+
+type IndexState = "indexed" | "indexing" | "error" | "empty";
 
 type StatusBarProps =
   | { mode: "welcome" }
@@ -8,7 +10,7 @@ type StatusBarProps =
       backendType?: "mono" | "il2cpp";
       unityVersion?: string;
       assetCount?: number;
-      indexState?: "indexed" | "indexing" | "error";
+      indexState?: IndexState;
     };
 
 /**
@@ -81,6 +83,33 @@ export function StatusBar(props: StatusBarProps) {
             <span className="flex items-center gap-1.5">
               <CheckCircle size={11} className="text-accent" />
               <span className="text-secondary">Indexed</span>
+            </span>
+          </>
+        )}
+        {indexState === "indexing" && (
+          <>
+            <span className="text-overlay">•</span>
+            <span className="flex items-center gap-1.5">
+              <Spinner size={11} className="text-info animate-spin" />
+              <span className="text-secondary">Indexing…</span>
+            </span>
+          </>
+        )}
+        {indexState === "empty" && (
+          <>
+            <span className="text-overlay">•</span>
+            <span className="flex items-center gap-1.5" title="Extraction completed but produced no assets. Check %LOCALAPPDATA%\Unwrap\logs\ for AssetRipper diagnostics.">
+              <Warning size={11} className="text-danger" />
+              <span className="text-danger">No assets indexed — see logs</span>
+            </span>
+          </>
+        )}
+        {indexState === "error" && (
+          <>
+            <span className="text-overlay">•</span>
+            <span className="flex items-center gap-1.5">
+              <Warning size={11} className="text-danger" />
+              <span className="text-danger">Indexing failed</span>
             </span>
           </>
         )}

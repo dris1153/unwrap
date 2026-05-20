@@ -50,7 +50,13 @@ function ProjectRoute() {
         backendType={content.project?.scripting_backend === "il2cpp" ? "il2cpp" : "mono"}
         unityVersion={content.project?.engine_version ?? ""}
         assetCount={content.assetCount}
-        indexState="indexed"
+        indexState={
+          content.treeLoading
+            ? "indexing"
+            : content.tree && Object.keys(content.tree.nodes).length > 1
+              ? "indexed"
+              : "empty"
+        }
       />
     </>
   );

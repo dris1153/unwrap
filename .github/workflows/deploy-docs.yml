@@ -36,6 +36,8 @@ jobs:
           cp -r docs/assets   _site/docs/assets
           # Brand logos (favicon, mark, wordmark)
           cp -r docs/branding _site/docs/branding
+          # Custom domain for GitHub Pages (unwrap.drisdev.io)
+          cp CNAME _site/CNAME
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

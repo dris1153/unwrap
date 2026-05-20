@@ -176,12 +176,18 @@ impl FormatHandler for UnityHandler {
             ProgressPayload {
                 operation_id: ctx.operation_id.clone(),
                 phase: "indexing".into(),
-                percent: Some(90.0),
-                message: "Building asset tree…".into(),
+                percent: Some(95.0),
+                message: format!(
+                    "Indexing {} files…",
+                    report.assets_count
+                ),
             },
         );
 
-        let tree = tree_builder::walk(&extracted_dir).await?;
+        // Walk the resolved output dir from the extract report (typically
+        // `extracted_dir/ExportedProject`) rather than the export root —
+        // AssetRipper writes assets into the ExportedProject subfolder.
+        let tree = tree_builder::walk(&report.output_dir).await?;
 
         // Prefer engine version from AssetRipper report; fall back to ggm parse.
         let final_engine_version = report
