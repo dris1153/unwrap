@@ -113,7 +113,16 @@ Full-text search across asset names/types (SQLite FTS). Cmd+K command palette (f
 | Large asset trees (20k+ nodes) crash | Virtualize via TanStack Virtual (phase 06) |
 | GPL infection (AssetRipper) | Subprocess-only pattern (never link); verify safe pattern + document (phase 04/10) |
 
-## Recent Fixes (v0.1.1 Hotfixes)
+## Recent Fixes & Additions (v0.1.1+)
+
+**2026-05-20:** Multi-language documentation landing page shipped. See [brainstorm-docs-html.md](../plans/20260520-1530-unwrap-mvp-bootstrap/reports/brainstorm-docs-html.md) for spec details.
+
+- Standalone `docs.html` with 11 sections (intro, features, architecture, workflows, how-to-use, tech stack, shortcuts, bundled tools, troubleshooting, license, hero)
+- Multi-language support: English (authoritative), Vietnamese, Simplified Chinese (machine-assisted translations marked in `meta.note`)
+- 5 hand-coded SVG diagrams + 4 wireframe screenshots embedded
+- Vanilla JS i18n loader (no dependencies); fetch-based JSON with error fallback
+- `pnpm docs:serve` script for local preview at http://localhost:5173/docs.html
+- Brand-aligned (emerald accent, Satoshi + JetBrains Mono, zinc-950 dark)
 
 **2026-05-20:** Welcome screen interaction gaps patched post-launch smoke test (`pnpm tauri dev`). See [brainstorm-welcome-fixes.md](../plans/20260520-1530-unwrap-mvp-bootstrap/reports/brainstorm-welcome-fixes.md) for details.
 

@@ -1,0 +1,208 @@
+{
+  "lang": "zh-CN",
+  "label": "简体中文",
+  "meta": {
+    "title": "Unwrap — 使用文档",
+    "description": "解析你所拥有的一切。",
+    "note": "由 AI 辅助翻译，欢迎社区贡献。"
+  },
+  "nav": {
+    "intro": "简介",
+    "features": "功能",
+    "architecture": "架构",
+    "workflow": "工作流程",
+    "howToUse": "使用指南",
+    "techStack": "技术栈",
+    "shortcuts": "快捷键",
+    "bundled": "内置工具",
+    "troubleshoot": "故障排查",
+    "license": "许可证"
+  },
+  "hero": {
+    "eyebrow": "REVERSE ENGINEERING · V0.1",
+    "headline": "解析你所拥有的一切。",
+    "tagline": "一款用于探索、反编译和翻译 Unity 游戏的 Windows 桌面工具。",
+    "screenshotAlt": "Unwrap 欢迎界面，显示拖放打开项目区域"
+  },
+  "sections": {
+    "intro": {
+      "heading": "简介",
+      "body": "Unwrap 是一款用于 Unity 游戏逆向工程的 Windows 桌面应用。将 Unity 构建目录拖放到应用中，即可立即浏览资源、查看反编译的 C# 源码，并建立双栏字符串翻译——所有操作均在本地完成，无需联网上传。支持 Unity 3.5 至 6000.x，兼容 Mono 和 IL2CPP 两种脚本后端。v0.1 为只读查看器，编辑与重打包功能将在后续版本推出。"
+    },
+    "features": {
+      "heading": "功能",
+      "intro": "v0.1 提供四项核心功能，覆盖最常见的逆向工程需求。",
+      "items": [
+        {
+          "icon": "package",
+          "title": "浏览资源",
+          "body": "以虚拟化树形结构浏览 Unity 构建中的全部资源——纹理、音频、3D 网格、文本资源及原始二进制文件。树形结构可流畅处理数万节点，无卡顿。"
+        },
+        {
+          "icon": "code",
+          "title": "反编译 C#",
+          "body": "点击树中任意脚本即可将其反编译为可读的 C# 源码。Mono 和 IL2CPP 后端均支持，输出在 Monaco Editor 中呈现，带完整语法高亮和代码折叠。"
+        },
+        {
+          "icon": "translate",
+          "title": "翻译字符串",
+          "body": "打开任意 TextAsset，即可在原文旁看到可编辑的翻译栏。修改内容会自动保存到本地 SQLite 数据库，无需手动导出。"
+        },
+        {
+          "icon": "magnifying-glass",
+          "title": "Cmd+K 快速跳转",
+          "body": "命令面板（Cmd/Ctrl+K）在资源、反编译代码和已存储字符串中统一搜索。借助 SQLite 全文搜索，结果在 200ms 内呈现。"
+        }
+      ]
+    },
+    "architecture": {
+      "heading": "架构",
+      "intro": "Unwrap 分为三个独立层次：通过 Tauri IPC 通信的 React 前端、负责检测、缓存和业务逻辑的 Rust 应用后端，以及承担繁重计算的外部 sidecar 进程。各层边界清晰，可独立演进。",
+      "diagramAlt": "三层架构图：顶层为 React 前端，中层为 Rust/Tauri 后端，底层为外部 sidecar 进程，由 Tauri IPC 箭头相连",
+      "caption": "三层分离确保 GPL 授权工具（AssetRipper）以独立进程运行，不会污染 Unwrap 二进制文件的许可证。",
+      "callouts": [
+        "GPL 隔离：AssetRipper 仅以子进程方式调用，从不链接到 Unwrap 二进制文件，在进程级别满足 GPL-3.0 的 copyleft 边界要求。",
+        "插件可扩展性：Rust trait FormatHandler 定义了稳定的接口契约——可以以 handler 形式添加新游戏引擎格式（Unreal、Godot），无需改动前端或 IPC 层。",
+        "SQLite 作为唯一数据源：所有项目状态——资源树快照、翻译字符串、最近项目、用户备注——均存储在以项目内容哈希为键的本地 SQLite 文件中。"
+      ]
+    },
+    "workflow": {
+      "heading": "工作流程",
+      "openProject": {
+        "heading": "打开项目",
+        "steps": [
+          "将 Unity 构建目录（包含 Data/ 目录和可执行文件的文件夹）拖放到 Unwrap 窗口，或点击 Browse 按钮。",
+          "Unwrap 扫描魔术字节、文件扩展名和目录结构以判断格式。UnityHandler 返回置信度分数；超过 0.8 则自动确认。",
+          "检测脚本后端：若存在 Managed/*.dll 则为 Mono；若找到 GameAssembly.dll 和 global-metadata.dat 则为 IL2CPP。",
+          "以子进程方式启动 AssetRipper，将所有资源解压到临时目录。大型项目此步骤最多需要 30 秒，每次构建仅运行一次——结果缓存在 SQLite 中。",
+          "从解压后的结构构建资源树并存入缓存。进度通过 Tauri 事件实时推送至界面。",
+          "左侧栏填充完整资源树，项目即可开始浏览。"
+        ],
+        "diagramAlt": "工作流程图：用户拖放箭头到 Unwrap、置信度检测、启动 AssetRipper、构建树、更新界面"
+      },
+      "decompile": {
+        "heading": "反编译 C# 脚本",
+        "steps": [
+          "点击资源树中任意脚本节点，节点类型为 Script 或 managed DLL。",
+          "Unwrap 检查 SQLite 缓存——若该文件哈希已有反编译版本，直接返回缓存结果。",
+          "若无缓存：Mono 项目将 managed DLL 传递给 ILSpyCmd 子进程；IL2CPP 项目先由 Il2CppDumper 生成 dummy DLL，再由 ILSpyCmd 反编译。",
+          "ILSpyCmd 通过 stdout 流式返回 C# 文本，输出写入缓存供后续调用使用。",
+          "Monaco Editor 渲染带语法高亮的 C# 源码，Inspector 面板显示命名空间、引用及反编译置信度指标。"
+        ],
+        "diagramAlt": "反编译流程：点击脚本、检查缓存、ILSpyCmd 子进程、stdout 流、Monaco 渲染"
+      },
+      "translate": {
+        "heading": "翻译字符串",
+        "steps": [
+          "在树中导航到任意 TextAsset 节点并点击，进入翻译视图。",
+          "原文显示在左栏，右栏为可编辑的翻译输入框。",
+          "输入或粘贴译文，修改经防抖处理后在 500ms 无操作后自动保存到 SQLite。",
+          "所有翻译以资源节点 ID 和目标语言为键本地存储。",
+          "使用 Cmd+K 搜索已存储的翻译，快速跳转到任意已翻译字符串。"
+        ],
+        "diagramAlt": "翻译流程：打开 TextAsset、双栏编辑器、防抖保存、SQLite 存储"
+      }
+    },
+    "howToUse": {
+      "heading": "使用指南",
+      "screens": [
+        {
+          "id": "welcome",
+          "title": "欢迎界面",
+          "body": "未打开项目时显示欢迎界面。将 Unity 构建目录直接拖放到窗口，或点击 Browse 通过系统文件对话框选择目录。下方列出最近项目以便快速重新打开。应用检查现有缓存条目——若找到，则从 SQLite 加载树，无需重新运行 AssetRipper。",
+          "screenshotAlt": "Unwrap 欢迎界面，显示拖放区域和最近项目列表"
+        },
+        {
+          "id": "asset-preview",
+          "title": "资源预览",
+          "body": "项目打开后，左侧栏显示完整资源树。点击任意节点在标签页中打开。纹理带缩放和平移控件；音频剪辑显示波形和播放按钮；3D 网格在轨道查看器中渲染；原始二进制文件在十六进制查看器中打开。右侧 Inspector 面板显示尺寸、文件大小和格式详情等元数据。",
+          "screenshotAlt": "Unwrap 资源树侧边栏，主面板中打开纹理预览标签页"
+        },
+        {
+          "id": "code-decompile",
+          "title": "代码反编译视图",
+          "body": "点击脚本节点打开反编译视图，后台运行反编译任务并显示进度转圈。完成后，C# 源码在 Monaco Editor 中以语法高亮呈现。使用 Cmd/Ctrl+E 将反编译文件导出为 .cs 文件。Inspector 显示命名空间、引用程序集和置信度指标（IL2CPP 结果为近似值）。",
+          "screenshotAlt": "Unwrap 代码反编译标签页，Monaco Editor 显示 C# 源码，右侧为 Inspector 面板"
+        },
+        {
+          "id": "translate",
+          "title": "翻译视图",
+          "body": "打开任意 TextAsset 进入翻译模式，原文在左，译文在右，自由输入，自动保存。通过面板顶部的语言选择器切换目标语言。已保存翻译的节点在资源树中以绿色指示器标记，方便追踪整个项目的翻译进度。",
+          "screenshotAlt": "Unwrap 翻译视图，左侧原文，右侧可编辑译文"
+        }
+      ]
+    },
+    "techStack": {
+      "heading": "技术栈",
+      "body": "Unwrap 将运行在 Tauri 2 WebView2 容器中的 React 18 + TypeScript 前端，与处理所有文件 I/O、子进程管理和 SQLite 持久化的 Rust 后端相结合。这种分层方式既保证了 UI 迭代速度，又让后端直接访问 OS 原语和 sidecar 进程控制——关键路径上没有 Node.js。",
+      "items": [
+        { "group": "桌面",  "tools": "Tauri 2 · React 18 · TypeScript · Vite · Tailwind 4" },
+        { "group": "后端",  "tools": "Rust 1.95+ · tokio · async-trait" },
+        { "group": "存储",  "tools": "SQLite via rusqlite (FTS5)" },
+        { "group": "UI",    "tools": "Zustand · TanStack Router · TanStack Virtual · Monaco Editor" },
+        { "group": "Sidecars", "tools": "AssetRipper (GPL-3.0) · ILSpyCmd (MIT) · Il2CppDumper (MIT)" }
+      ]
+    },
+    "shortcuts": {
+      "heading": "快捷键",
+      "intro": "所有快捷键使用平台标准修饰键（Windows 上为 Ctrl）。",
+      "rows": [
+        { "keys": "Cmd / Ctrl + K", "action": "打开命令面板" },
+        { "keys": "Cmd / Ctrl + O", "action": "浏览项目文件夹" },
+        { "keys": "Esc",            "action": "关闭面板 / 弹窗" },
+        { "keys": "Cmd / Ctrl + \\","action": "切换 Inspector" },
+        { "keys": "Cmd / Ctrl + /", "action": "聚焦树过滤器" },
+        { "keys": "Cmd / Ctrl + E", "action": "导出反编译 .cs 文件" },
+        { "keys": "方向键",          "action": "导航资源树" },
+        { "keys": "右方向键",        "action": "展开树节点" },
+        { "keys": "左方向键",        "action": "折叠树节点" },
+        { "keys": "Enter",          "action": "在标签页中打开选中节点" }
+      ]
+    },
+    "bundled": {
+      "heading": "内置工具",
+      "body": "Unwrap 将 AssetRipper 和 ILSpyCmd 作为 sidecar 可执行文件与 Unwrap 二进制文件并排打包。两者均仅以独立 OS 进程方式调用，没有任何代码链接到 Unwrap 中。Il2CppDumper 不预先打包；首次检测到 IL2CPP 项目时按需下载，执行前经 SHA-256 校验。这种子进程模式确保 AssetRipper 的 GPL-3.0 边界完整。",
+      "table": [
+        { "tool": "AssetRipper",  "license": "GPL-3.0", "delivery": "内置 sidecar——以子进程调用" },
+        { "tool": "ILSpyCmd",     "license": "MIT",     "delivery": "内置 sidecar——以子进程调用" },
+        { "tool": "Il2CppDumper", "license": "MIT",     "delivery": "首次检测到 IL2CPP 时按需下载" }
+      ]
+    },
+    "troubleshoot": {
+      "heading": "故障排查",
+      "items": [
+        {
+          "q": "窗口控件无响应",
+          "a": "这是早期构建版本中的已知问题，原因是 tauri.conf.json 中缺少 Tauri 窗口控件 capability 权限。请更新到最新版本。如果从源码构建，请确认 capabilities 文件中的 allowlist 包含 window:allow-close、window:allow-minimize 和 window:allow-maximize。"
+        },
+        {
+          "q": "Browse 按钮呈灰色",
+          "a": "直接打开压缩包（.zip、.apk）的功能推迟到 v0.2。Browse 按钮目前仅接受未压缩的构建目录。请先解压文件，然后将 Unwrap 指向解压后的文件夹。"
+        },
+        {
+          "q": "反编译显示「低置信度」",
+          "a": "IL2CPP 反编译精度约为 70%——Il2CppDumper 生成的 dummy DLL 不含真实方法体，ILSpy 只能重建函数签名。Mono 反编译精度约为 95%。Inspector 中的置信度指标反映了这一情况。计划在 v0.2 中集成 Cpp2IL 以改善 IL2CPP 输出质量。"
+        },
+        {
+          "q": "首次打开约需 30 秒",
+          "a": "首次打开项目时，AssetRipper 需要解压整个 Unity 构建。解压时间随项目大小线性增长——1 GB 的构建通常需要 20–30 秒。结果缓存在 SQLite 中，之后所有打开操作均从缓存加载，耗时不超过 2 秒。"
+        },
+        {
+          "q": "pnpm tauri dev 首次运行失败",
+          "a": "首次 cargo build 需要从源码编译 rusqlite、three.js 绑定（symphonia、three-d）等原生依赖，耗时 3–10 分钟，具体取决于 CPU 性能。后续构建为增量编译，速度较快。运行 pnpm tauri dev 前，请确保已安装 Rust stable MSVC 工具链、.NET 8 SDK，并通过 pnpm sidecars 安装了 sidecar 二进制文件。"
+        },
+        {
+          "q": "翻译未保存",
+          "a": "Unwrap 将翻译写入应用数据目录中的 SQLite 文件。若该目录位于只读路径或网络驱动器上，写入将静默失败。打开浏览器 DevTools 控制台（Tauri 窗口中按 F12），查找 db 错误信息。确保应用数据目录可写，然后重启应用。"
+        }
+      ]
+    },
+    "license": {
+      "heading": "许可证",
+      "body": "Unwrap 本身以 MIT 许可证发布——请参阅仓库根目录中的 LICENSE 文件。内置 sidecar 工具保留各自的原始许可证：AssetRipper 为 GPL-3.0，ILSpyCmd 为 MIT，Il2CppDumper 为 MIT。所有第三方工具的完整许可证文本和源码 URL 位于 src-tauri/NOTICE.txt 中。"
+    }
+  },
+  "footer": {
+    "html": "Unwrap v0.1 · MIT · <a href=\"https://github.com/dris1153/unwrap\">github</a>"
+  }
+}

@@ -11,7 +11,8 @@
     "sidecars": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/download-sidecars.ps1",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "test:coverage": "vitest --run --coverage"
+    "test:coverage": "vitest --run --coverage",
+    "docs:serve": "npx serve . -l 5173"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

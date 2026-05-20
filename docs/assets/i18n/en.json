@@ -1,0 +1,207 @@
+{
+  "lang": "en",
+  "label": "English",
+  "meta": {
+    "title": "Unwrap — Documentation",
+    "description": "Decode anything you own."
+  },
+  "nav": {
+    "intro": "Introduction",
+    "features": "Features",
+    "architecture": "Architecture",
+    "workflow": "Workflows",
+    "howToUse": "How to use",
+    "techStack": "Tech stack",
+    "shortcuts": "Keyboard shortcuts",
+    "bundled": "Bundled tools",
+    "troubleshoot": "Troubleshooting",
+    "license": "License"
+  },
+  "hero": {
+    "eyebrow": "REVERSE ENGINEERING · V0.1",
+    "headline": "Decode anything you own.",
+    "tagline": "A Windows desktop tool for exploring, decompiling, and translating Unity games.",
+    "screenshotAlt": "Unwrap welcome screen showing drag-and-drop project opener"
+  },
+  "sections": {
+    "intro": {
+      "heading": "Introduction",
+      "body": "Unwrap is a Windows desktop application for reverse engineering Unity games. Drop a Unity build folder into the app and immediately browse its assets, read decompiled C# source, and build a side-by-side string translation — all without uploading anything to a server. It targets Unity 3.5 through 6000.x on both Mono and IL2CPP scripting backends. In v0.1 the tool is read-only; editing and repacking are on the roadmap."
+    },
+    "features": {
+      "heading": "Features",
+      "intro": "Four core capabilities ship in v0.1, covering the most common reverse engineering tasks.",
+      "items": [
+        {
+          "icon": "package",
+          "title": "Browse assets",
+          "body": "Navigate a full virtualized tree of every asset in a Unity build — textures, audio clips, 3D meshes, text assets, and raw binary blobs. The tree handles projects with tens of thousands of nodes without lag."
+        },
+        {
+          "icon": "code",
+          "title": "Decompile C#",
+          "body": "Click any script in the tree to decompile it to readable C# source. Mono and IL2CPP backends are both supported. Output opens in Monaco Editor with full syntax highlighting and code folding."
+        },
+        {
+          "icon": "translate",
+          "title": "Translate strings",
+          "body": "Open any TextAsset to see its original text alongside an editable translation column. Changes save automatically to a local SQLite database — no manual export step required."
+        },
+        {
+          "icon": "magnifying-glass",
+          "title": "Jump anywhere with Cmd+K",
+          "body": "The command palette (Cmd/Ctrl+K) searches across assets, decompiled code, and stored strings in a single query. Results appear in under 200ms using SQLite full-text search."
+        }
+      ]
+    },
+    "architecture": {
+      "heading": "Architecture",
+      "intro": "Unwrap is structured as three isolated layers: a React frontend communicating over Tauri IPC, a Rust application backend that drives detection, caching, and business logic, and external sidecar processes for the heavy lifting. Each layer has a clear boundary and can evolve independently.",
+      "diagramAlt": "Three-layer architecture diagram: React frontend at top, Rust/Tauri backend in middle, external sidecar processes at bottom, connected by Tauri IPC arrows",
+      "caption": "Three-layer separation keeps GPL-licensed tools (AssetRipper) as separate processes — no license infection of the Unwrap binary.",
+      "callouts": [
+        "GPL isolation: AssetRipper is invoked only as a subprocess and is never linked into the Unwrap binary, satisfying GPL-3.0's copyleft boundary at the process level.",
+        "Plugin extensibility: the FormatHandler Rust trait defines a stable contract — new game engine formats (Unreal, Godot) can be added as handlers without touching the frontend or IPC layer.",
+        "SQLite as the single source of truth: all project state — asset tree snapshots, translation strings, recent projects, user notes — lives in one local SQLite file keyed by the project's content hash."
+      ]
+    },
+    "workflow": {
+      "heading": "Workflows",
+      "openProject": {
+        "heading": "Opening a project",
+        "steps": [
+          "Drag a Unity build folder (the folder containing the Data/ directory and executable) onto the Unwrap window, or click the Browse button.",
+          "Unwrap scans magic bytes, file extensions, and directory structure to determine the format. UnityHandler returns a confidence score; anything above 0.8 auto-confirms.",
+          "The scripting backend is detected: Mono if Managed/*.dll is present, IL2CPP if GameAssembly.dll + global-metadata.dat are found.",
+          "AssetRipper is spawned as a subprocess to extract all assets into a temp directory. This step takes up to 30 seconds for large projects and runs once per build — results are cached in SQLite.",
+          "The asset tree is built from the extracted structure and stored in the cache. Progress is streamed to the UI via Tauri events.",
+          "The left sidebar populates with the full asset tree. The project is now open and ready to explore."
+        ],
+        "diagramAlt": "Workflow diagram: user drag-drop arrow to Unwrap, confidence detection, AssetRipper spawn, tree build, UI populate"
+      },
+      "decompile": {
+        "heading": "Decompiling C# scripts",
+        "steps": [
+          "Click any script node in the asset tree. The node kind is Script or a managed DLL.",
+          "Unwrap checks the SQLite cache — if a decompiled version exists for this file hash it is returned immediately.",
+          "If not cached: for Mono projects, the managed DLL is passed to ILSpyCmd as a subprocess; for IL2CPP, Il2CppDumper first generates dummy DLLs, then ILSpyCmd decompiles them.",
+          "ILSpyCmd streams C# text back via stdout. The output is written to the cache for future calls.",
+          "Monaco Editor renders the C# source with syntax highlighting and code folding. The Inspector panel shows the namespace, cross-references, and estimated decompile confidence."
+        ],
+        "diagramAlt": "Decompile workflow: script click, cache check, ILSpyCmd subprocess, stdout stream, Monaco render"
+      },
+      "translate": {
+        "heading": "Translating strings",
+        "steps": [
+          "Navigate to any TextAsset node in the tree and click it to open the translate view.",
+          "The original text appears in the left column. An editable translation input appears on the right.",
+          "Type or paste your translation. Changes are debounced and autosaved to SQLite after 500ms of inactivity.",
+          "All translations are stored locally, keyed by the asset's node ID and the target locale.",
+          "Use Cmd+K to search your stored translations and jump back to any previously translated string."
+        ],
+        "diagramAlt": "Translate workflow: TextAsset open, side-by-side editor, debounce save, SQLite storage"
+      }
+    },
+    "howToUse": {
+      "heading": "How to use",
+      "screens": [
+        {
+          "id": "welcome",
+          "title": "Welcome screen",
+          "body": "The welcome screen appears when no project is open. Drag a Unity build folder directly onto the window or click Browse to select a folder via the system file dialog. Recent projects are listed below for quick re-open. The app checks for an existing cache entry — if found, the tree loads from SQLite instead of re-running AssetRipper.",
+          "screenshotAlt": "Unwrap welcome screen with drag-drop zone and recent projects list"
+        },
+        {
+          "id": "asset-preview",
+          "title": "Asset preview",
+          "body": "Once a project is open, the left sidebar shows the full asset tree. Click any node to open it in a tab. Textures display with zoom and pan controls; audio clips show a waveform with a play button; 3D meshes render in an orbit viewer; raw binary files open in a hex viewer. The Inspector panel on the right shows metadata such as dimensions, file size, and format details.",
+          "screenshotAlt": "Unwrap asset tree sidebar with texture preview tab open in the main panel"
+        },
+        {
+          "id": "code-decompile",
+          "title": "Code decompile view",
+          "body": "Click a script node to open the decompile view. Decompilation runs in the background — a spinner shows progress. Once complete, C# source appears in Monaco Editor with syntax highlighting. Use Cmd/Ctrl+E to export the decompiled file as a .cs file. The Inspector shows namespace, referenced assemblies, and a confidence indicator (IL2CPP results are approximate).",
+          "screenshotAlt": "Unwrap code decompile tab showing C# source in Monaco Editor with Inspector panel"
+        },
+        {
+          "id": "translate",
+          "title": "Translation view",
+          "body": "Open any TextAsset to enter translate mode. The original text sits on the left; your translation goes on the right. Type freely — saves happen automatically. Switch language target via the locale selector at the top of the panel. Previously saved translations are highlighted with a green indicator in the asset tree so you can track progress across a project.",
+          "screenshotAlt": "Unwrap translation view with original text on left and editable translation on right"
+        }
+      ]
+    },
+    "techStack": {
+      "heading": "Tech stack",
+      "body": "Unwrap pairs a React 18 + TypeScript frontend running inside Tauri 2's WebView2 shell with a Rust backend that handles all file I/O, subprocess management, and SQLite persistence. This split keeps UI iteration fast while giving the backend direct access to OS primitives and sidecar process control — no Node.js in the critical path.",
+      "items": [
+        { "group": "Desktop",   "tools": "Tauri 2 · React 18 · TypeScript · Vite · Tailwind 4" },
+        { "group": "Backend",   "tools": "Rust 1.95+ · tokio · async-trait" },
+        { "group": "Storage",   "tools": "SQLite via rusqlite (FTS5)" },
+        { "group": "UI",        "tools": "Zustand · TanStack Router · TanStack Virtual · Monaco Editor" },
+        { "group": "Sidecars",  "tools": "AssetRipper (GPL-3.0) · ILSpyCmd (MIT) · Il2CppDumper (MIT)" }
+      ]
+    },
+    "shortcuts": {
+      "heading": "Keyboard shortcuts",
+      "intro": "All shortcuts use the standard modifier for the platform (Cmd on macOS-style keyboards, Ctrl on Windows).",
+      "rows": [
+        { "keys": "Cmd / Ctrl + K", "action": "Open command palette" },
+        { "keys": "Cmd / Ctrl + O", "action": "Browse for project folder" },
+        { "keys": "Esc",            "action": "Close palette / modal" },
+        { "keys": "Cmd / Ctrl + \\","action": "Toggle inspector" },
+        { "keys": "Cmd / Ctrl + /", "action": "Focus tree filter" },
+        { "keys": "Cmd / Ctrl + E", "action": "Export decompiled .cs file" },
+        { "keys": "Arrow keys",     "action": "Navigate tree" },
+        { "keys": "Right arrow",    "action": "Expand tree row" },
+        { "keys": "Left arrow",     "action": "Collapse tree row" },
+        { "keys": "Enter",          "action": "Open selected row in tab" }
+      ]
+    },
+    "bundled": {
+      "heading": "Bundled tools",
+      "body": "Unwrap ships AssetRipper and ILSpyCmd as bundled sidecar executables placed beside the Unwrap binary. Both are invoked only as separate OS processes — no code is linked into Unwrap. Il2CppDumper is not bundled; it is downloaded on demand when an IL2CPP project is first detected, with SHA-256 verification before execution. This subprocess pattern keeps the GPL-3.0 boundary intact for AssetRipper.",
+      "table": [
+        { "tool": "AssetRipper",  "license": "GPL-3.0", "delivery": "Bundled sidecar — invoked as subprocess" },
+        { "tool": "ILSpyCmd",     "license": "MIT",     "delivery": "Bundled sidecar — invoked as subprocess" },
+        { "tool": "Il2CppDumper", "license": "MIT",     "delivery": "Downloaded lazily on first IL2CPP detection" }
+      ]
+    },
+    "troubleshoot": {
+      "heading": "Troubleshooting",
+      "items": [
+        {
+          "q": "Window controls do nothing",
+          "a": "This was a known issue in early builds where Tauri window-control capability permissions were missing from tauri.conf.json. Update to the latest release. If building from source, confirm the allowlist includes window:allow-close, window:allow-minimize, and window:allow-maximize in your Tauri capabilities file."
+        },
+        {
+          "q": "Browse files button is grey",
+          "a": "Opening a compressed archive (.zip, .apk directly) is deferred to v0.2. The Browse button currently accepts uncompressed build folders only. Unzip the archive first, then point Unwrap at the extracted folder."
+        },
+        {
+          "q": "Decompile shows 'low confidence'",
+          "a": "IL2CPP decompilation accuracy is approximately 70% — Il2CppDumper produces dummy DLLs without real method bodies, so ILSpy can only reconstruct signatures. Mono decompilation accuracy is approximately 95%. The confidence indicator in the Inspector reflects this. A Cpp2IL integration for improved IL2CPP output is planned for v0.2."
+        },
+        {
+          "q": "First open takes ~30 seconds",
+          "a": "AssetRipper must extract the entire Unity build the first time a project is opened. Extraction time scales with project size — a 1 GB build typically takes 20–30 seconds. The result is cached in SQLite; all subsequent opens load from cache in under 2 seconds."
+        },
+        {
+          "q": "pnpm tauri dev fails on first run",
+          "a": "The first cargo build compiles rusqlite, three.js bindings (symphonia, three-d), and other native dependencies from source. This takes 3–10 minutes depending on your CPU. Subsequent builds are incremental and fast. Ensure you have Rust stable MSVC toolchain, .NET 8 SDK, and the sidecar binaries installed via pnpm sidecars before running pnpm tauri dev."
+        },
+        {
+          "q": "Translations not saving",
+          "a": "Unwrap writes translations to a SQLite file in the app's data directory. If the directory is on a read-only path or a network drive, writes will silently fail. Open the browser DevTools console (F12 in the Tauri window) and look for db error messages. Ensure the app data directory is writable, then restart the app."
+        }
+      ]
+    },
+    "license": {
+      "heading": "License",
+      "body": "Unwrap itself is released under the MIT License — see the LICENSE file in the repository root. The bundled sidecar tools retain their original licenses: AssetRipper is GPL-3.0, ILSpyCmd is MIT, and Il2CppDumper is MIT. Full license texts and source code URLs for all third-party tools are in src-tauri/NOTICE.txt."
+    }
+  },
+  "footer": {
+    "html": "Unwrap v0.1 · MIT · <a href=\"https://github.com/dris1153/unwrap\">github</a>"
+  }
+}

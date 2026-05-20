@@ -1,0 +1,208 @@
+{
+  "lang": "vi",
+  "label": "Tiếng Việt",
+  "meta": {
+    "title": "Unwrap — Tài liệu hướng dẫn",
+    "description": "Giải mã bất kỳ thứ gì bạn sở hữu.",
+    "note": "Bản dịch hỗ trợ bởi AI. Mong góp ý từ cộng đồng."
+  },
+  "nav": {
+    "intro": "Giới thiệu",
+    "features": "Tính năng",
+    "architecture": "Kiến trúc",
+    "workflow": "Quy trình",
+    "howToUse": "Hướng dẫn sử dụng",
+    "techStack": "Công nghệ sử dụng",
+    "shortcuts": "Phím tắt",
+    "bundled": "Công cụ đi kèm",
+    "troubleshoot": "Khắc phục sự cố",
+    "license": "Giấy phép"
+  },
+  "hero": {
+    "eyebrow": "REVERSE ENGINEERING · V0.1",
+    "headline": "Giải mã bất kỳ thứ gì bạn sở hữu.",
+    "tagline": "Ứng dụng desktop Windows để khám phá, decompile và dịch các game Unity.",
+    "screenshotAlt": "Màn hình chào mừng Unwrap với vùng kéo-thả để mở dự án"
+  },
+  "sections": {
+    "intro": {
+      "heading": "Giới thiệu",
+      "body": "Unwrap là ứng dụng desktop Windows dành cho việc reverse engineering các game Unity. Kéo-thả thư mục build Unity vào ứng dụng để ngay lập tức xem các tệp asset, đọc mã nguồn C# đã decompile, và xây dựng bản dịch song ngữ — tất cả đều chạy hoàn toàn offline trên máy của bạn. Unwrap hỗ trợ Unity 3.5 đến 6000.x trên cả hai scripting backend Mono và IL2CPP. Trong v0.1, công cụ chỉ ở chế độ xem; tính năng chỉnh sửa và đóng gói lại sẽ có trong các phiên bản sau."
+    },
+    "features": {
+      "heading": "Tính năng",
+      "intro": "Bốn tính năng cốt lõi có mặt trong v0.1, bao phủ các tác vụ reverse engineering phổ biến nhất.",
+      "items": [
+        {
+          "icon": "package",
+          "title": "Xem tệp asset",
+          "body": "Duyệt qua cây tệp ảo hóa đầy đủ của mọi asset trong một Unity build — textures, audio, mesh 3D, text asset, và các blob nhị phân thô. Cây tệp xử lý các dự án hàng chục nghìn node mà không bị chậm."
+        },
+        {
+          "icon": "code",
+          "title": "Decompile C#",
+          "body": "Nhấn vào bất kỳ script nào trong cây để decompile ra mã nguồn C# dễ đọc. Cả hai backend Mono và IL2CPP đều được hỗ trợ. Kết quả mở trong Monaco Editor với đầy đủ syntax highlighting và code folding."
+        },
+        {
+          "icon": "translate",
+          "title": "Dịch chuỗi văn bản",
+          "body": "Mở bất kỳ TextAsset nào để xem văn bản gốc cạnh cột dịch có thể chỉnh sửa. Thay đổi tự động lưu vào cơ sở dữ liệu SQLite cục bộ — không cần bước xuất thủ công."
+        },
+        {
+          "icon": "magnifying-glass",
+          "title": "Tìm kiếm nhanh với Cmd+K",
+          "body": "Command palette (Cmd/Ctrl+K) tìm kiếm đồng thời trên asset, mã đã decompile, và các chuỗi đã lưu chỉ trong một truy vấn. Kết quả hiện ra trong vòng 200ms nhờ SQLite full-text search."
+        }
+      ]
+    },
+    "architecture": {
+      "heading": "Kiến trúc",
+      "intro": "Unwrap được tổ chức thành ba lớp riêng biệt: frontend React giao tiếp qua Tauri IPC, backend ứng dụng Rust điều khiển quá trình phát hiện, lưu cache và xử lý logic, và các tiến trình sidecar bên ngoài đảm nhận phần tính toán nặng. Mỗi lớp có ranh giới rõ ràng và có thể phát triển độc lập.",
+      "diagramAlt": "Sơ đồ kiến trúc ba lớp: frontend React ở trên, backend Rust/Tauri ở giữa, các tiến trình sidecar bên ngoài ở dưới, nối với nhau bằng mũi tên Tauri IPC",
+      "caption": "Phân tách ba lớp giúp giữ các công cụ được cấp phép GPL (AssetRipper) dưới dạng tiến trình riêng biệt — không gây ô nhiễm giấy phép cho binary Unwrap.",
+      "callouts": [
+        "Cách ly GPL: AssetRipper chỉ được gọi dưới dạng subprocess và không bao giờ được link vào binary Unwrap, đảm bảo ranh giới copyleft của GPL-3.0 ở cấp độ tiến trình.",
+        "Khả năng mở rộng plugin: Rust trait FormatHandler định nghĩa một hợp đồng ổn định — có thể thêm hỗ trợ cho các game engine mới (Unreal, Godot) dưới dạng handler mà không cần chạm vào frontend hay lớp IPC.",
+        "SQLite là nguồn thông tin duy nhất: toàn bộ trạng thái dự án — snapshot cây asset, chuỗi dịch, dự án gần đây, ghi chú người dùng — đều lưu trong một tệp SQLite cục bộ, được khóa bởi hash nội dung của dự án."
+      ]
+    },
+    "workflow": {
+      "heading": "Quy trình",
+      "openProject": {
+        "heading": "Mở dự án",
+        "steps": [
+          "Kéo-thả thư mục Unity build (thư mục chứa thư mục Data/ và tệp thực thi) vào cửa sổ Unwrap, hoặc nhấn nút Browse.",
+          "Unwrap quét magic bytes, phần mở rộng tệp và cấu trúc thư mục để xác định định dạng. UnityHandler trả về điểm tin cậy; bất kỳ điểm nào trên 0.8 sẽ được tự động xác nhận.",
+          "Backend scripting được phát hiện: Mono nếu có Managed/*.dll, IL2CPP nếu tìm thấy GameAssembly.dll và global-metadata.dat.",
+          "AssetRipper được khởi chạy dưới dạng subprocess để giải nén toàn bộ asset vào thư mục tạm. Bước này mất tới 30 giây cho các dự án lớn và chỉ chạy một lần mỗi build — kết quả được cache trong SQLite.",
+          "Cây asset được xây dựng từ cấu trúc đã giải nén và lưu vào cache. Tiến trình được stream đến giao diện qua Tauri events.",
+          "Thanh bên trái hiện cây asset đầy đủ. Dự án đã sẵn sàng để khám phá."
+        ],
+        "diagramAlt": "Sơ đồ quy trình: mũi tên kéo-thả đến Unwrap, phát hiện độ tin cậy, khởi chạy AssetRipper, xây dựng cây, cập nhật giao diện"
+      },
+      "decompile": {
+        "heading": "Decompile script C#",
+        "steps": [
+          "Nhấn vào bất kỳ node script nào trong cây asset. Loại node là Script hoặc managed DLL.",
+          "Unwrap kiểm tra cache SQLite — nếu đã có phiên bản decompile cho hash tệp này, kết quả được trả về ngay lập tức.",
+          "Nếu chưa cache: với dự án Mono, managed DLL được truyền vào ILSpyCmd dưới dạng subprocess; với IL2CPP, Il2CppDumper trước tiên tạo các dummy DLL, sau đó ILSpyCmd decompile chúng.",
+          "ILSpyCmd stream mã nguồn C# trở lại qua stdout. Đầu ra được ghi vào cache để sử dụng cho các lần sau.",
+          "Monaco Editor hiển thị mã C# với syntax highlighting. Panel Inspector hiển thị namespace, tham chiếu và chỉ số tin cậy decompile."
+        ],
+        "diagramAlt": "Quy trình decompile: nhấn script, kiểm tra cache, subprocess ILSpyCmd, stream stdout, render Monaco"
+      },
+      "translate": {
+        "heading": "Dịch chuỗi văn bản",
+        "steps": [
+          "Điều hướng đến bất kỳ node TextAsset nào trong cây và nhấn để mở chế độ dịch.",
+          "Văn bản gốc xuất hiện ở cột bên trái. Ô nhập dịch có thể chỉnh sửa xuất hiện bên phải.",
+          "Gõ hoặc dán bản dịch của bạn. Thay đổi được debounce và tự động lưu vào SQLite sau 500ms không hoạt động.",
+          "Toàn bộ bản dịch được lưu cục bộ, được khóa bởi ID node của asset và locale đích.",
+          "Dùng Cmd+K để tìm kiếm các bản dịch đã lưu và nhảy đến bất kỳ chuỗi đã dịch nào."
+        ],
+        "diagramAlt": "Quy trình dịch: mở TextAsset, trình soạn thảo song ngữ, lưu debounce, lưu trữ SQLite"
+      }
+    },
+    "howToUse": {
+      "heading": "Hướng dẫn sử dụng",
+      "screens": [
+        {
+          "id": "welcome",
+          "title": "Màn hình chào mừng",
+          "body": "Màn hình chào mừng xuất hiện khi chưa có dự án nào được mở. Kéo-thả thư mục Unity build trực tiếp vào cửa sổ hoặc nhấn Browse để chọn thư mục qua hộp thoại tệp hệ thống. Các dự án gần đây được liệt kê bên dưới để mở nhanh. Ứng dụng kiểm tra cache hiện có — nếu tìm thấy, cây sẽ tải từ SQLite thay vì chạy lại AssetRipper.",
+          "screenshotAlt": "Màn hình chào mừng Unwrap với vùng kéo-thả và danh sách dự án gần đây"
+        },
+        {
+          "id": "asset-preview",
+          "title": "Xem trước asset",
+          "body": "Sau khi mở dự án, thanh bên trái hiển thị cây asset đầy đủ. Nhấn vào bất kỳ node nào để mở trong tab. Texture hiển thị với điều khiển zoom và pan; audio clip hiển thị dạng sóng với nút phát; mesh 3D hiển thị trong trình xem orbit; tệp nhị phân thô mở trong trình xem hex. Panel Inspector bên phải hiển thị metadata như kích thước, dung lượng tệp và chi tiết định dạng.",
+          "screenshotAlt": "Thanh bên cây asset Unwrap với tab xem trước texture mở trong panel chính"
+        },
+        {
+          "id": "code-decompile",
+          "title": "Chế độ xem decompile",
+          "body": "Nhấn vào node script để mở chế độ xem decompile. Quá trình decompile chạy ngầm — một spinner hiển thị tiến trình. Sau khi hoàn thành, mã nguồn C# xuất hiện trong Monaco Editor với syntax highlighting. Dùng Cmd/Ctrl+E để xuất tệp decompile dưới dạng .cs. Inspector hiển thị namespace, các assembly được tham chiếu và chỉ số độ tin cậy (kết quả IL2CPP chỉ là ước tính).",
+          "screenshotAlt": "Tab decompile Unwrap hiển thị mã nguồn C# trong Monaco Editor với panel Inspector"
+        },
+        {
+          "id": "translate",
+          "title": "Chế độ xem dịch thuật",
+          "body": "Mở bất kỳ TextAsset nào để vào chế độ dịch. Văn bản gốc nằm bên trái; bản dịch của bạn nằm bên phải. Gõ tự do — lưu diễn ra tự động. Chuyển đổi locale đích qua bộ chọn ở đầu panel. Các bản dịch đã lưu được đánh dấu màu xanh trong cây asset để bạn theo dõi tiến độ dịch của cả dự án.",
+          "screenshotAlt": "Chế độ xem dịch Unwrap với văn bản gốc bên trái và bản dịch có thể chỉnh sửa bên phải"
+        }
+      ]
+    },
+    "techStack": {
+      "heading": "Công nghệ sử dụng",
+      "body": "Unwrap kết hợp frontend React 18 + TypeScript chạy bên trong shell WebView2 của Tauri 2 với backend Rust xử lý toàn bộ I/O tệp, quản lý subprocess và lưu trữ SQLite. Cách phân tách này giúp việc phát triển giao diện nhanh chóng trong khi vẫn cho phép backend truy cập trực tiếp vào các nguyên thủy của OS và điều khiển tiến trình sidecar — không có Node.js trong đường dẫn quan trọng.",
+      "items": [
+        { "group": "Desktop",  "tools": "Tauri 2 · React 18 · TypeScript · Vite · Tailwind 4" },
+        { "group": "Backend",  "tools": "Rust 1.95+ · tokio · async-trait" },
+        { "group": "Lưu trữ", "tools": "SQLite via rusqlite (FTS5)" },
+        { "group": "Giao diện","tools": "Zustand · TanStack Router · TanStack Virtual · Monaco Editor" },
+        { "group": "Sidecars", "tools": "AssetRipper (GPL-3.0) · ILSpyCmd (MIT) · Il2CppDumper (MIT)" }
+      ]
+    },
+    "shortcuts": {
+      "heading": "Phím tắt",
+      "intro": "Tất cả phím tắt sử dụng modifier chuẩn của nền tảng (Ctrl trên Windows).",
+      "rows": [
+        { "keys": "Cmd / Ctrl + K", "action": "Mở command palette" },
+        { "keys": "Cmd / Ctrl + O", "action": "Duyệt tìm thư mục dự án" },
+        { "keys": "Esc",            "action": "Đóng palette / modal" },
+        { "keys": "Cmd / Ctrl + \\","action": "Bật/tắt Inspector" },
+        { "keys": "Cmd / Ctrl + /", "action": "Focus bộ lọc cây tệp" },
+        { "keys": "Cmd / Ctrl + E", "action": "Xuất tệp .cs đã decompile" },
+        { "keys": "Phím mũi tên",   "action": "Điều hướng cây tệp" },
+        { "keys": "Mũi tên phải",   "action": "Mở rộng hàng cây tệp" },
+        { "keys": "Mũi tên trái",   "action": "Thu gọn hàng cây tệp" },
+        { "keys": "Enter",          "action": "Mở hàng đã chọn trong tab" }
+      ]
+    },
+    "bundled": {
+      "heading": "Công cụ đi kèm",
+      "body": "Unwrap đi kèm AssetRipper và ILSpyCmd dưới dạng các tệp thực thi sidecar đặt cạnh binary Unwrap. Cả hai chỉ được gọi dưới dạng tiến trình OS riêng biệt — không có mã nào được link vào Unwrap. Il2CppDumper không được đóng gói sẵn; nó được tải xuống theo yêu cầu khi phát hiện dự án IL2CPP lần đầu tiên, với xác minh SHA-256 trước khi thực thi. Mô hình subprocess này giữ nguyên ranh giới GPL-3.0 cho AssetRipper.",
+      "table": [
+        { "tool": "AssetRipper",  "license": "GPL-3.0", "delivery": "Sidecar đóng gói sẵn — gọi dưới dạng subprocess" },
+        { "tool": "ILSpyCmd",     "license": "MIT",     "delivery": "Sidecar đóng gói sẵn — gọi dưới dạng subprocess" },
+        { "tool": "Il2CppDumper", "license": "MIT",     "delivery": "Tải xuống khi phát hiện IL2CPP lần đầu" }
+      ]
+    },
+    "troubleshoot": {
+      "heading": "Khắc phục sự cố",
+      "items": [
+        {
+          "q": "Điều khiển cửa sổ không phản hồi",
+          "a": "Đây là sự cố đã biết trong các bản build cũ, khi quyền capability của Tauri bị thiếu trong tauri.conf.json. Hãy cập nhật lên phiên bản mới nhất. Nếu bạn build từ mã nguồn, xác nhận rằng allowlist bao gồm window:allow-close, window:allow-minimize và window:allow-maximize trong tệp capabilities Tauri."
+        },
+        {
+          "q": "Nút Browse bị xám",
+          "a": "Mở trực tiếp file nén (.zip, .apk) được hoãn đến v0.2. Nút Browse hiện chỉ chấp nhận thư mục build chưa nén. Hãy giải nén file trước, sau đó trỏ Unwrap đến thư mục đã giải nén."
+        },
+        {
+          "q": "Decompile hiển thị 'độ tin cậy thấp'",
+          "a": "Độ chính xác decompile IL2CPP vào khoảng 70% — Il2CppDumper tạo ra các dummy DLL không có phần thân phương thức thực, nên ILSpy chỉ có thể tái tạo chữ ký. Độ chính xác với Mono là khoảng 95%. Chỉ số tin cậy trong Inspector phản ánh điều này. Tích hợp Cpp2IL để cải thiện đầu ra IL2CPP được lên kế hoạch cho v0.2."
+        },
+        {
+          "q": "Lần mở đầu tiên mất khoảng 30 giây",
+          "a": "AssetRipper phải giải nén toàn bộ Unity build lần đầu tiên dự án được mở. Thời gian giải nén tỷ lệ thuận với kích thước dự án — một build 1 GB thường mất 20–30 giây. Kết quả được cache trong SQLite; tất cả các lần mở tiếp theo tải từ cache trong dưới 2 giây."
+        },
+        {
+          "q": "pnpm tauri dev thất bại lần chạy đầu tiên",
+          "a": "Lần cargo build đầu tiên sẽ biên dịch rusqlite, three.js bindings (symphonia, three-d) và các dependency native khác từ mã nguồn. Quá trình này mất 3–10 phút tùy theo CPU của bạn. Các bản build tiếp theo là incremental và nhanh. Đảm bảo bạn đã cài Rust stable MSVC toolchain, .NET 8 SDK và các binary sidecar qua pnpm sidecars trước khi chạy pnpm tauri dev."
+        },
+        {
+          "q": "Bản dịch không được lưu",
+          "a": "Unwrap ghi bản dịch vào một tệp SQLite trong thư mục dữ liệu ứng dụng. Nếu thư mục này nằm trên đường dẫn chỉ đọc hoặc ổ đĩa mạng, việc ghi sẽ thất bại mà không có thông báo. Mở DevTools console (F12 trong cửa sổ Tauri) và tìm thông báo lỗi db. Đảm bảo thư mục dữ liệu ứng dụng có quyền ghi, sau đó khởi động lại ứng dụng."
+        }
+      ]
+    },
+    "license": {
+      "heading": "Giấy phép",
+      "body": "Bản thân Unwrap được phát hành theo giấy phép MIT — xem tệp LICENSE trong thư mục gốc của kho lưu trữ. Các công cụ sidecar đi kèm giữ nguyên giấy phép gốc của chúng: AssetRipper là GPL-3.0, ILSpyCmd là MIT và Il2CppDumper là MIT. Toàn bộ văn bản giấy phép và URL mã nguồn cho tất cả công cụ bên thứ ba nằm trong src-tauri/NOTICE.txt."
+    }
+  },
+  "footer": {
+    "html": "Unwrap v0.1 · MIT · <a href=\"https://github.com/dris1153/unwrap\">github</a>"
+  }
+}

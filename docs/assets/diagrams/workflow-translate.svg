@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="720" height="400" fill="none">
+  <defs>
+    <marker id="arrow-em" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#10B981"/>
+    </marker>
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#A1A1AA"/>
+    </marker>
+  </defs>
+
+  <!-- ====== Column captions ====== -->
+  <text x="100" y="28" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#10B981" letter-spacing="1.6">SOURCES</text>
+  <text x="360" y="28" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#10B981" letter-spacing="1.6">PIPELINE</text>
+  <text x="620" y="28" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#10B981" letter-spacing="1.6">UI</text>
+
+  <!-- ====== Column 1: Sources (3 boxes stacked) ====== -->
+  <!-- Source 1: TextAsset -->
+  <rect x="24" y="60" width="160" height="44" rx="6" stroke="#A1A1AA" stroke-width="1.5"/>
+  <text x="104" y="80" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="13" fill="#F4F4F5">TextAsset</text>
+  <text x="104" y="96" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">.txt · .json</text>
+
+  <!-- Source 2: ScriptableObject Localization -->
+  <rect x="24" y="118" width="160" height="44" rx="6" stroke="#A1A1AA" stroke-width="1.5"/>
+  <text x="104" y="138" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="13" fill="#F4F4F5">ScriptableObject</text>
+  <text x="104" y="154" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">Localization (.asset)</text>
+
+  <!-- Source 3: CSV/TSV -->
+  <rect x="24" y="176" width="160" height="44" rx="6" stroke="#A1A1AA" stroke-width="1.5"/>
+  <text x="104" y="196" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="13" fill="#F4F4F5">CSV / TSV</text>
+  <text x="104" y="212" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">delimited tables</text>
+
+  <!-- ====== Connectors: sources → parsers ====== -->
+  <line x1="184" y1="82"  x2="266" y2="100" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+  <line x1="184" y1="140" x2="266" y2="120" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+  <line x1="184" y1="198" x2="266" y2="140" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+
+  <!-- ====== Column 2: Pipeline ====== -->
+  <!-- Parsers box -->
+  <rect x="266" y="76" width="188" height="68" rx="6" stroke="#10B981" stroke-width="1.5"/>
+  <text x="360" y="92" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="12" font-weight="600" fill="#F4F4F5">Parsers</text>
+  <text x="360" y="110" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#A1A1AA">parse_textasset</text>
+  <text x="360" y="124" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#A1A1AA">parse_stringtable</text>
+  <text x="360" y="138" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#A1A1AA">locale_detect</text>
+
+  <!-- arrow parsers → scan -->
+  <line x1="360" y1="146" x2="360" y2="170" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+
+  <!-- scan_translatable -->
+  <rect x="266" y="174" width="188" height="36" rx="6"
+    fill="rgba(16,185,129,0.10)" stroke="#10B981" stroke-width="1.5"/>
+  <text x="360" y="190" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="12" font-weight="600" fill="#F4F4F5">scan_translatable</text>
+  <text x="360" y="204" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">walks tree · extracts rows</text>
+
+  <!-- arrow scan → SQLite table -->
+  <line x1="360" y1="212" x2="360" y2="236" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+
+  <!-- translatable_rows table -->
+  <rect x="266" y="240" width="188" height="44" rx="6" stroke="#A1A1AA" stroke-width="1.5"/>
+  <text x="360" y="258" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="12" fill="#F4F4F5">translatable_rows</text>
+  <text x="360" y="274" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">SQLite table</text>
+
+  <!-- ====== Column 3: UI ====== -->
+  <!-- TranslateView box -->
+  <rect x="536" y="76" width="160" height="68" rx="6" stroke="#10B981" stroke-width="1.5"/>
+  <text x="616" y="96" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="13" font-weight="600" fill="#F4F4F5">TranslateView</text>
+  <text x="616" y="114" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">side-by-side</text>
+  <text x="616" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">original | translation</text>
+
+  <!-- arrow scan-result → UI (read) — from translatable_rows to TranslateView -->
+  <path d="M 454 262 Q 510 262 510 110 L 534 110" stroke="#A1A1AA" stroke-width="1.5"
+    stroke-dasharray="5 3" fill="none" marker-end="url(#arrow-gray)"/>
+  <text x="488" y="186" font-family="JetBrains Mono, monospace" font-size="10"
+    fill="#A1A1AA">list_translatable</text>
+  <text x="488" y="200" font-family="JetBrains Mono, monospace" font-size="10"
+    fill="#71717A">IPC</text>
+
+  <!-- TranslateRow box -->
+  <rect x="536" y="166" width="160" height="44" rx="6" stroke="#A1A1AA" stroke-width="1.5"/>
+  <text x="616" y="186" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="13" fill="#F4F4F5">TranslateRow</text>
+  <text x="616" y="202" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">user edit input</text>
+
+  <!-- arrow TranslateView → TranslateRow -->
+  <line x1="616" y1="144" x2="616" y2="164" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+
+  <!-- arrow TranslateRow → translations table (autosave) -->
+  <path d="M 536 188 Q 490 188 490 308 L 454 308" stroke="#10B981" stroke-width="1.5"
+    fill="none" marker-end="url(#arrow-em)"/>
+  <text x="468" y="244" font-family="JetBrains Mono, monospace" font-size="10"
+    fill="#10B981">debounced</text>
+  <text x="468" y="258" font-family="JetBrains Mono, monospace" font-size="10"
+    fill="#10B981">save 500ms</text>
+
+  <!-- translations table -->
+  <rect x="266" y="296" width="188" height="56" rx="6"
+    fill="rgba(16,185,129,0.10)" stroke="#10B981" stroke-width="1.5"/>
+  <text x="360" y="314" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="12" font-weight="600" fill="#F4F4F5">translations</text>
+  <text x="360" y="330" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">row_id · target_locale</text>
+  <text x="360" y="344" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">text · status</text>
+
+  <!-- read-only v1 annotation -->
+  <g>
+    <rect x="536" y="240" width="160" height="44" rx="6"
+      stroke="#71717A" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <text x="616" y="258" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="12" fill="#A1A1AA">read-only v1</text>
+    <text x="616" y="274" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="10" font-style="italic" fill="#71717A">no repack (future)</text>
+  </g>
+
+  <!-- Bi-directional persistence note at bottom -->
+  <g>
+    <text x="360" y="378" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="10" font-style="italic" fill="#A1A1AA">edits persist across app restarts via SQLite</text>
+  </g>
+</svg>

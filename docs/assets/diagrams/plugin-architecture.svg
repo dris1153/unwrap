@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" width="720" height="440" fill="none">
+  <defs>
+    <marker id="arrow-em" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#10B981"/>
+    </marker>
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#A1A1AA"/>
+    </marker>
+  </defs>
+
+  <!-- ===== Top annotation ===== -->
+  <text x="360" y="24" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="11" fill="#A1A1AA">Trait-based registry · handlers register at startup</text>
+  <text x="360" y="40" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="11" fill="#A1A1AA">detection pipeline fans out via tokio::join_all</text>
+
+  <!-- ===== Center: FormatHandler trait (the contract) ===== -->
+  <g>
+    <rect x="180" y="60" width="360" height="172" rx="10"
+      stroke="#10B981" stroke-width="2"/>
+    <!-- label band -->
+    <rect x="180" y="60" width="360" height="28" rx="10"
+      fill="rgba(16,185,129,0.10)" stroke="none"/>
+    <rect x="180" y="78" width="360" height="10"
+      fill="rgba(16,185,129,0.10)" stroke="none"/>
+    <text x="200" y="78" font-family="JetBrains Mono, monospace" font-size="10"
+      fill="#10B981" letter-spacing="1.6">TRAIT</text>
+    <text x="360" y="78" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="14" font-weight="600" fill="#F4F4F5">FormatHandler</text>
+
+    <!-- separator -->
+    <line x1="180" y1="88" x2="540" y2="88" stroke="#10B981" stroke-width="1"/>
+
+    <!-- methods -->
+    <text x="200" y="108" font-family="JetBrains Mono, monospace" font-size="11"
+      fill="#F4F4F5">fn id(&amp;self) -&gt; &amp;str</text>
+    <text x="200" y="126" font-family="JetBrains Mono, monospace" font-size="11"
+      fill="#F4F4F5">async fn detect(path) -&gt; DetectionResult</text>
+    <text x="200" y="144" font-family="JetBrains Mono, monospace" font-size="11"
+      fill="#F4F4F5">async fn open(path, ctx) -&gt; ProjectHandle</text>
+    <text x="200" y="162" font-family="JetBrains Mono, monospace" font-size="11"
+      fill="#F4F4F5">async fn tree(handle) -&gt; AssetTree</text>
+    <text x="200" y="180" font-family="JetBrains Mono, monospace" font-size="11"
+      fill="#F4F4F5">async fn preview(handle, node) -&gt; PreviewPayload</text>
+    <text x="200" y="198" font-family="JetBrains Mono, monospace" font-size="11"
+      fill="#F4F4F5">async fn export(handle, node, dest) -&gt; Result</text>
+
+    <text x="200" y="220" font-family="JetBrains Mono, monospace" font-size="10"
+      font-style="italic" fill="#71717A">// implementors register at app startup</text>
+  </g>
+
+  <!-- ===== Registry box (just below trait) ===== -->
+  <g>
+    <rect x="180" y="248" width="360" height="48" rx="8" stroke="#A1A1AA" stroke-width="1.5"/>
+    <text x="200" y="266" font-family="JetBrains Mono, monospace" font-size="10"
+      fill="#A1A1AA" letter-spacing="1.6">REGISTRY</text>
+    <text x="360" y="286" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="12" fill="#F4F4F5">FormatHandlerRegistry { Vec&lt;Arc&lt;dyn FormatHandler&gt;&gt; }</text>
+  </g>
+
+  <!-- arrow trait → registry (composition) -->
+  <line x1="360" y1="232" x2="360" y2="246" stroke="#A1A1AA" stroke-width="1.5"
+    stroke-dasharray="3 3"/>
+
+  <!-- ===== Concrete handlers (4 boxes, bottom row) ===== -->
+  <!-- Box positions: x = 28, 200, 372, 544 → width 148 each, gap 24 -->
+  <g>
+    <!-- UnityHandler (active, filled) -->
+    <rect x="28" y="334" width="148" height="68" rx="8"
+      fill="rgba(16,185,129,0.10)" stroke="#10B981" stroke-width="2"/>
+    <text x="102" y="354" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="13" font-weight="600" fill="#F4F4F5">UnityHandler</text>
+    <text x="102" y="372" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="10" fill="#10B981">active · v1</text>
+    <text x="102" y="388" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="9" fill="#71717A">Mono · IL2CPP</text>
+
+    <!-- UnrealHandler (future) -->
+    <rect x="200" y="334" width="148" height="68" rx="8"
+      stroke="#71717A" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="274" y="354" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="13" fill="#A1A1AA">UnrealHandler</text>
+    <text x="274" y="372" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="10" fill="#71717A">future · v2</text>
+    <text x="274" y="388" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="9" fill="#71717A">.uasset · .pak</text>
+
+    <!-- GodotHandler (future) -->
+    <rect x="372" y="334" width="148" height="68" rx="8"
+      stroke="#71717A" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="446" y="354" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="13" fill="#A1A1AA">GodotHandler</text>
+    <text x="446" y="372" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="10" fill="#71717A">future · v2</text>
+    <text x="446" y="388" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="9" fill="#71717A">.pck · .tscn</text>
+
+    <!-- PEHandler (future) -->
+    <rect x="544" y="334" width="148" height="68" rx="8"
+      stroke="#71717A" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="618" y="354" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="13" fill="#A1A1AA">PEHandler</text>
+    <text x="618" y="372" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="10" fill="#71717A">future · v2</text>
+    <text x="618" y="388" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="9" fill="#71717A">.exe · .dll · ELF</text>
+  </g>
+
+  <!-- ===== Arrows from each handler UP to the trait (implements) ===== -->
+  <!-- Each arrow from handler top-center → registry bottom (then up implicit) -->
+  <!-- UnityHandler (active = emerald arrow) -->
+  <path d="M 102 334 V 312 H 360 V 296" stroke="#10B981" stroke-width="1.5" fill="none"
+    marker-end="url(#arrow-em)"/>
+  <!-- UnrealHandler (dashed/muted) -->
+  <path d="M 274 334 V 320 H 360 V 296" stroke="#71717A" stroke-width="1.5"
+    stroke-dasharray="4 4" fill="none" marker-end="url(#arrow-gray)"/>
+  <!-- GodotHandler -->
+  <path d="M 446 334 V 320 H 360 V 296" stroke="#71717A" stroke-width="1.5"
+    stroke-dasharray="4 4" fill="none" marker-end="url(#arrow-gray)"/>
+  <!-- PEHandler -->
+  <path d="M 618 334 V 312 H 360 V 296" stroke="#71717A" stroke-width="1.5"
+    stroke-dasharray="4 4" fill="none" marker-end="url(#arrow-gray)"/>
+
+  <!-- implements label -->
+  <text x="380" y="318" font-family="JetBrains Mono, monospace" font-size="10"
+    font-style="italic" fill="#A1A1AA">impl FormatHandler for ...</text>
+
+  <!-- Bottom footer caption -->
+  <text x="360" y="424" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" font-style="italic" fill="#71717A">add a new engine = implement one trait — no core changes</text>
+</svg>

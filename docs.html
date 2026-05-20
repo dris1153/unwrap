@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unwrap — Documentation</title>
+  <meta name="description" content="Decode anything you own.">
+  <link rel="icon" href="docs/branding/logos/favicon.svg">
+  <link rel="stylesheet" href="docs/assets/styles/docs.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <a class="brand" href="#">
+      <img src="docs/branding/logos/unwrap-mark.svg" width="22" height="22" alt="Unwrap">
+      <span>Unwrap docs</span>
+    </a>
+    <nav class="lang-switcher" aria-label="Language">
+      <button data-lang="en"   aria-pressed="true">EN</button>
+      <button data-lang="vi"   aria-pressed="false">VI</button>
+      <button data-lang="zh-CN" aria-pressed="false">&#x4E2D;</button>
+    </nav>
+  </header>
+
+  <!-- Layout: sidebar + main -->
+  <div class="layout">
+
+    <!-- TOC sidebar -->
+    <aside class="toc" aria-label="Table of contents">
+      <!-- Mobile dropdown toggle -->
+      <button class="toc-toggle" aria-expanded="false" aria-controls="toc-list">
+        <i class="ph ph-list"></i>
+        <span>Contents</span>
+        <i class="ph ph-caret-down toc-caret"></i>
+      </button>
+      <ol id="toc-list">
+        <li><a href="#intro"        data-i18n="nav.intro"></a></li>
+        <li><a href="#features"     data-i18n="nav.features"></a></li>
+        <li><a href="#architecture" data-i18n="nav.architecture"></a></li>
+        <li><a href="#workflow"     data-i18n="nav.workflow"></a></li>
+        <li><a href="#how-to-use"   data-i18n="nav.howToUse"></a></li>
+        <li><a href="#tech-stack"   data-i18n="nav.techStack"></a></li>
+        <li><a href="#shortcuts"    data-i18n="nav.shortcuts"></a></li>
+        <li><a href="#bundled"      data-i18n="nav.bundled"></a></li>
+        <li><a href="#troubleshoot" data-i18n="nav.troubleshoot"></a></li>
+        <li><a href="#license"      data-i18n="nav.license"></a></li>
+      </ol>
+    </aside>
+
+    <!-- Main content -->
+    <main>
+
+      <!-- ── 1. Hero ─────────────────────────────────────── -->
+      <section class="hero">
+        <p class="eyebrow" data-i18n="hero.eyebrow"></p>
+        <h1 data-i18n="hero.headline"></h1>
+        <p class="tagline" data-i18n="hero.tagline"></p>
+        <img
+          src="docs/assets/screenshots/welcome.png"
+          alt=""
+          data-i18n-alt="hero.screenshotAlt"
+          class="hero-screenshot"
+          loading="eager"
+        >
+      </section>
+
+      <!-- ── 2. Introduction ────────────────────────────── -->
+      <section id="intro">
+        <h2 data-i18n="sections.intro.heading"></h2>
+        <p data-i18n="sections.intro.body"></p>
+      </section>
+
+      <!-- ── 3. Features ───────────────────────────────── -->
+      <section id="features">
+        <h2 data-i18n="sections.features.heading"></h2>
+        <p data-i18n="sections.features.intro"></p>
+        <div class="feature-grid" data-i18n-list="sections.features.items">
+          <template>
+            <article class="feature-card">
+              <i class="ph icon" aria-hidden="true"></i>
+              <h3 data-key="title"></h3>
+              <p data-key="body"></p>
+            </article>
+          </template>
+        </div>
+      </section>
+
+      <!-- ── 4. Architecture ───────────────────────────── -->
+      <section id="architecture">
+        <h2 data-i18n="sections.architecture.heading"></h2>
+        <p data-i18n="sections.architecture.intro"></p>
+        <figure class="diagram-figure">
+          <img
+            src="docs/assets/diagrams/architecture-3layer.svg"
+            alt=""
+            data-i18n-alt="sections.architecture.diagramAlt"
+            class="diagram-img"
+            loading="lazy"
+          >
+          <figcaption data-i18n="sections.architecture.caption"></figcaption>
+        </figure>
+        <ul class="callout-list" data-i18n-list="sections.architecture.callouts">
+          <template>
+            <li data-key="_text"></li>
+          </template>
+        </ul>
+      </section>
+
+      <!-- ── 5. Workflow ───────────────────────────────── -->
+      <section id="workflow">
+        <h2 data-i18n="sections.workflow.heading"></h2>
+
+        <!-- Open project -->
+        <article class="workflow-step">
+          <h3 data-i18n="sections.workflow.openProject.heading"></h3>
+          <ol class="step-list" data-i18n-list="sections.workflow.openProject.steps">
+            <template>
+              <li data-key="_text"></li>
+            </template>
+          </ol>
+        </article>
+
+        <!-- Decompile -->
+        <article class="workflow-step">
+          <h3 data-i18n="sections.workflow.decompile.heading"></h3>
+          <ol class="step-list" data-i18n-list="sections.workflow.decompile.steps">
+            <template>
+              <li data-key="_text"></li>
+            </template>
+          </ol>
+          <figure class="diagram-figure">
+            <img
+              src="docs/assets/diagrams/workflow-decompile.svg"
+              alt=""
+              data-i18n-alt="sections.workflow.decompile.diagramAlt"
+              class="diagram-img"
+              loading="lazy"
+            >
+          </figure>
+        </article>
+
+        <!-- Translate -->
+        <article class="workflow-step">
+          <h3 data-i18n="sections.workflow.translate.heading"></h3>
+          <ol class="step-list" data-i18n-list="sections.workflow.translate.steps">
+            <template>
+              <li data-key="_text"></li>
+            </template>
+          </ol>
+          <figure class="diagram-figure">
+            <img
+              src="docs/assets/diagrams/workflow-translate.svg"
+              alt=""
+              data-i18n-alt="sections.workflow.translate.diagramAlt"
+              class="diagram-img"
+              loading="lazy"
+            >
+          </figure>
+        </article>
+      </section>
+
+      <!-- ── 6. How to Use ─────────────────────────────── -->
+      <section id="how-to-use">
+        <h2 data-i18n="sections.howToUse.heading"></h2>
+        <div class="screens-list" data-i18n-list="sections.howToUse.screens">
+          <template>
+            <article class="screen-article">
+              <div class="screen-text">
+                <h3 data-key="title"></h3>
+                <p data-key="body"></p>
+              </div>
+              <figure class="screen-figure">
+                <img
+                  src=""
+                  alt=""
+                  data-key="screenshotAlt"
+                  data-key-src-map="id"
+                  class="screen-screenshot"
+                  loading="lazy"
+                >
+              </figure>
+            </article>
+          </template>
+        </div>
+      </section>
+
+      <!-- ── 7. Tech Stack ─────────────────────────────── -->
+      <section id="tech-stack">
+        <h2 data-i18n="sections.techStack.heading"></h2>
+        <p data-i18n="sections.techStack.body"></p>
+        <div class="techstack-groups" data-i18n-list="sections.techStack.items">
+          <template>
+            <div class="techstack-group">
+              <h4 data-key="group"></h4>
+              <p data-key="tools" class="techstack-tools"></p>
+            </div>
+          </template>
+        </div>
+      </section>
+
+      <!-- ── 8. Keyboard Shortcuts ─────────────────────── -->
+      <section id="shortcuts">
+        <h2 data-i18n="sections.shortcuts.heading"></h2>
+        <p data-i18n="sections.shortcuts.intro"></p>
+        <table class="shortcuts-table">
+          <thead>
+            <tr>
+              <th>Keys</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody data-i18n-list="sections.shortcuts.rows">
+            <template>
+              <tr>
+                <td><kbd data-key="keys"></kbd></td>
+                <td data-key="action"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ── 9. Bundled Tools ───────────────────────────── -->
+      <section id="bundled">
+        <h2 data-i18n="sections.bundled.heading"></h2>
+        <p data-i18n="sections.bundled.body"></p>
+        <table class="bundled-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>License</th>
+              <th>Delivery</th>
+            </tr>
+          </thead>
+          <tbody data-i18n-list="sections.bundled.table">
+            <template>
+              <tr>
+                <td data-key="tool"></td>
+                <td><code data-key="license"></code></td>
+                <td data-key="delivery"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ── 10. Troubleshooting ───────────────────────── -->
+      <section id="troubleshoot">
+        <h2 data-i18n="sections.troubleshoot.heading"></h2>
+        <dl class="qa-list" data-i18n-list="sections.troubleshoot.items">
+          <template>
+            <div class="qa-item">
+              <dt data-key="q"></dt>
+              <dd data-key="a"></dd>
+            </div>
+          </template>
+        </dl>
+      </section>
+
+      <!-- ── 11. License ───────────────────────────────── -->
+      <section id="license">
+        <h2 data-i18n="sections.license.heading"></h2>
+        <p data-i18n="sections.license.body"></p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer data-i18n-html="footer.html"></footer>
+
+  <script src="docs/assets/i18n-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" width="720" height="420" fill="none">
+  <defs>
+    <marker id="arrow-em" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#10B981"/>
+    </marker>
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#A1A1AA"/>
+    </marker>
+  </defs>
+
+  <!-- ====== Lane headers — 4 lanes ====== -->
+  <!-- Centers: 130, 320, 500, 660 -->
+  <g>
+    <rect x="80" y="20" width="100" height="36" rx="6" stroke="#A1A1AA" stroke-width="1.5"/>
+    <text x="130" y="42" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="12" font-weight="600" fill="#F4F4F5">User</text>
+
+    <rect x="265" y="20" width="110" height="36" rx="6" stroke="#10B981" stroke-width="1.5"/>
+    <text x="320" y="38" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="12" font-weight="600" fill="#F4F4F5">CodePreview</text>
+    <text x="320" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="9" fill="#71717A">React + Monaco</text>
+
+    <rect x="440" y="20" width="120" height="36" rx="6" stroke="#10B981" stroke-width="1.5"/>
+    <text x="500" y="38" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="12" font-weight="600" fill="#F4F4F5">Decompile Command</text>
+    <text x="500" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="9" fill="#71717A">Rust</text>
+
+    <rect x="605" y="20" width="110" height="36" rx="6" stroke="#A1A1AA" stroke-width="1.5"/>
+    <text x="660" y="38" text-anchor="middle" font-family="Satoshi, system-ui"
+      font-size="12" font-weight="600" fill="#F4F4F5">ILSpyCmd</text>
+    <text x="660" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace"
+      font-size="9" fill="#71717A">.exe sidecar</text>
+  </g>
+
+  <!-- ====== Lifelines ====== -->
+  <g stroke="#3F3F46" stroke-width="1" stroke-dasharray="4 4">
+    <line x1="130" y1="56" x2="130" y2="400"/>
+    <line x1="320" y1="56" x2="320" y2="400"/>
+    <line x1="500" y1="56" x2="500" y2="400"/>
+    <line x1="660" y1="56" x2="660" y2="400"/>
+  </g>
+
+  <!-- ====== Cache-hit annotation on the LEFT side ====== -->
+  <g>
+    <line x1="40" y1="180" x2="40" y2="260" stroke="#10B981" stroke-width="1.5"
+      stroke-dasharray="2 2"/>
+    <text x="46" y="200" font-family="JetBrains Mono, monospace" font-size="10"
+      fill="#10B981">cache hit</text>
+    <text x="46" y="216" font-family="JetBrains Mono, monospace" font-size="10"
+      fill="#10B981">&lt; 50ms</text>
+    <text x="46" y="234" font-family="JetBrains Mono, monospace" font-size="10"
+      fill="#71717A">(skips lane 4)</text>
+  </g>
+
+  <!-- ====== Sequence ====== -->
+  <!-- 1. User → CodePreview: click script (y=84) -->
+  <line x1="132" y1="84" x2="263" y2="84" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+  <text x="195" y="78" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="12" fill="#F4F4F5">click script.cs in tab</text>
+
+  <!-- 2. CodePreview → Decompile Command: invoke (y=116) -->
+  <line x1="322" y1="116" x2="438" y2="116" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+  <text x="380" y="110" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="11" fill="#F4F4F5">invoke('decompile', handle, nodeId)</text>
+
+  <!-- 3. Decompile self-loop: check cache (y=148) -->
+  <path d="M 500 148 H 540 V 166 H 500" stroke="#10B981" stroke-width="1.5" fill="none"
+    marker-end="url(#arrow-em)"/>
+  <text x="548" y="155" font-family="JetBrains Mono, monospace" font-size="10"
+    fill="#A1A1AA">check on-disk cache</text>
+
+  <!-- 4. Decompile → ILSpyCmd (cache miss) (y=200) -->
+  <line x1="502" y1="200" x2="658" y2="200" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+  <text x="580" y="194" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="11" fill="#F4F4F5">spawn --output</text>
+  <text x="580" y="214" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" font-style="italic" fill="#71717A">(only on cache miss)</text>
+
+  <!-- 5. ILSpyCmd → Decompile: C# text (y=246) -->
+  <line x1="658" y1="246" x2="502" y2="246" stroke="#A1A1AA" stroke-width="1.5"
+    stroke-dasharray="5 3" marker-end="url(#arrow-gray)"/>
+  <text x="580" y="240" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="11" fill="#A1A1AA">C# text (stdout)</text>
+
+  <!-- 6. Decompile self-loop: cache + header (y=278) -->
+  <path d="M 500 278 H 540 V 296 H 500" stroke="#10B981" stroke-width="1.5" fill="none"
+    marker-end="url(#arrow-em)"/>
+  <text x="548" y="285" font-family="JetBrains Mono, monospace" font-size="10"
+    fill="#A1A1AA">cache + add header comment</text>
+
+  <!-- 7. Decompile → CodePreview: DecompilePayload (y=326) -->
+  <line x1="498" y1="326" x2="322" y2="326" stroke="#A1A1AA" stroke-width="1.5"
+    stroke-dasharray="5 3" marker-end="url(#arrow-gray)"/>
+  <text x="410" y="320" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="11" fill="#A1A1AA">DecompilePayload</text>
+  <text x="410" y="340" text-anchor="middle" font-family="JetBrains Mono, monospace"
+    font-size="10" fill="#71717A">content · backend · confidence · classFullname</text>
+
+  <!-- 8. CodePreview → User: Monaco renders (y=372) -->
+  <line x1="318" y1="372" x2="132" y2="372" stroke="#10B981" stroke-width="1.5"
+    marker-end="url(#arrow-em)"/>
+  <text x="225" y="366" text-anchor="middle" font-family="Satoshi, system-ui"
+    font-size="12" fill="#F4F4F5">Monaco renders (unwrap-dark theme)</text>
+</svg>

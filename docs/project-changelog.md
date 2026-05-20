@@ -11,6 +11,15 @@ All notable changes to Unwrap are documented here. Format: [Keep a Changelog](ht
 
 ### Added
 
+- **Multi-language documentation page** at `docs.html` (root)
+  - Languages: English (authoritative), Vietnamese, Simplified Chinese — translations marked machine-assisted in `meta.note`
+  - 11 sections: intro, features, architecture, workflows, how-to-use, tech stack, keyboard shortcuts, bundled tools, troubleshooting, license + hero
+  - 5 hand-coded SVG diagrams (architecture 3-layer, 3 workflows, plugin architecture)
+  - 4 wireframe screenshots embedded
+  - npm script `pnpm docs:serve` for local serve at http://localhost:5173/docs.html
+  - Vanilla JS i18n loader (~150 LOC functional, no dependencies)
+  - Fetch-based JSON loading; in-page error banner with serve instructions if opened via file://
+  - Brand-aligned with Unwrap app (emerald accent, Satoshi + JetBrains Mono, zinc-950 dark)
 - Native folder picker via Browse files button (Tauri dialog plugin v2.7.1) — respects user's file explorer selection on Windows
 - Ctrl/Cmd+O keyboard shortcut for opening/browsing projects
 - Loading skeleton + error state UI for recent projects grid
@@ -18,6 +27,7 @@ All notable changes to Unwrap are documented here. Format: [Keep a Changelog](ht
 
 ### Fixed
 
+- `pnpm docs:serve` initially used `-s` (SPA mode) flag which caused `/docs.html` to redirect to `/docs` then return Vite `index.html`. Removed `-s`; docs.html now serves correctly.
 - Window minimize, maximize, close buttons now respond to clicks (Tauri 2 capability permissions: `core:window:allow-minimize`, `core:window:allow-toggle-maximize`, `core:window:allow-close`)
 - Custom title bar now draggable (added `core:window:allow-start-dragging` permission)
 - Recent projects grid now reads real `list_recents()` IPC endpoint from SQLite (was mock data)

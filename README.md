@@ -6,6 +6,18 @@
 
 > Decode anything you own. A Windows desktop tool for reverse engineering Unity games.
 
+## View docs
+
+Multi-language documentation page (EN / VI / zh-CN):
+
+```
+pnpm docs:serve
+```
+
+Then open http://localhost:5173/docs.html — opening the file directly via `file://` will fail because browsers block `fetch()` on local files.
+
+Or browse [the docs on GitHub Pages](https://dris1153.github.io/unwrap/docs.html) once Pages is enabled.
+
 ## What it does
 
 Drop a Unity build folder into Unwrap and instantly explore it.
