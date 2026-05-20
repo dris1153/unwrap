@@ -1,39 +1,22 @@
+<p align="left">
+  <img src="docs/branding/logos/unwrap-mark.svg" alt="Unwrap" width="96" height="96">
+</p>
+
 # Unwrap
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" width="128" height="128" role="img" aria-label="Unwrap" style="display: block; margin: 16px 0;">
-  <title>Unwrap</title>
-  <!-- Back bracket -->
-  <path d="M62 18 Q48 18 48 32 Q48 45 36 50 Q48 55 48 68 Q48 82 62 82"
-        stroke="#10B981" stroke-width="6.5"
-        stroke-linecap="round" stroke-linejoin="round" opacity="0.22"/>
-  <!-- Middle bracket -->
-  <path d="M56 18 Q42 18 42 32 Q42 45 30 50 Q42 55 42 68 Q42 82 56 82"
-        stroke="#10B981" stroke-width="6.5"
-        stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
-  <!-- Front bracket -->
-  <path d="M50 18 Q36 18 36 32 Q36 45 24 50 Q36 55 36 68 Q36 82 50 82"
-        stroke="#10B981" stroke-width="6.5"
-        stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Closing chevron echo -->
-  <path d="M62 38 L72 50 L62 62"
-        stroke="#10B981" stroke-width="6.5"
-        stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
-</svg>
+> Decode anything you own. A Windows desktop tool for reverse engineering Unity games.
 
-> Decode anything you own. Windows-first desktop reverse engineering tool for Unity games.
+## What it does
 
-## Status
+Drop a Unity build folder into Unwrap and instantly explore it.
 
-**v0.1 MVP — all 10 phases complete**
+- **Browse assets** — textures, audio, 3D meshes, text, raw hex, all in a virtualized tree
+- **Decompile C#** — Mono and IL2CPP backends, with Monaco syntax highlighting
+- **Translate strings** — side-by-side editor with autosave to a local database
+- **Jump anywhere** — Cmd+K (or Ctrl+K) palette searches assets, code, and strings
+- **Stays local** — nothing is uploaded; everything runs on your machine
 
-## What it does (v0.1)
-
-- Drop a Unity build folder — tree of extracted assets populates instantly
-- Preview textures, audio, 3D meshes, text files, and raw hex
-- Decompile C# scripts via Mono and IL2CPP backends
-- Side-by-side translation editor with autosave
-- Cmd+K command palette to jump anywhere
-- Read-only viewer (no edit or repack in v0.1)
+Read-only viewer. Editing and repacking are on the roadmap.
 
 ## Supported
 
@@ -43,50 +26,28 @@
 
 ## Install
 
-Download the latest MSI from [Releases](../../releases) and run it.
-WebView2 Runtime is required (pre-installed on Windows 11; the installer prompts on Windows 10).
-
-## Tech Stack
-
-- **Desktop:** Tauri 2, React 18, TypeScript, Vite, Tailwind 4
-- **Backend:** Rust 1.95+ with tokio async runtime
-- **Storage:** SQLite via rusqlite
-- **Sidecars:** AssetRipper (GPL-3.0, subprocess), ILSpyCmd (MIT), Il2CppDumper (MIT, on-demand)
-- **UI:** Zustand, TanStack Router, TanStack Virtual, Monaco Editor
-
-## Prerequisites (development)
-
-- Windows 10 / 11
-- Rust stable MSVC toolchain: `rustup default stable-x86_64-pc-windows-msvc`
-- Node.js 20+ and pnpm 9+
-- .NET 8 Runtime (required by ILSpyCmd sidecar)
-- WebView2 Runtime
+Download the latest MSI from [Releases](../../releases) and run it. WebView2 Runtime is required — pre-installed on Windows 11; the installer prompts to add it on Windows 10.
 
 ## Develop
 
 ```
 pnpm install
-pnpm sidecars      # one-time: downloads AssetRipper + installs ILSpyCmd (~120 MB)
+pnpm sidecars
 pnpm tauri dev
 ```
 
-`pnpm sidecars` is required after a fresh clone because Tauri sidecar binaries
-are gitignored (too large for GitHub). The script:
+`pnpm sidecars` is a one-time step after a fresh clone. It auto-downloads **AssetRipper 1.3.14** (~120 MB) from upstream, installs **ILSpyCmd 9.1.0.7988** via `dotnet tool install --global` (needs .NET 8 SDK on PATH), and skips **Il2CppDumper** — the app fetches it lazily on first IL2CPP detection.
 
-- Downloads **AssetRipper 1.3.14** (~120 MB) from the upstream GitHub release and
-  verifies SHA-256 against `src-tauri/binaries/sidecar-manifest.json`.
-- Installs **ILSpyCmd 9.1.0.7988** via `dotnet tool install --global` (requires
-  .NET 8 SDK on PATH). Dev-mode uses the official tool; production MSI builds
-  use a custom self-contained wrapper documented in
-  `src-tauri/binaries/README.md`.
-- Skips **Il2CppDumper** — the app downloads it lazily on first IL2CPP project
-  detection into `%LOCALAPPDATA%\Unwrap\bin\`.
+The script is idempotent. Re-run it whenever versions change in [src-tauri/binaries/sidecar-manifest.json](src-tauri/binaries/sidecar-manifest.json).
 
-Re-run any time the sidecar versions change in
-[src-tauri/binaries/sidecar-manifest.json](src-tauri/binaries/sidecar-manifest.json).
-The script is idempotent — already-installed binaries pass through quickly.
+First `cargo build` takes 3–10 minutes while Rust compiles rusqlite, three, and symphonia.
 
-First `cargo build` takes 3-10 minutes while Rust compiles rusqlite, three, and symphonia.
+### Prerequisites
+
+- Rust stable MSVC toolchain — `rustup default stable-x86_64-pc-windows-msvc`
+- Node.js 20+ and pnpm 9+
+- .NET 8 SDK (for ILSpyCmd dev install)
+- WebView2 Runtime
 
 ## Test
 
@@ -103,34 +64,34 @@ pnpm tauri build
 
 Output: `src-tauri/target/release/bundle/msi/Unwrap_0.1.0_x64_en-US.msi`
 
-See [BUILD.md](BUILD.md) for full setup instructions including sidecar binary acquisition.
+Full instructions including sidecar acquisition: [BUILD.md](BUILD.md).
+
+## Tech stack
+
+- **Desktop:** Tauri 2, React 18, TypeScript, Vite, Tailwind 4
+- **Backend:** Rust 1.95+ on tokio
+- **Storage:** SQLite via rusqlite
+- **UI:** Zustand, TanStack Router, TanStack Virtual, Monaco Editor
+- **Sidecars:** AssetRipper (GPL-3.0, subprocess), ILSpyCmd (MIT), Il2CppDumper (MIT, on-demand)
 
 ## Bundled tools
 
-Unwrap bundles or downloads the following third-party tools:
+Unwrap invokes the following third-party tools only as separate processes; none of their code is linked into the Unwrap binary.
 
-| Tool | License | How bundled |
+| Tool | License | Delivery |
 |---|---|---|
-| AssetRipper | GPL-3.0 | Shipped binary, invoked as subprocess |
-| ILSpyCmd | MIT | Shipped binary, invoked as subprocess |
-| Il2CppDumper | MIT | Downloaded on first IL2CPP detection |
+| AssetRipper | GPL-3.0 | Bundled sidecar |
+| ILSpyCmd | MIT | Bundled sidecar |
+| Il2CppDumper | MIT | Lazy-downloaded on first IL2CPP detection |
 
-See [src-tauri/NOTICE.txt](src-tauri/NOTICE.txt) for full license texts and source URLs.
-Unwrap invokes each tool only as a separate process and does not link any of their code.
-
-## Roadmap
-
-- **v0.2** — Light theme, asset repack to bundle, AI-assisted translation, signed installer
-- **v0.3** — Plugin SDK, custom decompiler adapters, Linux / macOS support
+Full license texts and source URLs: [src-tauri/NOTICE.txt](src-tauri/NOTICE.txt).
 
 ## Documentation
 
-- [BUILD.md](BUILD.md) — Full build and sidecar setup
+- [BUILD.md](BUILD.md) — Full build setup
 - [docs/keyboard-shortcuts.md](docs/keyboard-shortcuts.md) — Keyboard reference
-- [docs/development-roadmap.md](docs/development-roadmap.md) — Phase progress
 - [docs/project-changelog.md](docs/project-changelog.md) — Version history
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
-Bundled tools retain their original licenses; see [src-tauri/NOTICE.txt](src-tauri/NOTICE.txt).
+MIT — see [LICENSE](LICENSE). Bundled tools retain their original licenses.
