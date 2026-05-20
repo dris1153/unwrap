@@ -12,6 +12,10 @@ export type RecentProject = {
   iconTheme: "tex" | "mesh" | "script" | "txt";
 };
 
+/**
+ * @deprecated Use `ipc.listRecents()` for all production paths.
+ * Kept for potential Storybook / test reuse only.
+ */
 export const MOCK_RECENTS: RecentProject[] = [
   {
     id: "hollow-vale",

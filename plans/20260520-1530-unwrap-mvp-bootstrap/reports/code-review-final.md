@@ -1,3 +1,36 @@
+## Hotfix Review — 2026-05-20 (PR 1 + PR 2)
+
+**Verdict:** SHIP-WITH-CAVEATS
+**Files inspected:** 6 (`capabilities/default.json`, `src-tauri/src/lib.rs`, `src-tauri/Cargo.toml`, `drop-zone.tsx`, `recent-projects-grid.tsx`, `mock-recents.ts`)
+
+### Findings
+
+1. **P2 — `handleBrowse` stale-closure risk in ⌘O effect (`drop-zone.tsx:128-138`).** Effect deps are `[opening]`, but `handleBrowse` is recreated each render and captures the latest `opening` via closure — works because `opening` is also in deps. However the listener is removed/re-added on every `opening` toggle, briefly leaving a window where ⌘O has no listener (between unmount and remount). Low-risk in practice but worth wrapping `handleBrowse` in `useCallback` or moving the `opening` guard inside `onKey` (already done — so the deps array can safely be `[]`, eliminating churn). Recommend: drop `[opening]` from deps array; the in-handler `!opening` check is sufficient because `opening` is read via state-setter closure freshness is not needed here, but you DO need to re-read via a ref. Cleanest fix: `const openingRef = useRef(opening); useEffect(() => { openingRef.current = opening; }); ` and check `openingRef.current` inside `onKey`. Current code is functional but has listener churn.
+
+2. **P2 — Capability permission valid but not exhaustive for non-toggle paths (`capabilities/default.json:10`).** `core:window:allow-toggle-maximize` is the correct Tauri 2.7 identifier and matches the spec. However if the frontend ever calls `window.maximize()` / `window.unmaximize()` directly (not via `toggleMaximize`), they will fail at runtime with no compile-time signal. Acceptable for the current titlebar which uses toggle, but flag for any future maximize-only buttons.
+
+3. **P3 — `recent-projects-grid.tsx` is 365 lines, violates project's 200-LOC threshold (`CLAUDE.md`).** Natural split points: `ProjectTile` + `TileIcon` + chip helpers → `recent-project-tile.tsx`; `Header` + `FooterHints` + `SkeletonTile` → `recent-projects-grid-parts.tsx`; main `RecentProjectsGrid` keeps query + state-machine rendering only. Not blocking but technical debt accumulates fast in this region.
+
+4. **P3 — Error-state error message is not shown (`recent-projects-grid.tsx:290-306`).** `useQuery` exposes `error` but the UI shows only a static "Could not load recents" with a generic hint. Long error messages would not overflow because they're not rendered at all — but the actual cause (e.g., DB lock, missing dir) is invisible to the user and to support. Recommend: render `error.message` truncated to 2 lines with `line-clamp-2` or expose via expandable "Show details".
+
+5. **P3 — `dynamic import` of `@tauri-apps/plugin-dialog` inside try (`drop-zone.tsx:113`).** Vite/Rollup handles `await import()` inside try fine — the module is code-split into its own chunk and the try only wraps the awaited promise. No bundling issue. Minor: this adds a network/disk fetch on first ⌘O press; if cold-start latency matters, switch to a top-level static import (the plugin is tiny).
+
+6. **P3 — `MOCK_RECENTS` `@deprecated` JSDoc correct but removal path undocumented.** The comment says "Kept for potential Storybook / test reuse only" but no test/Storybook consumer references it (verified via grep — only `mock-recents.ts` self-references). Either delete the file now or add a `TODO(v0.2)` with a tracking issue. Leaving deprecated code without a removal date tends to rot.
+
+7. **Strength — Tooltip wrapper compatibility:** `Tooltip` uses Radix's `Trigger asChild`, which forwards refs/events to its child. The disabled-looking archive button (`cursor-not-allowed opacity-60`) is NOT actually `disabled` (it has `onClick={e => e.preventDefault()}`), so Radix tooltip will fire on hover correctly. If it were truly `disabled`, Radix would not fire — current implementation sidesteps that issue cleanly.
+
+### Strengths
+
+- Permission set is minimal and intentional — only `dialog:allow-open` added (not the full `dialog:default`), good least-privilege hygiene.
+- `recent-projects-grid` query states (loading / error / empty / populated) are all distinct components — easy to reason about.
+- `basename()` handles both `/` and `\\` correctly for cross-platform paths.
+- `relativeTime()` is pure and doesn't rely on `Intl.RelativeTimeFormat` — keeps bundle small.
+- `MOCK_RECENTS` correctly excluded from production code path; no accidental import in `recent-projects-grid.tsx`.
+
+**Status:** DONE_WITH_CONCERNS — None blocking. P2 stale-closure churn is a polish item; P3 file size and missing error detail are tech debt to track.
+
+---
+
 # Code Review — Unwrap v0.1
 
 **Date:** 2026-05-20

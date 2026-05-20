@@ -5,6 +5,7 @@ import { useRouter } from "@tanstack/react-router";
 import { ipc } from "../../lib/ipc";
 import type { ProgressPayload } from "../../lib/types";
 import { LoadingModal } from "./loading-modal";
+import { Tooltip } from "../../components/ui/tooltip";
 
 /**
  * Drop zone for the Welcome screen.
@@ -106,6 +107,36 @@ export function DropZone() {
     setProgress(null);
   }
 
+  async function handleBrowse() {
+    if (opening) return;
+    try {
+      const { open } = await import("@tauri-apps/plugin-dialog");
+      const selected = await open({
+        directory: true,
+        multiple: false,
+        title: "Select Unity build folder",
+      });
+      if (typeof selected === "string" && selected.length > 0) {
+        await handleOpen(selected);
+      }
+    } catch (err) {
+      console.error("[DropZone] browse failed:", err);
+    }
+  }
+
+  // ⌘O / Ctrl+O keyboard shortcut — same flow as Browse button.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "o" && !opening) {
+        e.preventDefault();
+        void handleBrowse();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opening]);
+
   // HTML drag-drop fallback (browser dragging files into the webview).
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
@@ -164,20 +195,23 @@ export function DropZone() {
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() => console.log("[DropZone] browse clicked — phase-05")}
+                onClick={() => void handleBrowse()}
                 className="h-8 px-3 rounded-[var(--radius-md)] bg-accent text-[#09090B] text-[13px] font-semibold hover:bg-accent-strong active:translate-y-[1px] transition-all flex items-center gap-1.5"
               >
                 <FolderSimplePlus size={14} />
                 Browse files…
               </button>
               <span className="font-mono text-[12px] text-tertiary">or</span>
-              <button
-                onClick={() => console.log("[DropZone] open archive — phase-05")}
-                className="h-8 px-3 rounded-[var(--radius-md)] text-secondary hover:text-primary hover:bg-overlay text-[13px] font-medium transition-colors flex items-center gap-1.5"
-              >
-                <FileArrowUp size={14} />
-                Open archive (.zip)
-              </button>
+              <Tooltip content="Coming in v0.2 — archive extraction" side="top">
+                <button
+                  onClick={(e) => e.preventDefault()}
+                  aria-label="Open archive (coming in v0.2)"
+                  className="h-8 px-3 rounded-[var(--radius-md)] text-tertiary cursor-not-allowed opacity-60 text-[13px] font-medium flex items-center gap-1.5"
+                >
+                  <FileArrowUp size={14} />
+                  Open archive (.zip)
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>

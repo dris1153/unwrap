@@ -49,8 +49,9 @@ Ship a polished read-only Unity reverse engineering viewer on Windows. User drop
 | 2026-05-20 | 08 Translatable Text View | Complete | DB v2 + 4 parsers + side-by-side editor with debounced autosave. 76 tests. |
 | 2026-05-20 | 09 Search + Palette | Complete | DB v3 FTS5 + cmdk palette + 5 built-in commands + global shortcuts. 79 tests. |
 | 2026-05-20 | 10 Testing + Docs | Complete | Vitest 51 tests + LICENSE + BUILD.md + CI workflow + NOTICE bundled. 140 total tests pass. |
+| 2026-05-20 | hotfix-welcome-fixes | Complete | PR 1: Tauri perms + dialog plugin + ⌘O shortcut. PR 2: real recents via ipc.listRecents + empty/loading/error states. See reports/brainstorm-welcome-fixes.md. 140 tests pass. |
 
-**Active progress:** 100% (10/10 phases complete — MVP complete).
+**Active progress:** 100% (10/10 phases complete — MVP complete + hotfix merged).
 
 ## Dependency Chain
 phase-01 -> phase-02 -> phase-03 -> phase-04 -> phase-05 -> (06 || 07 || 08) -> phase-09 -> phase-10

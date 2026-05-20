@@ -113,6 +113,22 @@ Full-text search across asset names/types (SQLite FTS). Cmd+K command palette (f
 | Large asset trees (20k+ nodes) crash | Virtualize via TanStack Virtual (phase 06) |
 | GPL infection (AssetRipper) | Subprocess-only pattern (never link); verify safe pattern + document (phase 04/10) |
 
+## Recent Fixes (v0.1.1 Hotfixes)
+
+**2026-05-20:** Welcome screen interaction gaps patched post-launch smoke test (`pnpm tauri dev`). See [brainstorm-welcome-fixes.md](../plans/20260520-1530-unwrap-mvp-bootstrap/reports/brainstorm-welcome-fixes.md) for details.
+
+- Window control buttons (minimize, maximize, close) now respond to clicks
+- Title bar is now draggable
+- Browse files button wired to native folder picker (Tauri dialog plugin)
+- Ctrl/Cmd+O keyboard shortcut for project open
+- Recent projects grid now reads real SQLite data (was mock)
+- Empty/loading/error states added for recents grid
+- Open archive button deferred to v0.2 with tooltip
+
+All 140 tests continue to pass.
+
+---
+
 ## How to Cook the Next Phase
 
 Once this phase is complete, run:

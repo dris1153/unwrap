@@ -9,6 +9,27 @@ All notable changes to Unwrap are documented here. Format: [Keep a Changelog](ht
 - `sidecar::manifest::verify_sha256` and `verify_sha256_bytes` now **refuse** to short-circuit on placeholder `"TBD"` or empty-string checksums. Previously, these returned `Ok(true)`, allowing tools shipped with `sha256: "TBD"` in `sidecar-manifest.json` to bypass integrity verification entirely. The lazy-download path (Il2CppDumper) is the primary affected surface. Test `sha256_bytes_placeholder_refused` updated to assert the new fail-closed behavior.
 - Code-review P1 fix tracked in `plans/20260520-1530-unwrap-mvp-bootstrap/reports/code-review-final.md` finding #1.
 
+### Added
+
+- Native folder picker via Browse files button (Tauri dialog plugin v2.7.1) — respects user's file explorer selection on Windows
+- Ctrl/Cmd+O keyboard shortcut for opening/browsing projects
+- Loading skeleton + error state UI for recent projects grid
+- Empty state card when no recent projects in database ("No recent projects yet — drop a Unity build folder to start")
+
+### Fixed
+
+- Window minimize, maximize, close buttons now respond to clicks (Tauri 2 capability permissions: `core:window:allow-minimize`, `core:window:allow-toggle-maximize`, `core:window:allow-close`)
+- Custom title bar now draggable (added `core:window:allow-start-dragging` permission)
+- Recent projects grid now reads real `list_recents()` IPC endpoint from SQLite (was mock data)
+
+### Changed
+
+- Open archive (.zip) button now displays "Coming in v0.2 — archive extraction" tooltip in disabled state (deferred to v0.2)
+
+### Deprecated
+
+- `MOCK_RECENTS` constant in `src/lib/mock-recents.ts` (kept for storybook/test reuse; see recent-projects-grid.tsx for real data flow)
+
 ### Known issues (v0.1.x track)
 
 - `SidecarManager::kill()` is a no-op because spawned PIDs are stored as `0` placeholders (`src-tauri/src/sidecar/mod.rs:50,74,106`). Frontend `cancel` IPC and app-shutdown cleanup do nothing for in-flight sidecars. Partial mitigation: `kill_on_drop(true)` on `Child` fires on Drop, but the `Child` is moved into a tokio task in `spawn.rs:90` and survives `cleanup_all`. Tracked as code-review P1 finding #2.
