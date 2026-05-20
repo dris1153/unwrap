@@ -331,6 +331,7 @@ section + section {
   display: block;
   width: 100%;
   height: auto;
+  margin-bottom: 20px;
 }
 
 .diagram-figure figcaption {
@@ -439,18 +440,15 @@ section + section {
 
 .screen-article {
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 28px;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
 }
 
-.screen-article:nth-child(even) {
-  grid-template-columns: 1.4fr 1fr;
-  direction: rtl;
-}
-
-.screen-article:nth-child(even) > * {
-  direction: ltr;
+/* Alternate image side via `order` (cleaner than direction:rtl trick).
+   Even-indexed rows put the figure on the left. */
+.screen-article:nth-child(even) .screen-figure {
+  order: -1;
 }
 
 .screen-text h3 {
@@ -473,6 +471,8 @@ section + section {
 .screen-screenshot {
   display: block;
   width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
   border-radius: var(--r-lg);
   border: 1px solid var(--border-default);
   background: var(--bg-surface);
@@ -776,4 +776,124 @@ footer a:hover {
 @media (max-width: 500px) {
   .topbar { padding: 0 16px; }
   main { padding: 24px 16px 48px; }
+}
+
+/* ── Lightbox (click-to-enlarge images) ─────────────────────────────────── */
+
+/* Hover affordance on main images */
+main img:not(.no-zoom) {
+  cursor: zoom-in;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+main img:not(.no-zoom):hover {
+  border-color: var(--border-strong);
+}
+
+/* Modal */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 9, 11, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 64px 32px 56px;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.96);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
+}
+
+.lightbox-open {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 120ms, background 120ms, border-color 120ms;
+}
+.lightbox-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-overlay);
+  border-color: var(--border-strong);
+}
+.lightbox-close:focus-visible {
+  outline: 2px solid var(--accent-glow);
+  outline-offset: 2px;
+}
+
+.lightbox-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: grab;
+}
+.lightbox-stage:active { cursor: grabbing; }
+
+.lightbox-pan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* panzoom applies transform to this element; user-select off prevents drag-select */
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform;
+}
+
+.lightbox-img {
+  display: block;
+  max-width: min(92vw, 1600px);
+  max-height: 84vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--r-md);
+  background: var(--bg-surface);
+  /* Hint to user that drag works */
+  pointer-events: none; /* panzoom handles events on parent */
+}
+
+.lightbox-caption {
+  text-align: center;
+  padding-top: 16px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text-secondary);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Reduced-motion: instant open/close */
+@media (prefers-reduced-motion: reduce) {
+  .lightbox { transition: opacity 1ms, visibility 1ms; transform: none; }
+  .lightbox-open { transform: none; }
+}
+
+/* Mobile tweaks */
+@media (max-width: 640px) {
+  .lightbox { padding: 56px 12px 40px; }
+  .lightbox-close { top: 12px; right: 12px; width: 36px; height: 36px; }
+  .lightbox-img { max-height: 72vh; }
 }
