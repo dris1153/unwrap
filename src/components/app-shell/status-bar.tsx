@@ -2,12 +2,13 @@ import { CloudSlash, Circuitry, CheckCircle, Warning, Spinner } from "@phosphor-
 import { StatusDot } from "../ui/status-dot";
 
 type IndexState = "indexed" | "indexing" | "error" | "empty";
+type BackendType = "mono" | "il2cpp" | "unknown";
 
 type StatusBarProps =
   | { mode: "welcome" }
   | {
       mode: "project";
-      backendType?: "mono" | "il2cpp";
+      backendType?: BackendType;
       unityVersion?: string;
       assetCount?: number;
       indexState?: IndexState;
@@ -49,11 +50,16 @@ export function StatusBar(props: StatusBarProps) {
   }
 
   const {
-    backendType = "mono",
+    backendType = "unknown",
     unityVersion = "",
     assetCount,
     indexState = "indexed",
   } = props;
+
+  const backendDot: "warning" | "info" | "tertiary" =
+    backendType === "il2cpp" ? "warning" : backendType === "mono" ? "info" : "tertiary";
+  const backendLabel =
+    backendType === "il2cpp" ? "IL2CPP" : backendType === "mono" ? "Mono" : "Unknown backend";
 
   return (
     <footer
@@ -62,8 +68,8 @@ export function StatusBar(props: StatusBarProps) {
     >
       <div className="flex items-center gap-3 text-[11px] font-mono text-secondary">
         <span className="flex items-center gap-1.5">
-          <StatusDot color={backendType === "il2cpp" ? "warning" : "info"} />
-          {backendType === "il2cpp" ? "IL2CPP" : "Mono"}
+          <StatusDot color={backendDot} />
+          {backendLabel}
         </span>
         {unityVersion && (
           <>

@@ -47,7 +47,13 @@ function ProjectRoute() {
 
       <StatusBar
         mode="project"
-        backendType={content.project?.scripting_backend === "il2cpp" ? "il2cpp" : "mono"}
+        backendType={
+          content.project?.scripting_backend === "il2cpp"
+            ? "il2cpp"
+            : content.project?.scripting_backend === "mono"
+              ? "mono"
+              : "unknown"
+        }
         unityVersion={content.project?.engine_version ?? ""}
         assetCount={content.assetCount}
         indexState={

@@ -13,6 +13,7 @@ use tracing::debug;
 use crate::domain::error::AppError;
 use crate::events::{emit_progress, ProgressPayload};
 use crate::handlers::HandlerCtx;
+use crate::sidecar::installer::ensure_bundled_cached;
 use crate::sidecar::spawn::{ProgressParser, SidecarSpec};
 
 use super::pump_progress;
@@ -49,9 +50,15 @@ pub async fn decompile(dll: &Path, output_cs: &Path, ctx: &HandlerCtx) -> Result
         },
     );
 
+    // Run ILSpyCmd from the per-user cache dir, NOT the source-tree binary.
+    // Same rationale as AssetRipper (see installer::ensure_bundled_cached):
+    // %PROGRAMFILES%\Unwrap\binaries is read-only in production, and writes
+    // adjacent to the exe in dev trigger Tauri's file-watcher rebuild loop.
+    let bin = ensure_bundled_cached("ilspycmd", ctx).await?;
+
     let spec = SidecarSpec {
         operation_id: ctx.operation_id.clone(),
-        bin: "ilspycmd".into(), // Tauri resolves from bundle
+        bin: bin.to_string_lossy().into_owned(),
         args: vec![
             dll.to_string_lossy().into_owned(),
             "-o".into(),

@@ -145,3 +145,27 @@ export const ipc = {
       if (e.payload.operation_id === operationId) cb(e.payload);
     }),
 } as const;
+
+/**
+ * Shape of an `AppError` as serialized by the Rust backend.
+ * See src-tauri/src/domain/error.rs::AppError::serialize.
+ */
+export interface AppErrorShape {
+  code: string;
+  message: string;
+}
+
+/**
+ * Normalize a Tauri IPC rejection into a stable {code, message} shape.
+ * Tauri may throw either a serialized AppError object or a bare string
+ * depending on where the failure occurred — this helper handles both.
+ */
+export function parseAppError(err: unknown): AppErrorShape {
+  if (err && typeof err === "object") {
+    const obj = err as Record<string, unknown>;
+    if (typeof obj.code === "string" && typeof obj.message === "string") {
+      return { code: obj.code, message: obj.message };
+    }
+  }
+  return { code: "UNKNOWN", message: String(err) };
+}

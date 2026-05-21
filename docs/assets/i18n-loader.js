@@ -162,7 +162,7 @@ function detectDefault() {
 /** Highlight active TOC item via IntersectionObserver. */
 function initTocObserver() {
   const sectionIds = ['intro','features','architecture','workflow','how-to-use',
-                      'tech-stack','shortcuts','bundled','troubleshoot','license'];
+                      'tech-stack','shortcuts','bundled','troubleshoot','develop','license'];
   const tocLinks = sectionIds.reduce((map, id) => {
     const a = document.querySelector(`.toc a[href="#${id}"]`);
     if (a) map[id] = a;

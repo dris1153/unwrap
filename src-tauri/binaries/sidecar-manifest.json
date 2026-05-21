@@ -25,14 +25,15 @@
     },
     {
       "id": "il2cpp-dumper",
-      "version": "6.7.42",
+      "version": "6.7.46",
       "bundled": false,
       "binary": "Il2CppDumper.exe",
-      "sha256": "TBD",
+      "sha256": "f5fc60dfc5c034c1ff3fc651514416ebd47658a63493207734537fd25fa2dea2",
       "license": "MIT",
-      "source": "https://github.com/Perfare/Il2CppDumper/releases/tag/v6.7.42",
-      "download_url": "https://github.com/Perfare/Il2CppDumper/releases/download/v6.7.42/Il2CppDumper-net6.0-x64-v6.7.42.zip",
+      "source": "https://github.com/Perfare/Il2CppDumper/releases/tag/v6.7.46",
+      "download_url": "https://github.com/Perfare/Il2CppDumper/releases/download/v6.7.46/Il2CppDumper-win-v6.7.46.zip",
       "install_subpath": "Il2CppDumper.exe",
+      "extra_files": ["config.json"],
       "invocation_mode": "subprocess",
       "notice_required": false
     }

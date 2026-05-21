@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { FolderSimplePlus, FolderOpen, FileArrowUp, ShieldCheck } from "@phosphor-icons/react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useRouter } from "@tanstack/react-router";
-import { ipc } from "../../lib/ipc";
+import { ipc, parseAppError } from "../../lib/ipc";
 import type { ProgressPayload } from "../../lib/types";
+import { useErrorStore } from "../../stores/use-error-store";
 import { LoadingModal } from "./loading-modal";
 import { Tooltip } from "../../components/ui/tooltip";
 
@@ -88,7 +89,16 @@ export function DropZone() {
 
       router.navigate({ to: "/project/$projectId", params: { projectId } });
     } catch (err) {
-      console.error("[DropZone] open_project failed:", err);
+      const { code, message } = parseAppError(err);
+      console.error("[DropZone] open_project failed:", code, message);
+      useErrorStore.getState().show({
+        title: "Couldn't open project",
+        message,
+        logHint:
+          code === "SIDECAR_FAILED"
+            ? "%LOCALAPPDATA%\\Unwrap\\Unwrap\\data\\logs\\"
+            : undefined,
+      });
       setOpening(false);
       setProgress(null);
     } finally {

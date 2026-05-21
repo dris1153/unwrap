@@ -15,6 +15,7 @@
     "shortcuts": "Keyboard shortcuts",
     "bundled": "Bundled tools",
     "troubleshoot": "Troubleshooting",
+    "develop": "Develop & Build",
     "license": "License"
   },
   "hero": {
@@ -195,6 +196,29 @@
           "a": "Unwrap writes translations to a SQLite file in the app's data directory. If the directory is on a read-only path or a network drive, writes will silently fail. Open the browser DevTools console (F12 in the Tauri window) and look for db error messages. Ensure the app data directory is writable, then restart the app."
         }
       ]
+    },
+    "develop": {
+      "heading": "Develop & Build",
+      "intro": "Build Unwrap from source for contributing, customization, or running the latest changes before a tagged release.",
+      "prereqsHeading": "Prerequisites",
+      "prereqs": [
+        "Windows 10 or 11 (x64) — primary supported platform",
+        "Node.js 20+ and pnpm 9+",
+        "Rust stable MSVC toolchain — set via `rustup default stable-x86_64-pc-windows-msvc`",
+        ".NET 8 SDK — required by `pnpm sidecars` to install ILSpyCmd",
+        "WebView2 Runtime — pre-installed on Windows 11; the installer prompts on Windows 10"
+      ],
+      "commandsHeading": "Commands",
+      "commands": [
+        { "cmd": "pnpm install", "desc": "Install JavaScript dependencies" },
+        { "cmd": "pnpm sidecars", "desc": "Download AssetRipper + install ILSpyCmd (~120 MB, one-time)" },
+        { "cmd": "pnpm tauri dev", "desc": "Launch desktop dev window with hot-reload" },
+        { "cmd": "pnpm test", "desc": "Run Vitest frontend test suite" },
+        { "cmd": "cargo test --manifest-path src-tauri/Cargo.toml", "desc": "Run Rust backend test suite" },
+        { "cmd": "pnpm tauri build", "desc": "Build release MSI installer (~5-10 min)" },
+        { "cmd": "pnpm docs:serve", "desc": "Serve this docs page at http://localhost:5173" }
+      ],
+      "more": "See <a href=\"https://github.com/dris1153/unwrap/blob/dev/BUILD.md\">BUILD.md</a> for sidecar acquisition fallbacks, MSI signing notes, and full troubleshooting."
     },
     "license": {
       "heading": "License",

@@ -16,6 +16,7 @@
     "shortcuts": "Phím tắt",
     "bundled": "Công cụ đi kèm",
     "troubleshoot": "Khắc phục sự cố",
+    "develop": "Phát triển & Build",
     "license": "Giấy phép"
   },
   "hero": {
@@ -196,6 +197,29 @@
           "a": "Unwrap ghi bản dịch vào một tệp SQLite trong thư mục dữ liệu ứng dụng. Nếu thư mục này nằm trên đường dẫn chỉ đọc hoặc ổ đĩa mạng, việc ghi sẽ thất bại mà không có thông báo. Mở DevTools console (F12 trong cửa sổ Tauri) và tìm thông báo lỗi db. Đảm bảo thư mục dữ liệu ứng dụng có quyền ghi, sau đó khởi động lại ứng dụng."
         }
       ]
+    },
+    "develop": {
+      "heading": "Phát triển & Build",
+      "intro": "Build Unwrap từ mã nguồn để đóng góp, tùy biến, hoặc chạy thử các thay đổi mới nhất trước khi có bản release chính thức.",
+      "prereqsHeading": "Yêu cầu",
+      "prereqs": [
+        "Windows 10 hoặc 11 (x64) — nền tảng chính được hỗ trợ",
+        "Node.js 20+ và pnpm 9+",
+        "Rust stable MSVC toolchain — thiết lập qua `rustup default stable-x86_64-pc-windows-msvc`",
+        ".NET 8 SDK — cần thiết để `pnpm sidecars` cài đặt ILSpyCmd",
+        "WebView2 Runtime — đã có sẵn trên Windows 11; installer sẽ tự nhắc cài trên Windows 10"
+      ],
+      "commandsHeading": "Lệnh",
+      "commands": [
+        { "cmd": "pnpm install", "desc": "Cài đặt dependencies JavaScript" },
+        { "cmd": "pnpm sidecars", "desc": "Tải AssetRipper + cài ILSpyCmd (~120 MB, chỉ một lần)" },
+        { "cmd": "pnpm tauri dev", "desc": "Mở cửa sổ dev với hot-reload" },
+        { "cmd": "pnpm test", "desc": "Chạy bộ test frontend Vitest" },
+        { "cmd": "cargo test --manifest-path src-tauri/Cargo.toml", "desc": "Chạy bộ test backend Rust" },
+        { "cmd": "pnpm tauri build", "desc": "Build MSI installer cho release (~5-10 phút)" },
+        { "cmd": "pnpm docs:serve", "desc": "Serve trang docs tại http://localhost:5173" }
+      ],
+      "more": "Xem <a href=\"https://github.com/dris1153/unwrap/blob/dev/BUILD.md\">BUILD.md</a> để biết các phương án dự phòng khi tải sidecar, ghi chú về ký MSI, và hướng dẫn troubleshoot đầy đủ."
     },
     "license": {
       "heading": "Giấy phép",

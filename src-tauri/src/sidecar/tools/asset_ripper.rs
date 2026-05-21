@@ -90,11 +90,28 @@ pub async fn extract(
     std::fs::create_dir_all(output)
         .map_err(|e| AppError::Io(format!("create output dir: {e}")))?;
 
-    let bin = resolve_binary_path();
+    // AssetRipper writes session/temp files relative to its CWD. Inheriting
+    // the parent CWD (src-tauri/ in tauri dev) makes those writes land in
+    // src-tauri/binaries/temp/, which the Tauri dev file-watcher detects and
+    // reacts to by killing + rebuilding the running app. Anchor the workdir
+    // under the per-user cache dir, scoped by operation_id so concurrent opens
+    // never share state.
+    let sidecar_workdir = sidecar_workdir_for_op(&ctx.cache_dir, &ctx.operation_id);
+    std::fs::create_dir_all(&sidecar_workdir)
+        .map_err(|e| AppError::Io(format!("create sidecar workdir: {e}")))?;
+
+    // Run AssetRipper from the per-user cache dir, NOT from src-tauri/binaries
+    // (dev) or %PROGRAMFILES%\Unwrap\binaries (prod). .NET uses the exe
+    // directory as AppContext.BaseDirectory for content-root and Razor cache
+    // writes — landing in src-tauri triggers Tauri's dev rebuild loop, and
+    // landing in %PROGRAMFILES% crashes for non-admin users. The cache copy
+    // is idempotent: first call copies ~50 MB once, subsequent calls reuse.
+    let bin = crate::sidecar::installer::ensure_bundled_cached("asset-ripper", ctx).await?;
     info!(
         port = port,
         bin = %bin.display(),
         log = %log_path.display(),
+        workdir = %sidecar_workdir.display(),
         "spawning AssetRipper.GUI.Web"
     );
 
@@ -120,6 +137,7 @@ pub async fn extract(
             "--log-path",
             log_path.to_string_lossy().as_ref(),
         ])
+        .current_dir(&sidecar_workdir)
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())
         .kill_on_drop(true)
@@ -249,53 +267,21 @@ pub async fn extract(
 }
 
 // ---------------------------------------------------------------------------
-// Path / binary resolution
+// Path resolution
 // ---------------------------------------------------------------------------
-
-/// Resolve the AssetRipper binary path next to the running executable.
-///
-/// Tauri's sidecar resolution adds the target-triple suffix at build time,
-/// so production bundles ship `AssetRipper-x86_64-pc-windows-msvc.exe`
-/// next to the main executable. In dev runs we also place it under
-/// `src-tauri/binaries/`.
-fn resolve_binary_path() -> PathBuf {
-    let target_name = "AssetRipper-x86_64-pc-windows-msvc.exe";
-
-    // 1. Next to the running executable (production + tauri dev).
-    if let Ok(exe) = std::env::current_exe() {
-        if let Some(dir) = exe.parent() {
-            let cand = dir.join(target_name);
-            if cand.is_file() {
-                return cand;
-            }
-            let cand = dir.join("binaries").join(target_name);
-            if cand.is_file() {
-                return cand;
-            }
-        }
-    }
-
-    // 2. cargo run / cargo test (working dir = workspace root).
-    if let Ok(cwd) = std::env::current_dir() {
-        let cand = cwd.join("src-tauri").join("binaries").join(target_name);
-        if cand.is_file() {
-            return cand;
-        }
-        let cand = cwd.join("binaries").join(target_name);
-        if cand.is_file() {
-            return cand;
-        }
-    }
-
-    // 3. Last resort — let the OS path-resolve. Will fail at spawn if missing.
-    PathBuf::from(target_name)
-}
 
 fn log_path_for_op(operation_id: &str) -> PathBuf {
     directories::ProjectDirs::from("com", "Unwrap", "Unwrap")
         .map(|d| d.data_local_dir().join("logs"))
         .unwrap_or_else(|| PathBuf::from("logs"))
         .join(format!("{operation_id}-asset-ripper.log"))
+}
+
+/// Per-operation sidecar working directory under the user cache root.
+/// Used as the spawned AssetRipper process's CWD so its temp/session writes
+/// stay out of any source tree watched by Tauri's dev file-watcher.
+fn sidecar_workdir_for_op(cache_dir: &Path, operation_id: &str) -> PathBuf {
+    cache_dir.join("sidecar-workdir").join(operation_id)
 }
 
 // ---------------------------------------------------------------------------
@@ -502,6 +488,17 @@ mod tests {
         std::fs::create_dir(dir.path().join("ExportedProject")).unwrap();
         // ExportedProject exists but empty AND parent has only one child (the dir).
         assert_eq!(resolve_output_dir(dir.path()), None);
+    }
+
+    #[test]
+    fn sidecar_workdir_paths_isolate_per_op() {
+        let cache = std::path::PathBuf::from("/tmp/unwrap-cache");
+        let a = sidecar_workdir_for_op(&cache, "op-aaa");
+        let b = sidecar_workdir_for_op(&cache, "op-bbb");
+        assert_ne!(a, b);
+        assert!(a.starts_with(&cache));
+        assert!(a.ends_with("op-aaa"));
+        assert!(b.ends_with("op-bbb"));
     }
 
     #[tokio::test]

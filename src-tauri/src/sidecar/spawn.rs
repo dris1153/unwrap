@@ -13,6 +13,22 @@ use tracing::{debug, warn};
 use crate::domain::error::AppError;
 use super::progress::{parse_line, SidecarMsg};
 
+/// Patterns indicating a child process is hung waiting for a keypress that
+/// will never come. Typical of .NET console apps that call
+/// `Console.ReadKey()` at end-of-main (e.g. Il2CppDumper). When matched, the
+/// stdout reader kills the child and treats the run as a successful
+/// completion — all real work happened before the prompt was printed.
+const READKEY_HANG_PATTERNS: &[&str] = &[
+    "press any key to exit",
+    "press any key to continue",
+];
+
+#[inline]
+fn is_readkey_hang_line(line: &str) -> bool {
+    let lower = line.to_ascii_lowercase();
+    READKEY_HANG_PATTERNS.iter().any(|p| lower.contains(p))
+}
+
 /// How the sidecar's stdout lines should be interpreted.
 #[derive(Debug, Clone)]
 pub enum ProgressParser {
@@ -113,15 +129,29 @@ pub async fn spawn(spec: SidecarSpec) -> Result<SidecarHandle, AppError> {
     tokio::spawn(async move {
         let reader = BufReader::new(stdout);
         let mut lines = reader.lines();
+        let mut hang_killed = false;
 
         let result = timeout(deadline, async {
             while let Ok(Some(line)) = lines.next_line().await {
+                // Check for the .NET console-hang signature BEFORE moving the
+                // line into the message variant; if matched we still relay the
+                // log line to the caller, then kill the child.
+                let hang = is_readkey_hang_line(&line);
                 let msg = match parser {
                     ProgressParser::JsonLines => parse_line(&line),
                     ProgressParser::Stderr => SidecarMsg::Log(line),
                 };
                 if msg_tx.send(msg).await.is_err() {
                     break; // Receiver dropped — no one is listening
+                }
+                if hang {
+                    debug!(
+                        op_id = %op_id,
+                        "detected console-readkey hang signature; killing sidecar gracefully"
+                    );
+                    hang_killed = true;
+                    let _ = child.kill().await;
+                    break;
                 }
             }
             child.wait().await
@@ -141,13 +171,16 @@ pub async fn spawn(spec: SidecarSpec) -> Result<SidecarHandle, AppError> {
             }
         };
 
-        let _ = msg_tx.send(if code == 0 {
+        // `hang_killed` overrides the non-zero exit code: the child finished
+        // all real work before printing the prompt, so callers should see
+        // success rather than the synthetic kill exit status.
+        let _ = msg_tx.send(if code == 0 || hang_killed {
             SidecarMsg::Done
         } else {
             SidecarMsg::Error(format!("exit code {code}"))
         }).await;
 
-        let _ = exit_tx.send(code);
+        let _ = exit_tx.send(if hang_killed { 0 } else { code });
     });
 
     Ok(SidecarHandle {
@@ -155,4 +188,33 @@ pub async fn spawn(spec: SidecarSpec) -> Result<SidecarHandle, AppError> {
         stdout_rx: msg_rx,
         exit_rx,
     })
+}
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn readkey_hang_matches_press_any_key_variants() {
+        assert!(is_readkey_hang_line("Press any key to exit..."));
+        assert!(is_readkey_hang_line("press any key to continue . . ."));
+        assert!(is_readkey_hang_line("PRESS ANY KEY TO EXIT"));
+        // Embedded in a longer line still counts.
+        assert!(is_readkey_hang_line("Done!  Press any key to exit."));
+    }
+
+    #[test]
+    fn readkey_hang_ignores_unrelated_lines() {
+        assert!(!is_readkey_hang_line(""));
+        assert!(!is_readkey_hang_line("Initializing metadata..."));
+        assert!(!is_readkey_hang_line("Done!"));
+        assert!(!is_readkey_hang_line("Generate dummy dll..."));
+        assert!(!is_readkey_hang_line("Now listening on: http://127.0.0.1:12345"));
+        // Substring shouldn't trigger without the full pattern.
+        assert!(!is_readkey_hang_line("press the publish button"));
+    }
 }

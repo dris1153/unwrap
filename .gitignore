@@ -12,3 +12,10 @@ plans
 # Devs/CI must re-acquire from sources documented in src-tauri/binaries/README.md
 # and verify SHA-256 against src-tauri/binaries/sidecar-manifest.json before building.
 src-tauri/binaries/*.exe
+
+# AssetRipper runtime artifacts (logs + session/temp). Defense-in-depth — the
+# spawn now uses %LOCALAPPDATA%\Unwrap\…\sidecar-workdir\<op_id> as CWD so
+# these directories should never appear here, but keep the ignore rule so a
+# regression cannot accidentally commit them.
+src-tauri/binaries/*.log
+src-tauri/binaries/temp

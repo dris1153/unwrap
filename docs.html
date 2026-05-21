@@ -48,6 +48,7 @@
         <li><a href="#shortcuts"    data-i18n="nav.shortcuts"></a></li>
         <li><a href="#bundled"      data-i18n="nav.bundled"></a></li>
         <li><a href="#troubleshoot" data-i18n="nav.troubleshoot"></a></li>
+        <li><a href="#develop"      data-i18n="nav.develop"></a></li>
         <li><a href="#license"      data-i18n="nav.license"></a></li>
       </ol>
     </aside>
@@ -262,7 +263,40 @@
         </dl>
       </section>
 
-      <!-- ── 11. License ───────────────────────────────── -->
+      <!-- ── 11. Develop & Build ───────────────────────── -->
+      <section id="develop">
+        <h2 data-i18n="sections.develop.heading"></h2>
+        <p data-i18n="sections.develop.intro"></p>
+
+        <h3 class="dev-subheading" data-i18n="sections.develop.prereqsHeading"></h3>
+        <ul class="callout-list" data-i18n-list="sections.develop.prereqs">
+          <template>
+            <li data-key="_text"></li>
+          </template>
+        </ul>
+
+        <h3 class="dev-subheading" data-i18n="sections.develop.commandsHeading"></h3>
+        <table class="shortcuts-table">
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody data-i18n-list="sections.develop.commands">
+            <template>
+              <tr>
+                <td><code data-key="cmd"></code></td>
+                <td data-key="desc"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+
+        <p class="dev-more" data-i18n-html="sections.develop.more"></p>
+      </section>
+
+      <!-- ── 12. License ───────────────────────────────── -->
       <section id="license">
         <h2 data-i18n="sections.license.heading"></h2>
         <p data-i18n="sections.license.body"></p>

@@ -36,6 +36,11 @@ pub struct ToolEntry {
     pub download_url: Option<String>,
     /// Path inside the zip to extract (non-bundled only).
     pub install_subpath: Option<String>,
+    /// Additional companion files to extract from the same zip alongside
+    /// `install_subpath`. Empty by default — set for tools that require
+    /// adjacent runtime files (e.g. Il2CppDumper reads `./config.json`).
+    #[serde(default)]
+    pub extra_files: Vec<String>,
     /// Whether NOTICE.txt is legally required for this tool.
     #[serde(default)]
     pub notice_required: bool,

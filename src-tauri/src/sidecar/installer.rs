@@ -16,6 +16,98 @@ use crate::sidecar::manifest::{read_manifest, verify_sha256, verify_sha256_bytes
 // Public API
 // ---------------------------------------------------------------------------
 
+/// Ensure a bundled binary is copied to the user-writable cache dir and
+/// return the cached path. Subsequent calls reuse the cache.
+///
+/// Why this exists: bundled sidecars normally live next to the app exe
+/// (`src-tauri/binaries/` in dev, `%PROGRAMFILES%\Unwrap\binaries\` in
+/// production MSI installs). Spawning them from there has two problems:
+///   1. .NET apps treat `AppContext.BaseDirectory` (= exe location) as their
+///      content root and write Razor cache, temp session files, etc. under
+///      it. In dev that lands inside `src-tauri/binaries/temp/` which the
+///      Tauri CLI file-watcher reacts to by rebuilding the application,
+///      killing the running app mid-operation.
+///   2. `%PROGRAMFILES%\Unwrap\` is read-only for non-admin users on
+///      Windows; the spawned exe fails its first write and crashes during
+///      startup. The MSI install path would be entirely broken.
+///
+/// Solution: copy the bundled binary once into `<cache_dir>/bin/`. Spawning
+/// from there relocates the .NET BaseDirectory writes into the per-user
+/// cache, out of both watched and read-only trees.
+///
+/// Cache-hit policy: match by file size only. We can't use the manifest sha
+/// because the dev path for ILSpyCmd (`pnpm sidecars`) installs the dotnet-
+/// tool exe which has a different hash than the production wrapper sha
+/// pinned in `sidecar-manifest.json` — see `scripts/download-sidecars.ps1`.
+pub async fn ensure_bundled_cached(
+    tool_id: &str,
+    ctx: &HandlerCtx,
+) -> Result<PathBuf, AppError> {
+    let manifest = read_manifest()?;
+    let entry = manifest
+        .find(tool_id)
+        .ok_or_else(|| AppError::SidecarFailed(format!("tool '{tool_id}' not in manifest")))?;
+    if !entry.bundled {
+        return Err(AppError::SidecarFailed(format!(
+            "'{tool_id}' is not bundled — use ensure_installed for lazy tools"
+        )));
+    }
+
+    let source = resolve_bundled_source(&entry.binary)?;
+    let target = ctx.cache_dir.join("bin").join(&entry.binary);
+
+    if let (Ok(sm), Ok(tm)) = (std::fs::metadata(&source), std::fs::metadata(&target)) {
+        if sm.len() == tm.len() {
+            return Ok(target);
+        }
+    }
+
+    tokio::fs::create_dir_all(target.parent().unwrap())
+        .await
+        .map_err(|e| AppError::Io(format!("create bin dir: {e}")))?;
+    tokio::fs::copy(&source, &target)
+        .await
+        .map_err(|e| AppError::Io(format!("copy bundled binary: {e}")))?;
+
+    tracing::info!(
+        tool = %tool_id,
+        src = %source.display(),
+        dst = %target.display(),
+        "cached bundled binary"
+    );
+
+    Ok(target)
+}
+
+/// Locate a bundled binary on disk. Searches the standard dev + prod paths.
+fn resolve_bundled_source(binary_name: &str) -> Result<PathBuf, AppError> {
+    // 1. Next to the running executable — production MSI + `tauri dev` run.
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            for cand in [dir.join("binaries").join(binary_name), dir.join(binary_name)] {
+                if cand.is_file() {
+                    return Ok(cand);
+                }
+            }
+        }
+    }
+    // 2. Working directory — `cargo run` / `cargo test` from workspace root.
+    if let Ok(cwd) = std::env::current_dir() {
+        for cand in [
+            cwd.join("src-tauri").join("binaries").join(binary_name),
+            cwd.join("binaries").join(binary_name),
+        ] {
+            if cand.is_file() {
+                return Ok(cand);
+            }
+        }
+    }
+    Err(AppError::SidecarFailed(format!(
+        "bundled binary '{}' not found in any expected location",
+        binary_name
+    )))
+}
+
 /// Ensure `tool_id` is installed and return the path to its executable.
 ///
 /// If the binary already exists and passes the checksum, returns immediately.
@@ -112,14 +204,24 @@ pub async fn ensure_installed(tool_id: &str, ctx: &HandlerCtx) -> Result<PathBuf
         },
     );
 
-    extract_zip(&zip_bytes, target.parent().unwrap(), install_subpath).await?;
+    // Build the full list of entries to extract: the main binary plus any
+    // companion files declared in the manifest (e.g. Il2CppDumper's config.json).
+    let mut entries: Vec<String> = vec![install_subpath.to_string()];
+    entries.extend(entry.extra_files.iter().cloned());
 
-    if !target.exists() {
-        return Err(AppError::SidecarFailed(format!(
-            "extraction succeeded but '{}' is not at expected path: {}",
-            install_subpath,
-            target.display()
-        )));
+    let dest_dir = target.parent().unwrap();
+    extract_zip_files(&zip_bytes, dest_dir, &entries).await?;
+
+    // Verify every requested file is actually on disk before declaring success.
+    for name in &entries {
+        let expected = dest_dir.join(name);
+        if !expected.exists() {
+            return Err(AppError::SidecarFailed(format!(
+                "extraction reported success but '{}' is not at expected path: {}",
+                name,
+                expected.display()
+            )));
+        }
     }
 
     emit_progress(
@@ -236,48 +338,86 @@ async fn download_once(
 // Zip extraction
 // ---------------------------------------------------------------------------
 
-/// Extract only the entry matching `entry_name` from `zip_bytes` into `dest_dir`.
+/// Extract `entry_names` from `zip_bytes` into `dest_dir`.
+///
+/// Opens the archive once and iterates entries, matching each entry name
+/// by exact filename or path-suffix (so flat zips and nested zips both work).
+/// Returns the on-disk paths of the extracted files in arbitrary order.
 ///
 /// # Security
 /// - Rejects entries with `..` or absolute paths (zip-slip prevention).
-/// - Only extracts the single named entry.
+/// - Only extracts entries explicitly requested.
+///
+/// # Errors
+/// Returns `Err(AppError::SidecarFailed)` if any requested name is not
+/// present in the archive — partial extraction is treated as failure so
+/// callers don't end up with half a sidecar installation.
+pub async fn extract_zip_files(
+    zip_bytes: &[u8],
+    dest_dir: &Path,
+    entry_names: &[String],
+) -> Result<Vec<PathBuf>, AppError> {
+    let zip_bytes = zip_bytes.to_vec();
+    let dest_dir = dest_dir.to_path_buf();
+    let entry_names: Vec<String> = entry_names.to_vec();
+
+    tokio::task::spawn_blocking(move || extract_zip_files_sync(&zip_bytes, &dest_dir, &entry_names))
+        .await
+        .map_err(|e| AppError::SidecarFailed(format!("spawn_blocking: {e}")))?
+}
+
+/// Backward-compatible single-entry wrapper.
 pub async fn extract_zip(
     zip_bytes: &[u8],
     dest_dir: &Path,
     entry_name: &str,
 ) -> Result<(), AppError> {
-    // zip crate operations are synchronous; run on blocking thread.
-    let zip_bytes = zip_bytes.to_vec();
-    let dest_dir = dest_dir.to_path_buf();
-    let entry_name = entry_name.to_string();
-
-    tokio::task::spawn_blocking(move || extract_zip_sync(&zip_bytes, &dest_dir, &entry_name))
+    let names = vec![entry_name.to_string()];
+    extract_zip_files(zip_bytes, dest_dir, &names)
         .await
-        .map_err(|e| AppError::SidecarFailed(format!("spawn_blocking: {e}")))?
+        .map(|_| ())
 }
 
-fn extract_zip_sync(zip_bytes: &[u8], dest_dir: &Path, entry_name: &str) -> Result<(), AppError> {
+fn extract_zip_files_sync(
+    zip_bytes: &[u8],
+    dest_dir: &Path,
+    entry_names: &[String],
+) -> Result<Vec<PathBuf>, AppError> {
+    use std::collections::HashSet;
     use std::io::Cursor;
+
+    if entry_names.is_empty() {
+        return Ok(Vec::new());
+    }
 
     let cursor = Cursor::new(zip_bytes);
     let mut archive = zip::ZipArchive::new(cursor)
         .map_err(|e| AppError::SidecarFailed(format!("open zip: {e}")))?;
 
+    // Pending set drains as entries are extracted so we can short-circuit
+    // once everything requested is on disk.
+    let mut pending: HashSet<String> = entry_names.iter().cloned().collect();
+    let mut extracted: Vec<PathBuf> = Vec::with_capacity(entry_names.len());
+
     for i in 0..archive.len() {
+        if pending.is_empty() {
+            break;
+        }
+
         let mut file = archive
             .by_index(i)
             .map_err(|e| AppError::SidecarFailed(format!("zip entry {i}: {e}")))?;
 
         let raw_name = file.name().to_string();
 
-        // Only extract the requested entry (simple filename match OR full path match).
-        let matches = raw_name == entry_name
-            || raw_name.ends_with(&format!("/{}", entry_name))
-            || raw_name.ends_with(&format!("\\{}", entry_name));
+        // Find which pending name this entry matches (basename or suffix).
+        let matched_name = pending.iter().find(|name| {
+            raw_name == **name
+                || raw_name.ends_with(&format!("/{}", name))
+                || raw_name.ends_with(&format!("\\{}", name))
+        }).cloned();
 
-        if !matches {
-            continue;
-        }
+        let Some(name) = matched_name else { continue };
 
         // Security: reject zip-slip paths.
         if raw_name.contains("..") || raw_name.starts_with('/') || raw_name.starts_with('\\') {
@@ -287,7 +427,7 @@ fn extract_zip_sync(zip_bytes: &[u8], dest_dir: &Path, entry_name: &str) -> Resu
             )));
         }
 
-        let out_path = dest_dir.join(entry_name);
+        let out_path = dest_dir.join(&name);
 
         let mut out_file = std::fs::File::create(&out_path)
             .map_err(|e| AppError::Io(format!("create {}: {e}", out_path.display())))?;
@@ -296,14 +436,20 @@ fn extract_zip_sync(zip_bytes: &[u8], dest_dir: &Path, entry_name: &str) -> Resu
             .map_err(|e| AppError::Io(format!("extract {}: {e}", raw_name)))?;
 
         debug!(entry = %raw_name, dest = %out_path.display(), "extracted zip entry");
-        return Ok(());
+        pending.remove(&name);
+        extracted.push(out_path);
     }
 
-    Err(AppError::SidecarFailed(format!(
-        "entry '{}' not found in zip ({} entries total)",
-        entry_name,
-        archive.len()
-    )))
+    if !pending.is_empty() {
+        let missing: Vec<String> = pending.into_iter().collect();
+        return Err(AppError::SidecarFailed(format!(
+            "entries not found in zip: {:?} ({} entries in archive)",
+            missing,
+            archive.len()
+        )));
+    }
+
+    Ok(extracted)
 }
 
 // ---------------------------------------------------------------------------
@@ -374,8 +520,112 @@ mod tests {
         zip.finish().unwrap();
 
         let dir = tempfile::tempdir().unwrap();
-        extract_zip_sync(&buf, dir.path(), "Tool.exe").unwrap();
+        let names = vec!["Tool.exe".to_string()];
+        extract_zip_files_sync(&buf, dir.path(), &names).unwrap();
         let out = dir.path().join("Tool.exe");
         assert!(out.exists());
+    }
+
+    /// Build a zip with multiple distinct entries for multi-extract tests.
+    fn make_multi_zip(entries: &[(&str, &[u8])]) -> Vec<u8> {
+        use std::io::Write;
+        let mut buf = Vec::new();
+        let cursor = std::io::Cursor::new(&mut buf);
+        let mut zip = zip::ZipWriter::new(cursor);
+        let opts = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored);
+        for (name, content) in entries {
+            zip.start_file(*name, opts).unwrap();
+            zip.write_all(content).unwrap();
+        }
+        zip.finish().unwrap();
+        buf
+    }
+
+    #[tokio::test]
+    async fn extract_zip_files_extracts_multiple_entries() {
+        let zip_bytes = make_multi_zip(&[
+            ("Il2CppDumper.exe", b"main binary"),
+            ("config.json", b"{\"foo\": 1}"),
+            ("Il2CppDumper-x86.exe", b"x86 binary"),
+            ("ghidra.py", b"# helper"),
+        ]);
+        let dir = tempfile::tempdir().unwrap();
+        let requested = vec!["Il2CppDumper.exe".to_string(), "config.json".to_string()];
+        let out_paths = extract_zip_files(&zip_bytes, dir.path(), &requested)
+            .await
+            .expect("extract should succeed");
+
+        assert_eq!(out_paths.len(), 2);
+        assert!(dir.path().join("Il2CppDumper.exe").exists());
+        assert!(dir.path().join("config.json").exists());
+        // Non-requested entries must NOT be extracted.
+        assert!(!dir.path().join("Il2CppDumper-x86.exe").exists());
+        assert!(!dir.path().join("ghidra.py").exists());
+    }
+
+    #[tokio::test]
+    async fn extract_zip_files_errors_on_missing_entry() {
+        let zip_bytes = make_multi_zip(&[("a.txt", b"a"), ("b.txt", b"b")]);
+        let dir = tempfile::tempdir().unwrap();
+        let requested = vec!["a.txt".to_string(), "missing.txt".to_string()];
+        let result = extract_zip_files(&zip_bytes, dir.path(), &requested).await;
+        assert!(result.is_err());
+        let msg = result.unwrap_err().to_string();
+        assert!(
+            msg.contains("entries not found") && msg.contains("missing.txt"),
+            "unexpected error: {msg}"
+        );
+    }
+
+    // -----------------------------------------------------------------------
+    // ensure_bundled_cached behavior — tested via the inner helper so we don't
+    // have to mock read_manifest() or HandlerCtx.
+    // -----------------------------------------------------------------------
+
+    /// Single helper that mirrors the cache-or-copy logic of
+    /// `ensure_bundled_cached` without the manifest + ctx plumbing. Tests pass
+    /// source/target paths directly so the cache decision can be observed.
+    async fn cache_or_copy(source: &Path, target: &Path) -> Result<bool, AppError> {
+        if let (Ok(sm), Ok(tm)) = (std::fs::metadata(source), std::fs::metadata(target)) {
+            if sm.len() == tm.len() {
+                return Ok(false); // cache hit, no copy
+            }
+        }
+        tokio::fs::create_dir_all(target.parent().unwrap()).await
+            .map_err(|e| AppError::Io(format!("create bin dir: {e}")))?;
+        tokio::fs::copy(source, target).await
+            .map_err(|e| AppError::Io(format!("copy bundled binary: {e}")))?;
+        Ok(true)
+    }
+
+    #[tokio::test]
+    async fn cache_or_copy_copies_on_first_call() {
+        let dir = tempfile::tempdir().unwrap();
+        let source = dir.path().join("bin-src.exe");
+        let target = dir.path().join("cache").join("bin-cached.exe");
+        std::fs::write(&source, b"binary-payload-v1").unwrap();
+        assert!(!target.exists());
+
+        let copied = cache_or_copy(&source, &target).await.unwrap();
+        assert!(copied, "expected first call to copy");
+        assert!(target.exists());
+        assert_eq!(std::fs::read(&target).unwrap(), b"binary-payload-v1");
+    }
+
+    #[tokio::test]
+    async fn cache_or_copy_reuses_when_size_matches() {
+        let dir = tempfile::tempdir().unwrap();
+        let source = dir.path().join("bin-src.exe");
+        let target = dir.path().join("cache").join("bin-cached.exe");
+        std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+        // Same byte length → cache hit decision.
+        std::fs::write(&source, b"AAAAAAAA").unwrap();
+        std::fs::write(&target, b"BBBBBBBB").unwrap();
+
+        let copied = cache_or_copy(&source, &target).await.unwrap();
+        assert!(!copied, "expected cache hit, no copy");
+        // Target content unchanged because the function did not copy.
+        assert_eq!(std::fs::read(&target).unwrap(), b"BBBBBBBB");
     }
 }

@@ -90,34 +90,49 @@ impl FormatHandler for UnityHandler {
         let source_hash = cache_key::source_hash(&canonical).await?;
 
         // --- Cache hit path ---
+        // Self-heal: a cached tree with <= 1 nodes (just the root) means a
+        // previous extraction failed silently and poisoned the cache. Drop
+        // the bad row and fall through to re-extract.
         {
             let conn = self.db.lock().await;
             let cached = tokio::task::block_in_place(|| {
                 db::repo::asset_trees::get(&conn, &project_id.0, &source_hash)
             })?;
 
-            if cached.is_some() {
-                debug!(project_id = %project_id, "cache hit — returning fast");
-                let project = tokio::task::block_in_place(|| {
-                    db::repo::projects::get(&conn, &project_id.0)
-                })?;
+            if let Some(cached_tree) = cached {
+                if cached_tree.nodes.len() > 1 {
+                    debug!(project_id = %project_id, "cache hit — returning fast");
+                    let project = tokio::task::block_in_place(|| {
+                        db::repo::projects::get(&conn, &project_id.0)
+                    })?;
 
-                if let Some(proj) = project {
-                    let handle = ProjectHandle {
-                        id: proj.id,
-                        root_path: proj.root_path,
-                        format_id: proj.format_id,
-                    };
-                    emit_progress(
-                        &ctx.app,
-                        ProgressPayload {
-                            operation_id: ctx.operation_id.clone(),
-                            phase: "done".into(),
-                            percent: Some(100.0),
-                            message: "Loaded from cache".into(),
-                        },
+                    if let Some(proj) = project {
+                        let handle = ProjectHandle {
+                            id: proj.id,
+                            root_path: proj.root_path,
+                            format_id: proj.format_id,
+                        };
+                        emit_progress(
+                            &ctx.app,
+                            ProgressPayload {
+                                operation_id: ctx.operation_id.clone(),
+                                phase: "done".into(),
+                                percent: Some(100.0),
+                                message: "Loaded from cache".into(),
+                            },
+                        );
+                        return Ok(handle);
+                    }
+                } else {
+                    tracing::warn!(
+                        project_id = %project_id,
+                        nodes = cached_tree.nodes.len(),
+                        "cached tree empty — discarding and re-extracting"
                     );
-                    return Ok(handle);
+                    let _ = tokio::task::block_in_place(|| {
+                        db::repo::asset_trees::delete(&conn, &project_id.0)
+                    });
+                    // fall through to extraction below
                 }
             }
         }
@@ -213,9 +228,20 @@ impl FormatHandler for UnityHandler {
 
         {
             let conn = self.db.lock().await;
+            let nodes_len = tree.nodes.len();
             tokio::task::block_in_place(|| -> Result<(), AppError> {
                 db::repo::projects::upsert(&conn, &project)?;
-                db::repo::asset_trees::put(&conn, &project_id.0, &source_hash, &tree)?;
+                // Don't poison the cache with empty trees: an extraction that
+                // produced no assets (root-only tree) re-runs on next open
+                // instead of being remembered forever.
+                if nodes_len > 1 {
+                    db::repo::asset_trees::put(&conn, &project_id.0, &source_hash, &tree)?;
+                } else {
+                    tracing::warn!(
+                        project_id = %project_id,
+                        "extraction produced empty tree — NOT caching"
+                    );
+                }
                 db::repo::recents::upsert(&conn, &project_id.0, false)?;
                 Ok(())
             })?;

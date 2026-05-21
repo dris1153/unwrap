@@ -16,6 +16,7 @@
     "shortcuts": "快捷键",
     "bundled": "内置工具",
     "troubleshoot": "故障排查",
+    "develop": "开发与构建",
     "license": "许可证"
   },
   "hero": {
@@ -197,9 +198,32 @@
         }
       ]
     },
+    "develop": {
+      "heading": "开发与构建",
+      "intro": "从源码构建 Unwrap,用于贡献代码、自定义功能,或在正式发布前运行最新的改动。",
+      "prereqsHeading": "前置要求",
+      "prereqs": [
+        "Windows 10 或 11 (x64) — 主要支持的平台",
+        "Node.js 20+ 与 pnpm 9+",
+        "Rust stable MSVC 工具链 — 通过 `rustup default stable-x86_64-pc-windows-msvc` 设置",
+        ".NET 8 SDK — `pnpm sidecars` 安装 ILSpyCmd 时所需",
+        "WebView2 Runtime — Windows 11 已预装;Windows 10 上由安装程序自动提示安装"
+      ],
+      "commandsHeading": "命令",
+      "commands": [
+        { "cmd": "pnpm install", "desc": "安装 JavaScript 依赖" },
+        { "cmd": "pnpm sidecars", "desc": "下载 AssetRipper + 安装 ILSpyCmd(约 120 MB,只需一次)" },
+        { "cmd": "pnpm tauri dev", "desc": "启动支持热重载的开发窗口" },
+        { "cmd": "pnpm test", "desc": "运行 Vitest 前端测试套件" },
+        { "cmd": "cargo test --manifest-path src-tauri/Cargo.toml", "desc": "运行 Rust 后端测试套件" },
+        { "cmd": "pnpm tauri build", "desc": "构建发布版 MSI 安装包(约 5-10 分钟)" },
+        { "cmd": "pnpm docs:serve", "desc": "在 http://localhost:5173 本地提供此文档页面" }
+      ],
+      "more": "请参阅 <a href=\"https://github.com/dris1153/unwrap/blob/dev/BUILD.md\">BUILD.md</a> 了解 sidecar 获取的备选方案、MSI 签名说明以及完整的故障排查指南。"
+    },
     "license": {
       "heading": "许可证",
-      "body": "Unwrap 本身以 MIT 许可证发布——请参阅仓库根目录中的 LICENSE 文件。内置 sidecar 工具保留各自的原始许可证：AssetRipper 为 GPL-3.0，ILSpyCmd 为 MIT，Il2CppDumper 为 MIT。所有第三方工具的完整许可证文本和源码 URL 位于 src-tauri/NOTICE.txt 中。"
+      "body": "Unwrap 本身以 MIT 许可证发布——请参阅仓库根目录中的 LICENSE 文件。内置 sidecar 工具保留各自的原始许可证:AssetRipper 为 GPL-3.0,ILSpyCmd 为 MIT,Il2CppDumper 为 MIT。所有第三方工具的完整许可证文本和源码 URL 位于 src-tauri/NOTICE.txt 中。"
     }
   },
   "footer": {

@@ -79,26 +79,41 @@ fn read_nul_terminated_version(slice: &[u8]) -> Option<String> {
 }
 
 /// Scan raw bytes for a Unity version pattern anywhere in the buffer.
+///
+/// Walks bytes (no UTF-8 lossy conversion) and tests each contiguous run of
+/// ASCII version-shape chars `[0-9A-Za-z.]` against `looks_like_unity_version`.
+/// Pre-fix this used `String::from_utf8_lossy` then byte-indexed the resulting
+/// `str` — invalid bytes were replaced with 3-byte `U+FFFD` chars which made
+/// `text[start..start + 24]` panic when `start + 24` landed inside one.
 fn scan_for_version(header: &[u8]) -> Option<String> {
-    // Convert to UTF-8 lossy so we can use str methods.
-    let text = String::from_utf8_lossy(header);
-    // Find digit sequences that look like "NNNN.N.NNfN".
-    for start in 0..text.len().saturating_sub(6) {
-        let candidate = &text[start..text.len().min(start + 24)];
-        // Quick filter: must start with a digit
-        if !candidate.starts_with(|c: char| c.is_ascii_digit()) {
+    let mut i = 0;
+    while i < header.len() {
+        if !header[i].is_ascii_digit() {
+            i += 1;
             continue;
         }
-        // Extract up to the first non-version character
-        let end = candidate
-            .find(|c: char| !c.is_ascii_alphanumeric() && c != '.')
-            .unwrap_or(candidate.len());
-        let tok = &candidate[..end];
-        if looks_like_unity_version(tok) {
-            return Some(tok.to_string());
+        let start = i;
+        while i < header.len() && is_version_byte(header[i]) {
+            i += 1;
+        }
+        let len = i - start;
+        // Unity version strings are ~8-15 chars; 5..=32 is a generous window
+        // that still rejects long false-positive runs (e.g. base64-like data).
+        if (5..=32).contains(&len) {
+            // Slice is pure ASCII (filtered by is_version_byte) — utf8 safe.
+            if let Ok(s) = std::str::from_utf8(&header[start..i]) {
+                if looks_like_unity_version(s) {
+                    return Some(s.to_string());
+                }
+            }
         }
     }
     None
+}
+
+#[inline]
+fn is_version_byte(b: u8) -> bool {
+    b.is_ascii_alphanumeric() || b == b'.'
 }
 
 /// Returns true when `s` matches the Unity version format `MAJOR.MINOR.PATCHxN`
@@ -206,5 +221,45 @@ mod tests {
         assert!(!looks_like_unity_version("not.a.version"));
         assert!(!looks_like_unity_version(""));
         assert!(!looks_like_unity_version("1.0")); // only two parts
+    }
+
+    // -----------------------------------------------------------------------
+    // Regression tests for the byte-scanner panic fix (phase-01b Bug C).
+    // -----------------------------------------------------------------------
+
+    /// Real Unity 6000.2.6f2 ggm headers contain non-ASCII bytes before the
+    /// version string. The pre-fix scanner converted via from_utf8_lossy and
+    /// panicked at non-char-boundary slicing into a 3-byte U+FFFD char.
+    #[test]
+    fn scan_for_version_unity6_with_garbage_prefix() {
+        let mut header = vec![0u8; 64];
+        // Garbage prefix bytes that from_utf8_lossy would render as U+FFFD.
+        header[0] = 0xC2;
+        header[1] = 0x4C;
+        header[2] = 0xC2;
+        header[3] = 0xA0;
+        let version_str = b"6000.2.6f2";
+        header[16..16 + version_str.len()].copy_from_slice(version_str);
+        assert_eq!(
+            scan_for_version(&header).as_deref(),
+            Some("6000.2.6f2")
+        );
+    }
+
+    /// All-garbage header must produce no false-positive version.
+    #[test]
+    fn scan_for_version_returns_none_on_garbage_only() {
+        let header = vec![0xFFu8; 64];
+        assert_eq!(scan_for_version(&header), None);
+    }
+
+    /// A 33+ char digit run (random binary blob) must NOT match — we cap at 32.
+    #[test]
+    fn scan_for_version_rejects_oversized_run() {
+        let mut header = vec![0u8; 64];
+        for (idx, b) in (0..33u32).enumerate() {
+            header[idx] = b'0' + ((b as u8) % 10);
+        }
+        assert_eq!(scan_for_version(&header), None);
     }
 }
